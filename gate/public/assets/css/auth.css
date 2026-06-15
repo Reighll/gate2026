@@ -1,0 +1,148 @@
+/* ==========================================
+   1. MODERN, AESTHETIC BACKGROUND
+   ========================================== */
+.auth-bg {
+    /* Soft, airy gradient background */
+    background: linear-gradient(135deg, #f0f4f8 0%, #e2ebf0 100%);
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Adding subtle, aesthetic decorative glow blobs in the background */
+.auth-bg::before,
+.auth-bg::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.6;
+}
+
+.auth-bg::before {
+    width: 400px;
+    height: 400px;
+    background: #bbdefb; /* Soft primary blue glow */
+    top: -100px;
+    left: -100px;
+}
+
+.auth-bg::after {
+    width: 300px;
+    height: 300px;
+    background: #e3f2fd; /* Lighter blue glow */
+    bottom: -50px;
+    right: -50px;
+}
+
+/* ==========================================
+   2. MODERN CARD (GLASSMORPHISM & CLEAN)
+   ========================================== */
+.auth-transition {
+    animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+
+    /* Frosted glass effect */
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    /* Soft, diffuse shadow instead of a harsh one */
+    border: 1px solid rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0,0,0,0.02) !important;
+    border-radius: 20px !important;
+
+    position: relative;
+    z-index: 1; /* Keeps the card above the background blobs */
+}
+
+@keyframes slideUpFade {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================
+   3. INPUT & BUTTON POLISH
+   ========================================== */
+.auth-transition .form-control,
+.auth-transition .form-select,
+.auth-transition .input-group-text,
+.auth-transition .btn-light {
+    background-color: #f8fafc !important; /* Very subtle off-white/gray */
+    border: 1px solid #e2e8f0 !important;
+    color: #334155;
+    transition: all 0.3s ease;
+}
+
+/* Premium Focus Ring on inputs */
+.auth-transition .form-control:focus,
+.auth-transition .form-select:focus {
+    background-color: #ffffff !important;
+    border-color: #93c5fd !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+}
+
+.input-group-lg .form-control:focus + .btn-toggle-pass {
+    border-color: #93c5fd !important;
+    background-color: #ffffff !important;
+}
+
+/* Sleek, hovering submit button */
+.auth-transition button[type="submit"] {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: none;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-transition button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+}
+
+/* Softer Typography Colors */
+.auth-transition h3 {
+    color: #1e293b !important;
+    letter-spacing: -0.5px;
+}
+.auth-transition p, .auth-transition label, .auth-transition span {
+    color: #64748b !important;
+}
+
+/* ==========================================
+   4. MOBILE RESPONSIVENESS
+   ========================================== */
+@media (max-width: 767px) {
+    .auth-transition .card-body {
+        padding: 2.5rem 1.5rem !important;
+    }
+
+    .auth-transition .form-control-lg,
+    .auth-transition .form-select-lg,
+    .auth-transition .input-group-lg > .form-control,
+    .auth-transition .input-group-lg > .input-group-text,
+    .auth-transition .input-group-lg > .btn {
+        font-size: 0.95rem !important;
+        padding: 0.6rem 1rem !important;
+        min-height: 48px;
+    }
+
+    .auth-transition button[type="submit"] {
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+        font-size: 1.1rem !important;
+    }
+
+    .auth-transition h3 {
+        font-size: 1.5rem !important;
+    }
+
+    .auth-transition .mb-4 {
+        margin-bottom: 1.2rem !important;
+    }
+}

@@ -1,0 +1,24 @@
+/* Custom styling for left vertical tabs */
+.nav-pills .nav-link {
+    color: #5a6a85;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+.nav-pills .nav-link.active {
+    background-color: #1e88e5;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(30,136,229,0.3);
+}
+.nav-pills .nav-link:hover:not(.active) {
+    background-color: #f1f6fa;
+    color: #1e88e5;
+}
+.sticky-menu {
+    position: sticky;
+    top: 90px;
+    z-index: 10;
+}
+.offcanvas-header {
+    background-color: #f8f9fa;
+}

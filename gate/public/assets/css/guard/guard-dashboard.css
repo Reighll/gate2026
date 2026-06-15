@@ -1,0 +1,66 @@
+.guard-card-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    color: #2a3547;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+.input-grey {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dfe5ef;
+    border-radius: 8px;
+}
+.btn-blue {
+    background-color: #5d87ff;
+    color: white;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+}
+.btn-blue:hover {
+    background-color: #4570ea;
+    color: white;
+    box-shadow: 0 4px 10px rgba(93, 135, 255, 0.3);
+}
+.info-block {
+    border: 1px solid #dfe5ef;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    text-align: center;
+    font-weight: 700;
+    color: #2a3547;
+    letter-spacing: 1px;
+}
+.image-placeholder-box {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 180px;
+    width: 100%;
+    border: 1px dashed #dfe5ef;
+    overflow: hidden;
+    position: relative;
+}
+.debug-box {
+    background-color: #2a3547;
+    color: #00ff00;
+    font-family: monospace;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    border: 2px solid #3e4b5b;
+    transition: all 0.2s ease-in-out;
+}
+.debug-box.focused {
+    border-color: #00ff00;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .image-placeholder-box {
+        height: 150px;
+    }
+}

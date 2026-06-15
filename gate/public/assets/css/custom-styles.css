@@ -1,0 +1,49 @@
+/* ==========================================
+   1. GLOBAL / DESKTOP STYLES (Large Screens)
+   ========================================== */
+.fixed-top-banner {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    min-height: 65px;
+    background-color: royalblue;
+    z-index: 1100;
+}
+
+.content-paddi
+ng-fix {
+    padding-top: 130px !important;
+}
+
+/* ==========================================
+   2. MOBILE STYLES (Phones & Small Tablets)
+   ========================================== */
+@media (max-width: 768px) {
+    /* Shrink the top banner slightly to save vertical space */
+    .fixed-top-banner {
+        min-height: 45px;
+    }
+
+    /* Pull the white navbar up to match the new, smaller banner height */
+    .app-header {
+        top: 45px !important;
+    }
+
+    /* Reduce the massive top padding so the ID card is visible immediately without scrolling */
+    .content-padding-fix {
+        padding-top: 105px !important;
+
+        /* Optional: Add a tiny bit of side padding so the edges of the ID card don't touch the phone screen bezels */
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}
+/* ==========================================
+   MOBILE SIDEBAR OVERLAY FIX
+   ========================================== */
+@media (max-width: 1199px) {
+    /* Forces the mobile sidebar to float ABOVE the top header (z-index 1100) */
+    .left-sidebar {
+        z-index: 1200 !important;
+    }
+}

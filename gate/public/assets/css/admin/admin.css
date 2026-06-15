@@ -1,0 +1,65 @@
+/* 1. Global Layout Fixes */
+.card { border-radius: 20px !important; }
+
+/* 2. Responsive Table Logic (Works for ALL tables) */
+@media (max-width: 767px) {
+    .table thead { display: none; }
+    .table tr { display: block; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; background: #fff; }
+    .table td {
+        display: flex;
+        justify-content: space-between;
+        text-align: right;
+        padding: 8px 0 !important;
+        border: none !important;
+    }
+    /* This automatically pulls the label from the HTML data-label attribute */
+    .table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #2a3547;
+        margin-right: 15px;
+    }
+}
+
+/* 3. Mobile Spacing Fixes (Reduces whitespace) */
+@media (max-width: 767px) {
+    .pt-5.mt-4 { padding-top: 3rem !important; margin-top: 1rem !important; }
+    .card-body.p-4 { padding: 1.25rem !important; }
+    .row.mb-4 { margin-bottom: 1rem !important; }
+}
+
+/* 4. Modal & Print Optimization */
+@media (max-width: 576px) { .modal-dialog { margin: 10px; } }
+
+@media print {
+    .left-sidebar, .app-header, .fixed-top-banner, .btn, .no-print {
+        display: none !important;
+    }
+    .body-wrapper { margin: 0 !important; padding: 0 !important; }
+}
+
+/* 5. Sidebar Customization */
+.sidebar-link.active, .sidebar-link:hover {
+    background-color: #ebf1ff !important;
+    color: #5d87ff !important;
+}
+.simplebar-scrollbar::before { background-color: #5d87ff !important; }
+
+/* Updated Subtle Scrollbar */
+.table-responsive::-webkit-scrollbar {
+    height: 6px; /* Slightly thinner */
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f8fafc; /* Very light, clean background */
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* A neutral, soft grey-blue that matches your border colors */
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* A darker grey for hover interaction */
+}

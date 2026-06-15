@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MessDetectorOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PHPCSFixerOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PHPCodeSnifferOptionsConfiguration">
+    <option name="highlightLevel" value="WARNING" />
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PhpCodeSniffer">
+    <phpcs_settings>
+      <phpcs_by_interpreter asDefaultInterpreter="true" interpreter_id="edb42f1d-9462-4ba9-9d95-1be3edc17d49" timeout="30000" />
+    </phpcs_settings>
+  </component>
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/gate/vendor/fakerphp/faker" />
+      <path value="$PROJECT_DIR$/gate/vendor/mikey179/vfsstream" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/cli-parser" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/code-unit" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/complexity" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/lines-of-code" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/type" />
+      <path value="$PROJECT_DIR$/gate/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/gate/vendor/codeigniter4/framework" />
+      <path value="$PROJECT_DIR$/gate/vendor/composer" />
+      <path value="$PROJECT_DIR$/gate/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/gate/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/gate/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/gate/vendor/laminas/laminas-escaper" />
+      <path value="$PROJECT_DIR$/gate/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/gate/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/gate/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/gate/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/gate/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/gate/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/gate/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/gate/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/gate/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/gate/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/gate/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/mikey179/vfsstream" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/laminas/laminas-escaper" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/fakerphp/faker" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/cli-parser" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/code-unit" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/complexity" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/lines-of-code" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/type" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/codeigniter4/framework" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/composer" />
+      <path value="$PROJECT_DIR$/gate2026-master/gate/vendor/psr/log" />
+    </include_path>
+  </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />
+  <component name="PhpStan">
+    <PhpStan_settings>
+      <phpstan_by_interpreter asDefaultInterpreter="true" interpreter_id="edb42f1d-9462-4ba9-9d95-1be3edc17d49" timeout="60000" />
+    </PhpStan_settings>
+  </component>
+  <component name="PhpStanOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+  <component name="PhpUnit">
+    <phpunit_settings>
+      <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/gate2026-master/gate/phpunit.xml.dist" custom_loader_path="$PROJECT_DIR$/gate2026-master/gate/vendor/autoload.php" use_configuration_file="true" />
+      <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/gate/phpunit.xml.dist" custom_loader_path="$PROJECT_DIR$/gate/vendor/autoload.php" use_configuration_file="true" />
+    </phpunit_settings>
+  </component>
+  <component name="Psalm">
+    <Psalm_settings>
+      <psalm_fixer_by_interpreter asDefaultInterpreter="true" interpreter_id="edb42f1d-9462-4ba9-9d95-1be3edc17d49" timeout="60000" />
+    </Psalm_settings>
+  </component>
+  <component name="PsalmOptionsConfiguration">
+    <option name="transferred" value="true" />
+  </component>
+</project>

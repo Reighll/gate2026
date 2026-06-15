@@ -1,0 +1,174 @@
+<?= $this->extend('Guard/layout/main') ?>
+
+<?= $this->section('styles') ?>
+    <link rel="stylesheet" href="<?= base_url('assets/css/guard/guard-dashboard.css') ?>" />
+<?= $this->endSection() ?>
+
+<?= $this->section('content') ?>
+
+    <div class="mt-5 pt-5 d-flex flex-column gap-3">
+
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="alert alert-success p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
+                <i class="ti ti-check-circle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('success') ?></span>
+            </div>
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="alert alert-danger p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
+                <i class="ti ti-alert-triangle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('error') ?></span>
+            </div>
+        <?php endif; ?>
+        <?php if (session()->getFlashdata('info')): ?>
+            <div class="alert alert-info p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
+                <i class="ti ti-info-circle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('info') ?></span>
+            </div>
+        <?php endif; ?>
+
+        <div class="row g-4 pb-5">
+
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-0 rounded-4 mb-4 h-auto">
+                    <div class="card-body p-3 p-md-4">
+                        <h5 class="guard-card-title">LOG A VISITOR</h5>
+
+                        <form action="<?= base_url('guard/log-visitor') ?>" method="POST" enctype="multipart/form-data">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="rfid" value="<?= esc(session()->getFlashdata('visitor_rfid') ?? '') ?>">
+
+                            <div class="row">
+                                <div class="col-12 col-xl-7">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted mb-1">Visitor Name:</label>
+                                        <input type="text" class="form-control input-grey" name="visitor_name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted mb-1">Purpose:</label>
+                                        <input type="text" class="form-control input-grey" name="purpose" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label small fw-bold text-muted mb-1">Items: <span class="fw-normal fst-italic">(Optional)</span></label>
+                                        <input type="text" class="form-control input-grey" name="items" placeholder="">
+                                    </div>
+                                    <button type="submit" class="btn btn-blue w-100 py-2 mb-3 mb-xl-0">LOG VISITOR</button>
+                                </div>
+
+                                <div class="col-12 col-xl-5 text-center d-flex flex-column mt-2 mt-xl-0">
+                                    <label class="form-label small fw-bold text-muted mb-1 text-start d-none d-xl-block">ID Photo:</label>
+
+                                    <div class="image-placeholder-box mb-3 flex-grow-1" id="cameraBox">
+                                        <i class="ti ti-id fs-1 text-muted opacity-50" id="cameraIcon" style="font-size: 5rem !important;"></i>
+
+                                        <video id="webcamVideo" autoplay playsinline style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"></video>
+                                        <img id="photoPreview" style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2;" />
+                                        <canvas id="photoCanvas" style="display:none;"></canvas>
+                                    </div>
+
+                                    <div class="d-flex flex-column gap-2 mt-auto">
+                                        <button type="button" id="startCameraBtn" class="btn btn-blue w-100 py-2"><i class="ti ti-camera me-1"></i> START CAMERA</button>
+                                        <button type="button" id="takePhotoBtn" class="btn btn-success w-100 py-2 shadow-sm" style="display:none;"><i class="ti ti-capture me-1"></i> SNAP PHOTO</button>
+                                        <button type="button" id="retakePhotoBtn" class="btn btn-warning w-100 py-2" style="display:none;"><i class="ti ti-reload me-1"></i> RETAKE</button>
+
+                                        <label class="btn btn-outline-secondary w-100 py-2 mb-0" id="manualUploadLabel">
+                                            <i class="ti ti-upload me-1"></i> UPLOAD INSTEAD
+                                            <input type="file" name="manual_photo" id="manualPhotoInput" class="d-none" accept="image/*">
+                                        </label>
+                                    </div>
+
+                                    <input type="hidden" name="webcam_photo" id="webcamPhotoInput">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-3 p-md-4 text-center text-xl-start">
+                        <h5 class="guard-card-title mb-0 border-0">VISITOR SLOTS REMAINING:</h5>
+                        <h1 class="display-3 fw-light text-muted mt-2 mb-0" style="font-family: 'Courier New', Courier, monospace; letter-spacing: -2px;">
+                            <?= esc($slotsAvailable ?? 0) ?>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card shadow-sm border-0 rounded-4 h-100">
+                    <div class="card-body p-3 p-md-4">
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <h5 class="guard-card-title mb-0">SCANNER</h5>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-3 fw-normal text-capitalize d-flex align-items-center">
+                                <span class="spinner-grow spinner-grow-sm me-2 bg-success" style="width: 8px; height: 8px;"></span> Listening
+                            </span>
+                        </div>
+
+                        <form id="hiddenScanForm" action="<?= base_url('guard/check-in') ?>" method="POST" data-check-url="<?= base_url('guard/check-latest-scan') ?>">
+                            <?= csrf_field() ?>
+                            <input type="text" id="hiddenRfidInput" name="rfid" autofocus autocomplete="off" style="position: absolute; opacity: 0; top: -1000px; left: -1000px; width: 1px; height: 1px; z-index: -9999;">
+
+                            <div class="debug-box p-3 mb-4 d-flex justify-content-between align-items-center" id="debugBox">
+                                <div class="d-flex align-items-center w-100 me-2">
+                                    <span class="text-success fw-bold me-2">&gt;_</span>
+                                    <span id="debugOutput">Waiting for scanner...</span>
+                                </div>
+                                <span id="debugStatus" class="text-warning fw-bold small">IDLE</span>
+                            </div>
+                        </form>
+
+                        <?php
+                        $scannedItem = session()->getFlashdata('scanned_item');
+                        $scannedStudent = session()->getFlashdata('scanned_student');
+                        ?>
+
+                        <?php if ($scannedItem && $scannedStudent): ?>
+                            <div class="row align-items-center mb-4">
+                                <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
+                                    <?php $isTimeIn = !(isset($scannedItem['in_campus']) && $scannedItem['in_campus'] == 1); ?>
+                                    <div class="mb-3">
+                                        <?php if ($isTimeIn): ?>
+                                            <span class="badge bg-success text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center" style="letter-spacing: 0.5px;">
+                                                <i class="ti ti-login me-2 fs-5"></i> TIME IN
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center" style="letter-spacing: 0.5px;">
+                                                <i class="ti ti-logout me-2 fs-5"></i> TIME OUT
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <h4 class="fw-bold text-dark mb-4 fs-4 text-uppercase"><?= esc($scannedItem['brand_model'] ?? $scannedItem['name'] ?? 'Unknown Item') ?></h4>
+                                    <p class="text-muted fw-semibold mb-2">TYPE: <span class="fw-normal"><?= esc($scannedItem['category'] ?? 'N/A') ?></span></p>
+                                    <p class="text-muted fw-semibold mb-2">SN: <span class="font-monospace fw-normal"><?= esc($scannedItem['serial_number'] ?? 'N/A') ?></span></p>
+                                    <p class="text-muted fw-semibold mb-0">STATUS: <span class="fw-normal"><?= esc($scannedItem['status'] ?? 'UNKNOWN') ?></span></p>
+                                </div>
+                                <div class="col-md-6 order-1 order-md-2">
+                                    <div class="image-placeholder-box p-3 h-100" style="min-height: 200px;">
+                                        <?php if (!empty($scannedItem['photo'])): ?>
+                                            <img src="<?= base_url('uploads/items/' . esc($scannedItem['photo'])) ?>" alt="Item" class="img-fluid rounded shadow-sm" style="max-height: 100%; object-fit: contain;">
+                                        <?php else: ?>
+                                            <i class="ti ti-device-laptop text-muted opacity-50" style="font-size: 5rem;"></i>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-block py-3 px-4 mb-3 shadow-sm text-uppercase">
+                                <?= esc($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name']) ?>
+                            </div>
+                            <div class="info-block py-3 px-4 shadow-sm text-uppercase font-monospace bg-light">
+                                <?= esc($scannedStudent['student_number'] ?? 'NO ID') ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted opacity-50 py-5">
+                                <i class="ti ti-nfc mb-3" style="font-size: 6rem;"></i>
+                                <h3 class="fw-bold text-center">Ready for next scan</h3>
+                                <p class="text-center">Tap an RFID card to display details.</p>
+                                <small class="mt-4"><kbd>Esc</kbd> to exit text boxes</small>
+                            </div>
+                        <?php endif; ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?= $this->endSection() ?>
