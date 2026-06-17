@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome | Gatepass System</title>
+    <title>Welcome | Gate System</title>
 
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
 
@@ -109,8 +109,9 @@
 
     <div class="row justify-content-center mb-5 animate-up delay-1">
         <div class="col-12 text-center">
-            <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
-                <i class="ti ti-shield-check text-primary" style="font-size: 3rem;"></i>
+            <div class="d-flex align-items-center justify-content-center gap-3 mb-3">
+                <!-- Swapped the icon for the image here -->
+                <img src="<?= base_url('assets/images/logos/favicon.png') ?>" alt="Gatepass Logo" style="height: 3.5rem; width: auto;">
                 <h1 class="fw-bolder mb-0 display-5" style="letter-spacing: -1px; color: #2a3547;">
                     <span class="text-primary">GA</span>TE
                 </h1>

@@ -4,8 +4,8 @@
     <option name="directories">
       <list>
         <option value="$PROJECT_DIR$/gate2026-master/gate/tests" />
-        <option value="$PROJECT_DIR$/gate/tests" />
         <option value="$PROJECT_DIR$/gate/gate/tests" />
+        <option value="$PROJECT_DIR$/gate/tests" />
       </list>
     </option>
   </component>

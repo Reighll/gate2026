@@ -16,7 +16,7 @@ class Auth extends BaseController
     public function register()
     {
         if (session()->get('student_logged_in')) return redirect()->to('student/dashboard');
-        return view('Student/auth/register');
+        return view('Student/auth/login');
     }
 
     public function login()

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/icons/tabler-icons/tabler-icons.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/auth.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('assets/css/auth-background.css?v=12') ?>" />
 </head>
 <body class="auth-bg position-relative">
 
@@ -18,7 +19,23 @@
     <span class="d-none d-sm-block">Home</span>
 </a>
 
-<?= $this->renderSection('content') ?>
+<!-- THE NEW SPLIT CARD WRAPPER -->
+<div class="page-wrapper min-vh-100 d-flex align-items-center justify-content-center p-3 p-md-4">
+    <div class="auth-card-wrapper shadow-lg">
+
+        <!-- Left Side: Dark Gradient Logo & System Name -->
+        <div class="auth-brand-panel flex-column text-center">
+            <img src="<?= base_url('assets/images/logos/favicon.png') ?>" alt="Gatepass Logo" class="mb-4">
+            <h6 class="text-white fw-bold mb-0" style="letter-spacing: 2px; opacity: 0.85;">GUEST AND TECHNOLOGY ENTRY</h6>
+        </div>
+
+        <!-- Right Side: Guard Login Form -->
+        <div class="auth-form-panel">
+            <?= $this->renderSection('content') ?>
+        </div>
+
+    </div>
+</div>
 
 <script src="<?= base_url('assets/libs/jquery/dist/jquery.min.js') ?>"></script>
 <script src="<?= base_url('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') ?>"></script>

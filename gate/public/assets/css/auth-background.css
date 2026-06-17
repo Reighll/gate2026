@@ -1,0 +1,68 @@
+/* File: public/assets/css/auth-background.css */
+
+/* 1. The subtle outer background */
+body.auth-bg {
+    background-color: #eef2f6;
+}
+
+/* 2. The Main Card Container */
+.auth-card-wrapper {
+    display: flex;
+    max-width: 950px;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 24px;
+    overflow: hidden; /* Keeps the inner panels from breaking the rounded corners */
+    min-height: 550px;
+}
+
+/* 3. The Left Side (Logo Panel) */
+.auth-brand-panel {
+    width: 45%;
+
+    /* THE FIX: Replaced the solid #0f172a with a sleek dark gradient */
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+
+    /* Optional: Adding a subtle inner shadow makes the panel look inset and premium */
+    box-shadow: inset -10px 0 20px rgba(0,0,0,0.2);
+}
+
+.auth-brand-panel img {
+    width: 100%;
+    max-width: 240px;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4)); /* Makes the logo stand out */
+}
+
+/* 4. The Right Side (Form Panel) */
+.auth-form-panel {
+    width: 55%;
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* 5. Mobile Responsiveness (Stacks the columns on small screens) */
+@media (max-width: 992px) {
+    .auth-card-wrapper {
+        flex-direction: column;
+        max-width: 500px;
+    }
+    .auth-brand-panel {
+        width: 100%;
+        padding: 30px;
+        min-height: 200px;
+    }
+    .auth-brand-panel img {
+        max-width: 130px;
+    }
+    .auth-form-panel {
+        width: 100%;
+        padding: 40px 20px;
+    }
+}
