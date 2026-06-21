@@ -1,5 +1,5 @@
 <?= $this->extend('Student/layout/main') ?>
-
+<?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
     <div class="pt-5 mt-4">

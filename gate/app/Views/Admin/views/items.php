@@ -1,5 +1,5 @@
 <?= $this->extend('Admin/layout/main') ?>
-
+<?= $this->section('title') ?>Registered Items | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
     <div class="pt-5 mt-4">

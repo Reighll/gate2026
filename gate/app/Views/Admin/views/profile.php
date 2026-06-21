@@ -1,5 +1,5 @@
 <?= $this->extend('Admin/layout/main') ?>
-
+<?= $this->section('title') ?>My Profile | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
         <div class="d-flex align-items-center pt-5">

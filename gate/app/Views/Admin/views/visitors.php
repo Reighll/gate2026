@@ -1,5 +1,5 @@
 <?= $this->extend('Admin/layout/main') ?>
-
+<?= $this->section('title') ?>Visitors Pass | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
     <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin-visitors.css') ?>">
 

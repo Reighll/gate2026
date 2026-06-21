@@ -167,6 +167,37 @@ class Users extends BaseController
     // -------------------------------------------------------------------------
     // Admin Management Logic
     // -------------------------------------------------------------------------
+
+    // NEW: Generate Admin Invite Key Logic
+    public function generateAdminKey()
+    {
+        // Security check
+        $adminId = session()->get('admin_id');
+        if (!$adminId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        // Use your specific Model
+        $keyModel = new \App\Models\AdminKeyModel();
+
+        // Generate a random 6-character hex string
+        $randomCode = strtoupper(substr(bin2hex(random_bytes(4)), 0, 6));
+        $finalKey = 'GATE-ADM-' . $randomCode;
+
+        // Save to your database mapping to your exact columns
+        $keyModel->insert([
+            'key_code'     => $finalKey,
+            'generated_by' => $adminId,
+            'status'       => 'unused' // Note: Change to 0 if your database uses a boolean
+        ]);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'key'     => $finalKey,
+            'message' => 'Key generated successfully!'
+        ]);
+    }
+
     public function createAdmin()
     {
         $adminModel = new AdminModel();

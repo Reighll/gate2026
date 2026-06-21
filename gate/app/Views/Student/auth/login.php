@@ -29,6 +29,7 @@
             opacity: 1;
             position: relative !important;
             visibility: visible !important;
+            z-index: 10 !important;
         }
 
         .form-slide-out-left {
@@ -39,6 +40,7 @@
             left: 0 !important;
             visibility: hidden !important;
             pointer-events: none;
+            z-index: 1 !important;
         }
 
         .form-slide-out-right {
@@ -49,11 +51,11 @@
             left: 0 !important;
             visibility: hidden !important;
             pointer-events: none;
+            z-index: 1 !important;
         }
 
-        /* Mobile spacing */
         @media (max-width: 992px) {
-            .auth-form-view { padding: 40px 20px; }
+            .auth-form-view { padding: 40px 20px 60px 20px !important; }
         }
     </style>
 
@@ -107,8 +109,7 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
 
             <div class="text-center">
                 <span class="text-muted">New student?</span>
-                <a href="#" id="btn-to-register" data-target-url="<?= base_url('student/register') ?>" class="text-primary fw-bold ms-1 text-decoration-none">Create Account</a>
-            </div>
+                <a href="#" id="btn-to-register" data-target-url="<?= base_url('student/register') ?>" class="text-primary fw-bold ms-1 text-decoration-none p-2">Create Account</a>            </div>
         </form>
     </div>
 

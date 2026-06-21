@@ -1,5 +1,5 @@
 <?= $this->extend('Admin/layout/main') ?>
-
+<?= $this->section('title') ?>Dashboard | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
     <style>

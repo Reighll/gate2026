@@ -21,6 +21,11 @@ $routes->group('admin', static function ($routes) {
     // Auth Routes
     $routes->get('login', 'Admin\Auth::index');
     $routes->post('login/auth', 'Admin\Auth::attemptLogin');
+
+    // NEW: Registration Routes
+    $routes->get('register', 'Admin\Auth::register');
+    $routes->post('register/auth', 'Admin\Auth::attemptRegister');
+
     $routes->get('logout', 'Admin\Auth::logout');
 
     // Dashboard Route
@@ -46,6 +51,7 @@ $routes->group('admin', static function ($routes) {
     $routes->get('users/deleteGuard/(:num)', 'Admin\Users::deleteGuard/$1', ['filter' => 'authGuard']);
 
     // Admins CRUD
+    $routes->post('users/generate-admin-key', 'Admin\Users::generateAdminKey', ['filter' => 'authGuard']);
     $routes->post('users/createAdmin', 'Admin\Users::createAdmin', ['filter' => 'authGuard']);
     $routes->post('users/editAdmin/(:num)', 'Admin\Users::editAdmin/$1', ['filter' => 'authGuard']);
     $routes->get('users/deleteAdmin/(:num)', 'Admin\Users::deleteAdmin/$1', ['filter' => 'authGuard']);

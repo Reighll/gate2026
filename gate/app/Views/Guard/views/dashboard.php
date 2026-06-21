@@ -1,5 +1,5 @@
 <?= $this->extend('Guard/layout/main') ?>
-
+<?= $this->section('title') ?>Scanner | Guard Portal<?= $this->endSection() ?>
 <?= $this->section('styles') ?>
     <link rel="stylesheet" href="<?= base_url('assets/css/guard/guard-dashboard.css') ?>" />
 <?= $this->endSection() ?>

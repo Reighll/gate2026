@@ -1,5 +1,5 @@
 <?= $this->extend('Student/layout/main') ?>
-
+<?= $this->section('title') ?>My Profile | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">

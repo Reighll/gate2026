@@ -1,5 +1,5 @@
 <?= $this->extend('Guard/layout/main') ?>
-
+<?= $this->section('title') ?>My Profile | Guard Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
     <!-- Cropper.js CSS -->

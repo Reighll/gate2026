@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title><?= $this->renderSection('title') ?? 'Admin Dashboard | Gatepass System' ?></title>
+    <title><?= $this->renderSection('title') ?? 'Admin Portal | Gatepass System' ?></title>
 
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
 

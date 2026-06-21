@@ -22,11 +22,11 @@
 
                         <div class="text-end mt-1" style="max-width: 140px;">
                             <h6 class="mb-0 fw-bold text-dark text-truncate" style="font-size: 0.85rem; line-height: 1.2;">
-                                <?= session()->get('username') ?? 'Admin' ?>
+                                <?= esc(session()->get('admin_username')) ?? 'Admin' ?>
                             </h6>
                             <span class="text-muted d-block mt-1 text-truncate fw-medium" style="font-size: 0.75rem; line-height: 1;">
-                                <?= session()->get('email') ?? 'admin@tup.edu.ph' ?>
-                            </span>
+        <?= esc(session()->get('admin_email')) ?? 'admin@tup.edu.ph' ?>
+    </span>
                         </div>
 
                         <?php $navPic = session()->get('profile_pic') ?? 'user-1.jpg'; ?>

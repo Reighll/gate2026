@@ -1,5 +1,5 @@
 <?= $this->extend('Admin/layout/main') ?>
-
+<?= $this->section('title') ?>Item Reports | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
     <div class="pt-5 mt-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
