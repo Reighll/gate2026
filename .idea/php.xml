@@ -99,7 +99,6 @@
   <component name="PhpUnit">
     <phpunit_settings>
       <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/gate2026-master/gate/phpunit.xml.dist" custom_loader_path="$PROJECT_DIR$/gate2026-master/gate/vendor/autoload.php" use_configuration_file="true" />
-      <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/gate/phpunit.xml.dist" custom_loader_path="$PROJECT_DIR$/gate/vendor/autoload.php" use_configuration_file="true" />
     </phpunit_settings>
   </component>
   <component name="Psalm">

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/student.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/student-layout.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
+    <link rel="manifest" href="<?= base_url('manifest.json') ?>">
 </head>
 
 <body>
@@ -39,6 +40,16 @@
 <script src="<?= base_url('assets/js/app.min.js') ?>"></script>
 <script src="<?= base_url('assets/libs/simplebar/dist/simplebar.js') ?>"></script>
 <script src="<?= base_url('assets/js/student/student.js') ?>"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('<?= base_url('sw.js') ?>')
+                .then(reg => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Registration failed: ', err));
+        });
+    }
+</script>
+
 
 <?= $this->renderSection('scripts') ?>
 </body>

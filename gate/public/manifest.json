@@ -1,0 +1,16 @@
+{
+  "short_name": "Gatepass",
+  "name": "Student & Guard Gatepass System",
+  "icons": [
+    {
+      "src": "assets/images/logos/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#5d87ff",
+  "display": "standalone",
+  "orientation": "portrait"
+}

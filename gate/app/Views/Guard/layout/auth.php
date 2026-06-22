@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/icons/tabler-icons/tabler-icons.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/auth.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/auth-background.css?v=12') ?>" />
+    <link rel="manifest" href="<?= base_url('manifest.json') ?>">
 </head>
 <body class="auth-bg position-relative">
 
