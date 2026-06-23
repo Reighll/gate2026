@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/icons/tabler-icons/tabler-icons.css') ?>" />
-
+    <link rel="manifest" href="/manifest.json">
     <style>
         /* Modern Soft Background */
         .landing-bg {
@@ -175,5 +175,14 @@
 
 <script src="<?= base_url('assets/libs/jquery/dist/jquery.min.js') ?>"></script>
 <script src="<?= base_url('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') ?>"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('<?= base_url('sw.js') ?>')
+                .then(reg => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Registration failed: ', err));
+        });
+    }
+</script>
 </body>
 </html>

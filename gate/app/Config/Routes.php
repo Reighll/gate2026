@@ -9,7 +9,7 @@ use CodeIgniter\Router\RouteCollection;
 // --------------------------------------------------------------------
 // Default Route
 // --------------------------------------------------------------------
-$routes->get('/', function() {
+$routes->match(['get', 'head'], '/', function() {
     return view('landing');
 });// --------------------------------------------------------------------
 // Admin Routes
