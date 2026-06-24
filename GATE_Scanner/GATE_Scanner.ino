@@ -9,12 +9,12 @@ String server1 = "http://192.168.100.29:8080/api/scan";
 
 // --- SECONDARY Wi-Fi & Server ---
 const char* ssid2 = "Converge_2.4GHz_5DE7";
-const char* pass2 = "HAHAHAHAHA";
-String server2 = "http://192.168.1.33:8080/api/scan";
+const char* pass2 = "HEHEHEHEHE";
+String server2 = "http://192.168.1.60:8080/api/scan";
 
 // --- TERTIARY Wi-Fi & Server ---
-const char* ssid3 = "TUP_Taguig_WiiFi";
-const char* pass3 = "Student12345";
+const char* ssid3 = "Nothing Phone (1)";
+const char* pass3 = "password";
 String server3 = "http://172.34.95.183/GATE/public/api/scan"; 
 
 // This variable will hold whichever server we actually connect to

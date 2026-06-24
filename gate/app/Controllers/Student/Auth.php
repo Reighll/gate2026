@@ -44,6 +44,7 @@ class Auth extends BaseController
                 'student_id'         => $student['id'],
                 'student_name'       => $student['first_name'] . ' ' . $student['last_name'],
                 'student_number'     => $student['student_number'],
+                'profile_pic'      => $student['profile_pic'],
                 'student_logged_in'  => true,
             ];
             session()->set($sessionData);

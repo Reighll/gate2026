@@ -5,9 +5,10 @@
 <?= $this->section('content') ?>
 
     <style>
-        .auth-card-wrapper {
-            transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
+        html, body {
+            overflow-x: hidden !important;
         }
+
         .auth-form-panel {
             position: relative !important;
             overflow: hidden !important;
@@ -15,6 +16,7 @@
             display: flex !important;
             align-items: flex-start !important;
             flex-direction: row !important;
+            width: 100% !important;
         }
 
         .auth-form-view {
@@ -56,6 +58,18 @@
 
         @media (max-width: 992px) {
             .auth-form-view { padding: 40px 20px 60px 20px !important; }
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            .row {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                justify-content: center !important;
+            }
         }
     </style>
 
