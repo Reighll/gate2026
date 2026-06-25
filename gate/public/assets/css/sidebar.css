@@ -1,0 +1,87 @@
+/* Apply only to desktop screens */
+@media (min-width: 1200px) {
+
+    /* 1. THE COLLAPSED SIDEBAR */
+    .left-sidebar {
+        width: 85px !important;
+        overflow-x: hidden !important;
+        white-space: nowrap !important; /* Prevents text from stacking */
+        transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+        z-index: 1000;
+        position: fixed;
+    }
+
+    /* 2. THE EXPANDED SIDEBAR (Hover State) */
+    .left-sidebar:hover {
+        width: 270px !important;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+    }
+
+    /* 3. HIDE & FADE TEXT ELEGANTLY */
+    .hide-menu,
+    .nav-small-cap span,
+    .logo-img h4 {
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        pointer-events: none;
+    }
+
+    .left-sidebar:hover .hide-menu,
+    .left-sidebar:hover .nav-small-cap span,
+    .left-sidebar:hover .logo-img h4 {
+        opacity: 1;
+        pointer-events: auto;
+        transition-delay: 0.15s;
+    }
+
+    /* =========================================
+       4. THE ALIGNMENT FIX (PERFECT PILLS)
+    ========================================== */
+    /* Align the main logo with the icons below it */
+    .brand-logo {
+        padding-left: 27px !important;
+    }
+
+    /* Align the tiny section dots (like "Home" and "Modules") */
+    .nav-small-cap {
+        padding-left: 36px !important;
+    }
+
+    /* Force the links into a clean, centered pill shape */
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        margin: 0 12px !important; /* Reduced outer margin makes the pill wider */
+        padding: 12px 10px !important; /* 18px padding gives the icon more space on the left and right */
+        width: 61px !important; /* Locked width for collapsed state */
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    }
+
+    /* When the sidebar expands, stretch the pill to fit the text */
+    .left-sidebar:hover .sidebar-link {
+        width: 246px !important; /* 270px sidebar - 24px margins = 246px */
+    }
+
+    .sidebar-link i {
+        font-size: 1.5rem !important;
+        min-width: 25px !important; /* Locks icon size so it doesn't squish */
+        margin-right: 15px !important;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* =========================================
+       5. THE MAIN PAGE SLIDE-OVER MAGIC
+    ========================================== */
+    .body-wrapper {
+        margin-left: 85px !important;
+        transition: margin-left 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    }
+
+    .left-sidebar:hover ~ .body-wrapper {
+        margin-left: 270px !important;
+    }
+
+}

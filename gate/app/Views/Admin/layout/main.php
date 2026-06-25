@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/admin.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/admin-layout.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
-    <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin.css') ?>" />\
+    <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
 
     <?= $this->renderSection('styles') ?>
 </head>

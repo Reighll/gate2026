@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/student.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/student-layout.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
     <link rel="manifest" href="<?= base_url('manifest.json') ?>">
 </head>
 

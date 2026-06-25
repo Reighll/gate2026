@@ -25,8 +25,8 @@
                                 <?= esc(session()->get('admin_username')) ?? 'Admin' ?>
                             </h6>
                             <span class="text-muted d-block mt-1 text-truncate fw-medium" style="font-size: 0.75rem; line-height: 1;">
-        <?= esc(session()->get('admin_email')) ?? 'admin@tup.edu.ph' ?>
-    </span>
+                                <?= esc(session()->get('admin_email')) ?? 'admin@tup.edu.ph' ?>
+                            </span>
                         </div>
 
                         <?php $navPic = session()->get('profile_pic') ?? 'user-1.jpg'; ?>

@@ -1,4 +1,4 @@
-<aside class="left-sidebar shadow-sm">
+<aside class="left-sidebar">
     <div>
         <div class="brand-logo d-flex align-items-center justify-content-between pt-4 pb-3 px-3">
 
@@ -12,55 +12,42 @@
             </div>
 
         </div>
-
-        <nav class="sidebar-nav scroll-sidebar mt-2" data-simplebar="">
+        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
             <ul id="sidebarnav">
-
-                <li class="nav-small-cap mt-2">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu fw-bold text-muted uppercase">Home</span>
-                </li>
-
                 <li class="sidebar-item">
-                    <a class="sidebar-link rounded-3" href="<?= base_url('admin/dashboard') ?>" aria-expanded="false">
+                    <a class="sidebar-link" href="<?= base_url('admin/dashboard') ?>" aria-expanded="false">
                         <span><i class="ti ti-layout-dashboard"></i></span>
                         <span class="hide-menu fw-medium">Dashboard</span>
                     </a>
                 </li>
 
-                <li class="nav-small-cap mt-4">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu fw-bold text-muted uppercase">Modules</span>
-                </li>
-
                 <li class="sidebar-item">
-                    <a class="sidebar-link rounded-3" href="<?= base_url('admin/visitors') ?>" aria-expanded="false">
+                    <a class="sidebar-link" href="<?= base_url('admin/visitors') ?>" aria-expanded="false">
                         <span><i class="ti ti-id-badge"></i></span>
                         <span class="hide-menu fw-medium">Visitors Pass</span>
                     </a>
                 </li>
 
                 <li class="sidebar-item">
-                    <a class="sidebar-link rounded-3" href="<?= base_url('admin/item-reports') ?>" aria-expanded="false">
+                    <a class="sidebar-link" href="<?= base_url('admin/item-reports') ?>" aria-expanded="false">
                         <span><i class="ti ti-alert-triangle"></i></span>
                         <span class="hide-menu fw-medium">Item Reports</span>
                     </a>
                 </li>
 
                 <li class="sidebar-item">
-                    <a class="sidebar-link rounded-3" href="<?= base_url('admin/items') ?>" aria-expanded="false">
+                    <a class="sidebar-link" href="<?= base_url('admin/items') ?>" aria-expanded="false">
                         <span><i class="ti ti-package"></i></span>
                         <span class="hide-menu fw-medium">Registered Items</span>
                     </a>
                 </li>
 
                 <li class="sidebar-item">
-                    <a class="sidebar-link rounded-3" href="<?= base_url('admin/users') ?>" aria-expanded="false">
+                    <a class="sidebar-link" href="<?= base_url('admin/users') ?>" aria-expanded="false">
                         <span><i class="ti ti-users"></i></span>
                         <span class="hide-menu fw-medium">User Management</span>
                     </a>
                 </li>
-
             </ul>
         </nav>
     </div>

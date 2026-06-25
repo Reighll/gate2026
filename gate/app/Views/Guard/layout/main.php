@@ -10,10 +10,9 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/icons/tabler-icons/tabler-icons.css') ?>" />
 
-    <!-- Mirroring the Student CSS approach -->
     <link rel="stylesheet" href="<?= base_url('assets/css/guard/guard.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
-
+    <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
     <link rel="manifest" href="<?= base_url('manifest.json') ?>">
     <?= $this->renderSection('styles') ?>
 </head>

@@ -20,7 +20,8 @@ class AdminModel extends Model
         'email',
         'password',
         'status',
-        'last_login'
+        'last_login',
+        'profile_pic'
     ];
 
     // Dates

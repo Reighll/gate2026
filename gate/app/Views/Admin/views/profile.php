@@ -1,61 +1,145 @@
 <?= $this->extend('Admin/layout/main') ?>
 <?= $this->section('title') ?>My Profile | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
+    <div class="pt-5 mt-4">
+        <div class="row">
+            <div class="col-12 col-lg-8 mx-auto">
 
-        <div class="d-flex align-items-center pt-5">
-            <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                <i class="ti ti-arrow-left fs-5 text-muted"></i>
-            </a>
-            <h4 class="fw-bolder mb-0" style="color: #2a3547;">My Profile Settings</h4>
-        </div>
+                <div class="d-flex align-items-center mb-4">
+                    <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-sm btn-light border shadow-sm rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                        <i class="ti ti-arrow-left fs-5 text-muted"></i>
+                    </a>
+                    <h4 class="fw-semibold mb-0">My Profile Settings</h4>
+                </div>
 
-        <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-            <div class="card-body p-4 p-md-5">
-
-                <form action="<?= base_url('admin/profile/update') ?>" method="post">
-                    <!-- Expanded the form to take up the full width (col-12) -->
-                    <div class="row">
-                        <div class="col-12">
-
-                            <h6 class="fw-bold mb-3" style="color: #5d87ff; font-size: 1.1rem;">Personal Details</h6>
-
-                            <div class="row mb-3">
-                                <div class="col-sm-6 mb-3 mb-sm-0">
-                                    <label class="form-label fw-semibold text-dark">First Name</label>
-                                    <input type="text" class="form-control form-control-lg bg-light shadow-none" style="border: 1px solid #eef2f6; border-radius: 8px;" name="first_name" value="<?= esc($admin['first_name']) ?>" required>
-                                </div>
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-dark">Last Name</label>
-                                    <input type="text" class="form-control form-control-lg bg-light shadow-none" style="border: 1px solid #eef2f6; border-radius: 8px;" name="last_name" value="<?= esc($admin['last_name']) ?>" required>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold text-dark">Email Address</label>
-                                <input type="email" class="form-control form-control-lg bg-light shadow-none" style="border: 1px solid #eef2f6; border-radius: 8px;" name="email" value="<?= esc($admin['email']) ?>">
-                            </div>
-
-                            <hr class="my-4" style="border-color: #eef2f6; opacity: 1;">
-
-                            <h6 class="fw-bold mb-3" style="color: #5d87ff; font-size: 1.1rem;">Change Password</h6>
-
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold text-dark">New Password</label>
-                                <input type="password" class="form-control form-control-lg bg-light shadow-none" style="border: 1px solid #eef2f6; border-radius: 8px;" name="password" placeholder="••••••••">
-                                <div class="form-text mt-2 text-muted">
-                                    <i class="ti ti-info-circle me-1"></i> Required only if you want to change your password. Leave blank to keep it unchanged.
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-end gap-3 mt-5">
-                                <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-light fw-bold px-4 py-2" style="border-radius: 8px; color: #5a6a85;">Cancel</a>
-                                <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm" style="border-radius: 8px; background-color: #2a3547; border: none;">Save Changes</button>
-                            </div>
-
-                        </div>
+                <!-- Alerts -->
+                <?php if (session()->getFlashdata('success')): ?>
+                    <div class="alert alert-success shadow-sm border-0 mb-4 d-flex align-items-center rounded-3">
+                        <i class="ti ti-check-circle fs-4 me-2"></i>
+                        <?= session()->getFlashdata('success') ?>
                     </div>
-                </form>
+                <?php endif; ?>
+
+                <?php if (session()->getFlashdata('error')): ?>
+                    <div class="alert alert-danger shadow-sm border-0 mb-4 d-flex align-items-center rounded-3">
+                        <i class="ti ti-alert-triangle fs-4 me-2"></i>
+                        <?= session()->getFlashdata('error') ?>
+                    </div>
+                <?php endif; ?>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 p-md-5">
+                        <form action="<?= base_url('admin/profile/update') ?>" method="POST" enctype="multipart/form-data">
+                            <?= csrf_field() ?>
+
+                            <div class="row mb-4">
+                                <!-- Profile Picture Section -->
+                                <div class="col-md-4 text-center mb-4 mb-md-0" style="position: relative; z-index: 20;">
+                                    <?php
+                                    // Checks DB first, falls back to default user-1
+                                    $pic = !empty($admin['profile_pic']) ? $admin['profile_pic'] : 'user-1.jpg';
+                                    ?>
+                                    <img src="<?= base_url('assets/images/profile/' . $pic) ?>" alt="Profile Picture" id="profilePicPreview" class="rounded-circle img-fluid border border-3 border-primary shadow-sm mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+
+                                    <div>
+                                        <label class="form-label fw-bold small text-muted mb-2">Choose an Avatar</label>
+
+                                        <!-- Hidden input -->
+                                        <input type="hidden" name="profile_pic" id="selected_profile_pic" value="<?= esc($pic) ?>">
+
+                                        <!-- The clickable avatar grid -->
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <?php for($i = 1; $i <= 5; $i++): ?>
+                                                <?php $filename = 'user-' . $i . '.jpg'; ?>
+                                                <img src="<?= base_url('assets/images/profile/' . $filename) ?>"
+                                                     class="avatar-option rounded-circle border border-2 <?= $pic == $filename ? 'border-primary' : 'border-white' ?> shadow-sm"
+                                                     style="width: 45px; height: 45px; object-fit: cover; cursor: pointer; transition: transform 0.2s;"
+                                                     data-filename="<?= $filename ?>">
+                                            <?php endfor; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Personal Details Section -->
+                                <div class="col-md-8">
+                                    <h5 class="fw-bold text-primary mb-3">Personal Details</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold text-dark">First Name</label>
+                                            <input type="text" class="form-control bg-light" name="first_name" value="<?= esc($admin['first_name'] ?? '') ?>" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-bold text-dark">Last Name</label>
+                                            <input type="text" class="form-control bg-light" name="last_name" value="<?= esc($admin['last_name'] ?? '') ?>" required>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold text-dark">Email Address</label>
+                                            <input type="email" class="form-control bg-light" name="email" value="<?= esc($admin['email'] ?? '') ?>" required>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label fw-bold text-dark">Username</label>
+                                            <input type="text" class="form-control bg-light text-muted" value="<?= esc($admin['username'] ?? '') ?>" readonly>
+                                            <small class="text-muted">Username cannot be changed.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 text-muted">
+
+                            <h5 class="fw-bold text-primary mb-3">Change Password</h5>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-dark">Current Password</label>
+                                <input type="password" class="form-control form-control-lg bg-light" name="current_password" placeholder="••••••••">
+                                <div class="form-text mt-2"><i class="ti ti-info-circle"></i> Required only if you want to change your password. Leave blank to keep it unchanged.</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold text-dark">New Password</label>
+                                    <input type="password" class="form-control form-control-lg bg-light" name="new_password" placeholder="••••••••">
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold text-dark">Repeat New Password</label>
+                                    <input type="password" class="form-control form-control-lg bg-light" name="confirm_password" placeholder="••••••••">
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 gap-md-3 mt-4">
+                                <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-light fw-bold text-muted px-3 px-md-4 py-2 rounded-3 border">Cancel</a>
+                                <button type="submit" class="btn btn-primary fw-bold px-4 px-md-5 py-2 shadow-sm rounded-3">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
             </div>
         </div>
+    </div>
+
+    <!-- Cropper Modal -->
+    <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0 rounded-4">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold text-primary" id="cropModalLabel"><i class="ti ti-crop me-2"></i>Crop Profile Picture</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center bg-light">
+                    <div style="max-height: 400px; width: 100%; overflow: hidden;">
+                        <img id="cropperImage" src="" style="max-width: 100%; display: block;">
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-light text-muted fw-bold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary fw-bold px-4" id="btnCrop">Crop & Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+    <script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>
 <?= $this->endSection() ?>
