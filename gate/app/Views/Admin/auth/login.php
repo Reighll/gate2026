@@ -110,6 +110,9 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
                 <label class="form-label fw-semibold">Password</label>
                 <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
                     <input type="password" class="form-control bg-light border-end-0 login-pass" id="login_password" name="password" required>
+                    <button class="btn btn-light border border-start-0 bg-light px-3 btn-toggle-pass" type="button">
+                        <i class="ti ti-eye fs-5 text-muted"></i>
+                    </button>
                 </div>
             </div>
 

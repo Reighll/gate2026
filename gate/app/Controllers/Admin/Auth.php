@@ -61,6 +61,7 @@ class Auth extends BaseController
                     'admin_name'         => $admin['first_name'] . ' ' . $admin['last_name'],
                     'admin_username'     => $admin['username'],
                     'admin_email'        => $admin['email'],
+                    'profile_pic'    => $admin['profile_pic'],
                     'is_admin_logged_in' => true,
                 ];
                 $session->set($ses_data);
