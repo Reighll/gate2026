@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "tech.tuptgate.twa",
+        "sha256_cert_fingerprints": ["5B:15:19:7F:84:1C:ED:60:57:67:45:0D:B0:13:5A:40:5D:C8:85:4C:95:63:E7:66:B9:B2:E7:E9:30:C8:E1:EB"]
+      }
+    }]
