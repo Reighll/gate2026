@@ -126,13 +126,39 @@ class Dashboard extends BaseController
 
         // 1. Handle Profile Picture Upload
         $file = $this->request->getFile('profile_pic');
-        if ($file && $file->isValid() && ! $file->hasMoved()) {
-            $newName = $file->getRandomName();
-            $file->move(FCPATH . 'uploads/profiles', $newName);
-            $updateData['profile_pic'] = $newName;
 
-            if (!empty($student['profile_pic']) && $student['profile_pic'] != 'default.png' && file_exists(FCPATH . 'uploads/profiles/' . $student['profile_pic'])) {
-                unlink(FCPATH . 'uploads/profiles/' . $student['profile_pic']);
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+
+            $newName = $file->getRandomName();
+            $uploadPath = FCPATH . 'uploads/profiles/';
+
+            $file->move($uploadPath, $newName);
+
+            $filepath = $uploadPath . $newName;
+
+            // 🧠 Resize + compress profile image
+            try {
+                \Config\Services::image()
+                    ->withFile($filepath)
+                    ->resize(300, 300, true, 'auto') // good for avatars
+                    ->save($filepath, 75);           // balanced quality
+
+                $updateData['profile_pic'] = $newName;
+
+            } catch (\Exception $e) {
+                log_message('error', 'Profile Image Compression Failed: ' . $e->getMessage());
+
+                // still save original if compression fails
+                $updateData['profile_pic'] = $newName;
+            }
+
+            // delete old profile pic
+            if (
+                !empty($student['profile_pic']) &&
+                $student['profile_pic'] != 'default.png' &&
+                file_exists($uploadPath . $student['profile_pic'])
+            ) {
+                unlink($uploadPath . $student['profile_pic']);
             }
         }
 

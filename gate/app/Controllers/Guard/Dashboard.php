@@ -194,17 +194,51 @@ class Dashboard extends BaseController
         if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
         $manualPhoto = $this->request->getFile('manual_photo');
+
         if ($manualPhoto && $manualPhoto->isValid() && !$manualPhoto->hasMoved()) {
+
             $photoName = $manualPhoto->getRandomName();
             $manualPhoto->move($uploadDir, $photoName);
+
+            $filepath = $uploadDir . $photoName;
+
+            try {
+                \Config\Services::image()
+                    ->withFile($filepath)
+                    ->resize(800, 800, true, 'auto') // adjust if needed
+                    ->save($filepath, 70);           // balanced compression
+
+            } catch (\Exception $e) {
+                log_message('error', 'Visitor image compression failed: ' . $e->getMessage());
+            }
+
         } else if ($webcamPhoto = $this->request->getPost('webcam_photo')) {
+
             $imageParts = explode(";base64,", $webcamPhoto);
+
             if (count($imageParts) == 2) {
+
                 $imageTypeAux = explode("image/", $imageParts[0]);
                 $imageType = $imageTypeAux[1] ?? 'png';
+
                 $imageBase64 = base64_decode($imageParts[1]);
+
                 $photoName = 'visitor_webcam_' . time() . '_' . uniqid() . '.' . $imageType;
-                file_put_contents($uploadDir . $photoName, $imageBase64);
+
+                $filepath = $uploadDir . $photoName;
+
+                file_put_contents($filepath, $imageBase64);
+
+                // 🧠 compress webcam image too
+                try {
+                    \Config\Services::image()
+                        ->withFile($filepath)
+                        ->resize(800, 800, true, 'auto')
+                        ->save($filepath, 70);
+
+                } catch (\Exception $e) {
+                    log_message('error', 'Visitor webcam compression failed: ' . $e->getMessage());
+                }
             }
         }
 
