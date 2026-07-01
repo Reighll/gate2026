@@ -7,10 +7,6 @@
                 <h4 class="mb-0 fw-bolder text-primary" style="letter-spacing: 0.5px;">GATE <span class="text-dark">Admin</span></h4>
             </a>
 
-            <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer me-2" id="sidebarCollapse">
-                <i class="ti ti-x fs-5 fw-bold text-dark"></i>
-            </div>
-
         </div>
         <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
             <ul id="sidebarnav">

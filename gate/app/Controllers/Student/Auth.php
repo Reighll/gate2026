@@ -108,7 +108,7 @@ class Auth extends BaseController
     {
         $emailService = \Config\Services::email();
         $emailService->setTo($email);
-        $emailService->setSubject('Verify your Gatepass Account');
+        $emailService->setSubject('Verify your GATE Account');
 
         $verifyUrl = base_url('student/verifyEmail/' . $token);
 

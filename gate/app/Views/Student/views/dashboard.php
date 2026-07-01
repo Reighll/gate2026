@@ -8,6 +8,21 @@
 
                 <h4 class="fw-semibold mb-3 d-none d-md-block">Student Dashboard</h4>
 
+                <?php if (session()->getFlashdata('success')) : ?>
+                    <div class="alert alert-success alert-dismissible fade show p-3 rounded-3 shadow-sm mb-4 d-flex align-items-center" role="alert">
+                        <i class="ti ti-circle-check fs-5 me-2"></i>
+                        <div><?= session()->getFlashdata('success') ?></div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (session()->getFlashdata('error')) : ?>
+                    <div class="alert alert-danger alert-dismissible fade show p-3 rounded-3 shadow-sm mb-4 d-flex align-items-center" role="alert">
+                        <i class="ti ti-alert-circle fs-5 me-2"></i>
+                        <div><?= session()->getFlashdata('error') ?></div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
                 <div class="digital-id-card mb-4">
                     <div class="digital-id-header position-relative" style="background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 15px 15px 0 0;">
                         <h5 class="text-white mb-0 opacity-75 fs-5">TECHNOLOGICAL UNIVERSITY OF THE PHILIPPINES</h5>
@@ -41,8 +56,8 @@
                             <small class="text-muted">Your current location</small>
                         </div>
                         <span class="badge bg-light-primary text-primary fs-3 rounded-pill px-3 py-2">
-                        <i class="ti ti-building me-1"></i> Outside Campus
-                    </span>
+                            <i class="ti ti-building me-1"></i> Outside Campus
+                        </span>
                     </div>
                 </div>
 

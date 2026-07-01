@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $this->renderSection('title') ?? 'Student Portal | Gatepass System' ?></title>
+    <title><?= $this->renderSection('title') ?? 'Student Portal | GATE System' ?></title>
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/student.css') ?>" />
@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
     <link rel="manifest" href="<?= base_url('manifest.json') ?>">
+    <script src="<?= base_url('assets/js/mobile.js') ?>"></script>
 </head>
 
 <body>
@@ -30,7 +31,7 @@
         </div>
 
         <div class="py-6 px-6 text-center">
-            <p class="mb-0 fs-4">Student Gatepass System</p>
+            <p class="mb-0 fs-4">Student GATE System</p>
         </div>
     </div>
 </div>
@@ -41,6 +42,7 @@
 <script src="<?= base_url('assets/js/app.min.js') ?>"></script>
 <script src="<?= base_url('assets/libs/simplebar/dist/simplebar.js') ?>"></script>
 <script src="<?= base_url('assets/js/student/student.js') ?>"></script>
+<script src="<?= base_url('assets/js/theme.js') ?>"></script>
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

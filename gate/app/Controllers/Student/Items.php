@@ -17,12 +17,12 @@ class Items extends BaseController
         $model = new StudentItemModel();
 
         // 2. Validate user input
-        // CHANGED: Increased max_size to 10240 KB (10MB) to allow modern phone cameras to upload!
+        // CHANGED: Increased max_size to 51200 KB (50MB) to allow modern phone cameras to upload!
         $rules = [
             'category'      => 'required',
             'brand_model'   => 'required',
             'serial_number' => 'required',
-            'photo'         => 'uploaded[photo]|is_image[photo]|max_size[photo,10240]'
+            'photo'         => 'uploaded[photo]|is_image[photo]|max_size[photo,51200]'
         ];
 
         if (!$this->validate($rules)) {

@@ -16062,3 +16062,211 @@ ul {
 }
 
 /*# sourceMappingURL=styles.min.css.map */
+
+/* ==========================================================================
+   GATE SYSTEM - DARK MODE MASTER STYLESHEET
+   ========================================================================== */
+
+/* -----------------------------------------
+   1. CORE & GLOBALS
+   ----------------------------------------- */
+/* Main Background & Text */
+[data-bs-theme="dark"] body {
+  background-color: #11142d !important;
+  color: #f1f9ff !important;
+}
+
+/* Global Dark Text Override (Fixes Navbar, Sidebar, Card text) */
+[data-bs-theme="dark"] .text-dark,
+[data-bs-theme="dark"] .app-header .text-dark {
+  color: #f1f9ff !important;
+}
+
+/* Global Muted Text Override */
+[data-bs-theme="dark"] .text-muted {
+  color: #a1aab2 !important;
+}
+
+/* Global Headings & Paragraphs */
+[data-bs-theme="dark"] .card-title,
+[data-bs-theme="dark"] .h4,
+[data-bs-theme="dark"] h4,
+[data-bs-theme="dark"] .card p,
+[data-bs-theme="dark"] .card h5,
+[data-bs-theme="dark"] .card h6 {
+  color: #f1f9ff !important;
+}
+
+/* Global Background Overrides */
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .bg-white {
+  background-color: #223640 !important;
+  color: #f1f9ff !important;
+  border-color: #4f5467 !important;
+}
+
+[data-bs-theme="dark"] .bg-light {
+  background-color: #1b2e38 !important;
+}
+
+/* -----------------------------------------
+   2. FORMS, INPUTS & DROPDOWNS
+   ----------------------------------------- */
+[data-bs-theme="dark"] .form-label {
+  color: #f1f9ff !important;
+}
+
+/* Text Inputs & Placeholders */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .input-grey,
+[data-bs-theme="dark"] .image-placeholder-box {
+  background-color: #223640 !important;
+  color: #f1f9ff !important;
+  border-color: #4f5467 !important;
+}
+
+[data-bs-theme="dark"] .form-control:focus {
+  background-color: #1b2e38 !important;
+  color: #ffffff !important;
+  border-color: #8bb4fa !important;
+}
+
+/* Select Dropdowns */
+[data-bs-theme="dark"] .form-select {
+  background-color: #223640 !important;
+  color: #f1f9ff !important;
+  border-color: #4f5467 !important;
+  color-scheme: dark !important;
+}
+
+[data-bs-theme="dark"] .form-select option {
+  background-color: #223640 !important;
+  color: #f1f9ff !important;
+}
+
+/* Profile / Action Dropdown Menus */
+[data-bs-theme="dark"] .dropdown-menu {
+  background-color: #11142d !important;
+  border: 1px solid #4f5467 !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item {
+  color: #f1f9ff !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover,
+[data-bs-theme="dark"] .dropdown-item:focus {
+  background-color: #223640 !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item.text-danger:hover {
+  color: #fc4b6c !important;
+}
+
+/* -----------------------------------------
+   3. BUTTONS & BADGES
+   ----------------------------------------- */
+/* Primary Outline Buttons (e.g., 'Outside' status) */
+[data-bs-theme="dark"] .btn-outline-primary {
+  color: #8bb4fa !important;
+  border-color: #8bb4fa !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary:hover {
+  background-color: #8bb4fa !important;
+  color: #11142d !important;
+}
+
+/* Warning Buttons (Solid & Outline) */
+[data-bs-theme="dark"] .btn-warning {
+  background-color: #c29b0a !important;
+  border-color: #c29b0a !important;
+  color: #f1f9ff !important;
+}
+
+[data-bs-theme="dark"] .btn-warning:hover {
+  background-color: #a68406 !important;
+  border-color: #a68406 !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-warning {
+  border-color: #fdc90f !important;
+  color: #fdc90f !important;
+}
+
+/* Badges */
+[data-bs-theme="dark"] .badge.bg-light-primary,
+[data-bs-theme="dark"] .badge.bg-primary-subtle {
+  background-color: rgba(30, 77, 183, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .badge.text-primary,
+[data-bs-theme="dark"] .bg-light-primary.text-primary {
+  color: #8bb4fa !important;
+}
+
+/* -----------------------------------------
+   4. TABLES & LISTS
+   ----------------------------------------- */
+/* Table Text & Backgrounds */
+[data-bs-theme="dark"] .table,
+[data-bs-theme="dark"] tbody tr,
+[data-bs-theme="dark"] .table-light {
+  background-color: transparent !important;
+  color: #f1f9ff !important;
+}
+
+[data-bs-theme="dark"] .table thead th h6,
+[data-bs-theme="dark"] td,
+[data-bs-theme="dark"] td p,
+[data-bs-theme="dark"] td h6 {
+  color: #f1f9ff !important;
+}
+
+/* Table Borders */
+[data-bs-theme="dark"] .table th,
+[data-bs-theme="dark"] .table td,
+[data-bs-theme="dark"] .border-bottom {
+  border-color: #4f5467 !important;
+}
+
+/* Mobile Responsive Table Labels */
+[data-bs-theme="dark"] td::before {
+  color: #8bb4fa !important;
+  font-weight: 600;
+}
+
+/* -----------------------------------------
+   5. SPECIFIC COMPONENTS (DIGITAL ID)
+   ----------------------------------------- */
+[data-bs-theme="dark"] .digital-id-body {
+  background-color: #223640 !important;
+}
+
+[data-bs-theme="dark"] .digital-id-body h3,
+[data-bs-theme="dark"] .digital-id-body h4,
+[data-bs-theme="dark"] .digital-id-body h5,
+[data-bs-theme="dark"] .digital-id-body p,
+[data-bs-theme="dark"] .digital-id-body span {
+  color: #f1f9ff !important;
+}
+
+[data-bs-theme="dark"] .digital-id-body .bg-light,
+[data-bs-theme="dark"] .digital-id-body .bg-body-secondary {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid #4f5467 !important;
+}
+
+[data-bs-theme="dark"] .digital-id-body .bg-body-secondary .text-muted,
+[data-bs-theme="dark"] .digital-id-body .bg-body-secondary p,
+[data-bs-theme="dark"] .digital-id-body .bg-body-secondary span {
+  color: #a1aab2 !important;
+}
+
+[data-bs-theme="dark"] .digital-id-body .bg-body-secondary h5,
+[data-bs-theme="dark"] .digital-id-body .bg-body-secondary h6,
+[data-bs-theme="dark"] .digital-id-body .bg-body-secondary strong {
+  color: #f1f9ff !important;
+}

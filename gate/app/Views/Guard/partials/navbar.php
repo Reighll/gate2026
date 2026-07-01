@@ -15,7 +15,13 @@
         </a>
 
         <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
-            <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+            <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end gap-2">
+
+                <li class="nav-item">
+                    <a class="nav-link nav-icon-hover cursor-pointer" id="theme-toggle" style="border-radius: 50%;">
+                        <i class="ti ti-moon fs-6" id="theme-icon"></i>
+                    </a>
+                </li>
 
                 <li class="nav-item dropdown position-relative">
                     <a class="nav-link d-flex align-items-center gap-2 px-2" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false" style="line-height: normal; height: auto;">

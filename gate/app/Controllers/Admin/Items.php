@@ -166,15 +166,15 @@ class Items extends BaseController
         $messageBody = '';
 
         if ($status === 'approved') {
-            $subject = 'Gatepass: Item Approved!';
+            $subject = 'GATE: Item Approved!';
             $messageBody = "
                 <h2 style='color: #39cb7f;'>Item Approved!</h2>
                 <p style='font-size: 16px;'>Hi {$name},</p>
                 <p style='font-size: 16px; color: #555;'>Great news! The registration for your <strong>{$itemName}</strong> has been approved by the administration.</p>
-                <p style='font-size: 16px; color: #555;'>An RFID/NFC tag has been successfully assigned to your device. You may now tap your item in and out of the campus.</p>
+                <p style='font-size: 16px; color: #555;'>An RFID tag has been successfully assigned to your device. You may now tap your item in and out of the campus.</p>
             ";
         } elseif ($status === 'rejected') {
-            $subject = 'Gatepass: Item Rejected';
+            $subject = 'GATE: Item Rejected';
             $messageBody = "
                 <h2 style='color: #e46a76;'>Item Registration Rejected</h2>
                 <p style='font-size: 16px;'>Hi {$name},</p>
@@ -182,7 +182,7 @@ class Items extends BaseController
                 <p style='font-size: 16px; color: #555;'>This may be due to an unclear photo or incorrect serial number. Please visit the admin office for clarification.</p>
             ";
         } elseif ($status === 'inactive') {
-            $subject = 'Gatepass: Item Unregistered';
+            $subject = 'GATE: Item Unregistered';
             $messageBody = "
                 <h2 style='color: #2a3547;'>Item Unregistration Complete</h2>
                 <p style='font-size: 16px;'>Hi {$name},</p>
@@ -198,7 +198,7 @@ class Items extends BaseController
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;'>
                 {$messageBody}
                 <br>
-                <p style='font-size: 14px; color: #999;'>Thank you,<br>Gatepass Administration</p>
+                <p style='font-size: 14px; color: #999;'>Thank you,<br>GATE Administration</p>
             </div>
         ";
 

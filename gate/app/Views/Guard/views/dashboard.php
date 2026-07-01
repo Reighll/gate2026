@@ -120,49 +120,108 @@
                         $scannedStudent = session()->getFlashdata('scanned_student');
                         ?>
 
-                        <?php if ($scannedItem && $scannedStudent): ?>
-                            <div class="row align-items-center mb-4">
-                                <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
-                                    <?php $isTimeIn = !(isset($scannedItem['in_campus']) && $scannedItem['in_campus'] == 1); ?>
-                                    <div class="mb-3">
-                                        <?php if ($isTimeIn): ?>
-                                            <span class="badge bg-success text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center" style="letter-spacing: 0.5px;">
-                                                <i class="ti ti-login me-2 fs-5"></i> TIME IN
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center" style="letter-spacing: 0.5px;">
-                                                <i class="ti ti-logout me-2 fs-5"></i> TIME OUT
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <h4 class="fw-bold text-dark mb-4 fs-4 text-uppercase"><?= esc($scannedItem['brand_model'] ?? $scannedItem['name'] ?? 'Unknown Item') ?></h4>
-                                    <p class="text-muted fw-semibold mb-2">TYPE: <span class="fw-normal"><?= esc($scannedItem['category'] ?? 'N/A') ?></span></p>
-                                    <p class="text-muted fw-semibold mb-2">SN: <span class="font-monospace fw-normal"><?= esc($scannedItem['serial_number'] ?? 'N/A') ?></span></p>
-                                    <p class="text-muted fw-semibold mb-0">STATUS: <span class="fw-normal"><?= esc($scannedItem['status'] ?? 'UNKNOWN') ?></span></p>
-                                </div>
-                                <div class="col-md-6 order-1 order-md-2">
-                                    <div class="image-placeholder-box p-3 h-100" style="min-height: 200px;">
-                                        <?php if (!empty($scannedItem['photo'])): ?>
-                                            <img src="<?= base_url('uploads/items/' . esc($scannedItem['photo'])) ?>" alt="Item" class="img-fluid rounded shadow-sm" style="max-height: 100%; object-fit: contain;">
-                                        <?php else: ?>
-                                            <i class="ti ti-device-laptop text-muted opacity-50" style="font-size: 5rem;"></i>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
+                        <?php
+                        // Safely handle both single item ('scanned_item') and multiple items ('scanned_items')
+                        $scannedData = session()->getFlashdata('scanned_items') ?? session()->getFlashdata('scanned_item');
+                        $scannedStudent = session()->getFlashdata('scanned_student');
 
-                            <div class="info-block py-3 px-4 mb-3 shadow-sm text-uppercase">
-                                <?= esc($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name']) ?>
+                        // Normalize data into an array so we can count it
+                        $scannedItems = [];
+                        if (!empty($scannedData)) {
+                            // If it's a single associative array, wrap it in a list
+                            if (isset($scannedData['brand_model']) || isset($scannedData['name'])) {
+                                $scannedItems = [$scannedData];
+                            } else {
+                                $scannedItems = $scannedData; // It's already a list of multiple items
+                            }
+                        }
+                        ?>
+
+                        <?php if (!empty($scannedItems) && $scannedStudent): ?>
+
+                            <div class="info-block py-3 px-4 mb-2 shadow-sm text-uppercase fw-bold bg-primary-subtle text-primary border border-primary-subtle rounded-3 d-flex align-items-center">
+                                <i class="ti ti-user me-2 fs-4"></i> <?= esc($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name']) ?>
                             </div>
-                            <div class="info-block py-3 px-4 shadow-sm text-uppercase font-monospace bg-light">
+                            <div class="info-block py-2 px-4 mb-4 shadow-sm text-uppercase font-monospace bg-light rounded-3 text-muted">
                                 <?= esc($scannedStudent['student_number'] ?? 'NO ID') ?>
                             </div>
+
+                            <?php if (count($scannedItems) === 1): ?>
+                                <?php $item = $scannedItems[0]; ?>
+                                <div class="row align-items-center mb-4">
+                                    <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
+                                        <?php $isTimeIn = !(isset($item['in_campus']) && $item['in_campus'] == 1); ?>
+                                        <div class="mb-3">
+                                            <?php if ($isTimeIn): ?>
+                                                <span class="badge bg-success text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
+                                                    <i class="ti ti-login me-2 fs-5"></i> TIME IN
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
+                                                    <i class="ti ti-logout me-2 fs-5"></i> TIME OUT
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <h4 class="fw-bold text-dark mb-4 fs-4 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h4>
+                                        <p class="text-muted fw-semibold mb-2">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
+                                        <p class="text-muted fw-semibold mb-2">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
+                                        <p class="text-muted fw-semibold mb-0">STATUS: <span class="fw-normal text-dark"><?= esc($item['status'] ?? 'UNKNOWN') ?></span></p>
+                                    </div>
+                                    <div class="col-md-6 order-1 order-md-2">
+                                        <div class="image-placeholder-box p-3 h-100 bg-white border" style="min-height: 200px; border-radius: 12px;">
+                                            <?php if (!empty($item['photo'])): ?>
+                                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" alt="Item" class="img-fluid rounded shadow-sm" style="max-height: 100%; object-fit: contain;">
+                                            <?php else: ?>
+                                                <i class="ti ti-device-laptop text-muted opacity-25 d-flex justify-content-center align-items-center h-100" style="font-size: 5rem;"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            <?php else: ?>
+                                <h6 class="fw-bold text-muted mb-3 d-flex align-items-center">
+                                    <i class="ti ti-devices me-2"></i> SCANNED ITEMS (<?= count($scannedItems) ?>)
+                                </h6>
+
+                                <div class="d-flex flex-column gap-3 pe-2" style="max-height: 380px; overflow-y: auto; overflow-x: hidden;">
+                                    <?php foreach ($scannedItems as $item): ?>
+                                        <div class="row align-items-center p-3 border rounded-3 bg-light shadow-sm mx-0">
+                                            <div class="col-md-7 order-2 order-md-1 mt-3 mt-md-0">
+                                                <?php $isTimeIn = !(isset($item['in_campus']) && $item['in_campus'] == 1); ?>
+                                                <div class="mb-2">
+                                                    <?php if ($isTimeIn): ?>
+                                                        <span class="badge bg-success text-white fw-bold px-2 py-1 fs-2 rounded-2 shadow-sm">
+                                                            <i class="ti ti-login me-1"></i> TIME IN
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-secondary text-white fw-bold px-2 py-1 fs-2 rounded-2 shadow-sm">
+                                                            <i class="ti ti-logout me-1"></i> TIME OUT
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <h6 class="fw-bold text-dark mb-2 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h6>
+                                                <p class="text-muted fw-semibold mb-1" style="font-size: 0.8rem;">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
+                                                <p class="text-muted fw-semibold mb-0" style="font-size: 0.8rem;">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
+                                            </div>
+                                            <div class="col-md-5 order-1 order-md-2">
+                                                <div class="image-placeholder-box p-2 h-100 bg-white border" style="min-height: 100px; border-radius: 8px;">
+                                                    <?php if (!empty($item['photo'])): ?>
+                                                        <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" alt="Item" class="img-fluid rounded" style="max-height: 100px; width: 100%; object-fit: contain;">
+                                                    <?php else: ?>
+                                                        <i class="ti ti-device-laptop text-muted opacity-25 d-flex justify-content-center align-items-center h-100" style="font-size: 2.5rem;"></i>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
                         <?php else: ?>
                             <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted opacity-50 py-5">
-                                <i class="ti ti-nfc mb-3" style="font-size: 6rem;"></i>
-                                <h3 class="fw-bold text-center">Ready for next scan</h3>
+                                <h3 class="fw-bold text-center text-dark">Ready for next scan</h3>
                                 <p class="text-center">Tap an RFID card to display details.</p>
-                                <small class="mt-4"><kbd>Esc</kbd> to exit text boxes</small>
+                                <small class="mt-4"><kbd class="bg-secondary">Esc</kbd> to exit text boxes</small>
                             </div>
                         <?php endif; ?>
 

@@ -53,7 +53,7 @@
                     <div class="mb-4">
                         <label class="form-label">Item Photo</label>
                         <input class="form-control" type="file" name="photo" accept="image/*" required>
-                        <div class="form-text text-muted">Max file size: 2MB. Clear photo of the item.</div>
+                        <div class="form-text text-muted">Max file size: 50MB. Clear photo of the item.</div>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-2 fs-5 fw-bold shadow-sm">Submit Registration</button>

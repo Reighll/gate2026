@@ -3,76 +3,99 @@
 <?= $this->section('content') ?>
 
     <div class="pt-5 mt-4">
-        <div class="card border-0 shadow-sm w-100">
-            <div class="card-body p-4">
-                <h4 class="card-title fw-semibold mb-4">My Registered Items</h4>
 
-                <div class="table-responsive">
-                    <table class="table align-middle text-nowrap mb-0">
-                        <thead class="text-dark fs-4">
-                        <tr>
-                            <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Item Details</h6></th>
-                            <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Category</h6></th>
-                            <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Serial Number</h6></th>
-                            <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Assigned Tag</h6></th>
-                            <th class="border-bottom-0"><h6 class="fw-semibold mb-0">Status</h6></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php if (empty($items)): ?>
-                            <tr><td colspan="5" class="text-center text-muted py-4">You have no registered items yet.</td></tr>
-                        <?php else: ?>
-                            <?php foreach($items as $item): ?>
-                                <tr>
-                                    <td class="border-bottom-0">
-                                        <div class="d-flex align-items-center">
-                                            <?php if (!empty($item['photo'])): ?>
-                                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="rounded-3 shadow-sm" width="50" height="50" style="object-fit: cover;">
-                                            <?php else: ?>
-                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px;">
-                                                    <i class="ti ti-device-laptop text-muted fs-4"></i>
-                                                </div>
-                                            <?php endif; ?>
-                                            <div class="ms-3">
-                                                <h6 class="fw-semibold mb-0"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h6>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="border-bottom-0"><p class="mb-0 fw-normal"><?= esc($item['category'] ?? 'N/A') ?></p></td>
-                                    <td class="border-bottom-0"><p class="mb-0 fw-normal"><?= esc($item['serial_number'] ?? 'N/A') ?></p></td>
-                                    <td class="border-bottom-0">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h4 class="fw-semibold text-dark mb-0">My Registered Items</h4>
+        </div>
+
+        <?php if (empty($items)): ?>
+            <div class="card border-0 shadow-sm w-100 rounded-4">
+                <div class="card-body p-5 text-center">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="ti ti-device-laptop text-muted fs-1"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Items Found</h5>
+                    <p class="text-muted">You have no registered items yet.</p>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="row px-2 px-md-0">
+                <?php foreach($items as $item): ?>
+                    <div class="col-6 col-md-6 col-xl-4 mb-3 mb-md-4 px-2">
+
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="transition: transform 0.2s;">
+
+                            <?php if (!empty($item['photo'])): ?>
+                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="card-img-top" style="height: 150px; object-fit: cover;" alt="Item Photo">
+                            <?php else: ?>
+                                <div class="bg-light d-flex align-items-center justify-content-center card-img-top" style="height: 150px;">
+                                    <i class="ti ti-device-laptop text-muted opacity-50" style="font-size: 3rem;"></i>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="card-body d-flex flex-column p-3 p-md-4">
+
+                                <?php
+                                $badge = 'bg-secondary';
+                                if ($item['status'] === 'approved') $badge = 'bg-success';
+                                if ($item['status'] === 'missing') $badge = 'bg-danger';
+                                if ($item['status'] === 'pending') $badge = 'bg-warning text-dark';
+                                ?>
+                                <div class="mb-2">
+                                    <span class="badge <?= $badge ?> px-2 py-1 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                                        <?= esc($item['status']) ?>
+                                    </span>
+                                </div>
+
+                                <h6 class="fw-bold mb-1 text-dark text-truncate" style="font-size: 1rem;" title="<?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?>">
+                                    <?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?>
+                                </h6>
+
+                                <div class="mb-2">
+                                    <span class="fw-bolder text-dark" style="font-size: 0.85rem;"><?= esc($item['serial_number'] ?? 'N/A') ?></span>
+                                </div>
+
+                                <div class="d-flex flex-column flex-md-row text-muted mb-2 gap-1 gap-md-2 fw-medium" style="font-size: 0.8rem;">
+                                    <div class="d-flex align-items-center text-truncate">
+                                        <i class="ti ti-category me-1 fs-5"></i>
+                                        <span class="text-truncate"><?= esc($item['category'] ?? 'N/A') ?></span>
+                                    </div>
+                                    <div class="d-flex align-items-center text-truncate">
                                         <?php if ($item['status'] === 'approved' && !empty($item['rfid'])): ?>
-                                            <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1 fs-3">
-                                                <i class="ti ti-nfc me-1"></i> <?= esc($item['rfid']) ?>
+                                            <i class="ti ti-nfc me-1 fs-5 text-primary"></i>
+                                            <span class="text-truncate" title="<?= esc($item['rfid']) ?>">
+                                                <?= esc($item['rfid']) ?>
                                             </span>
                                         <?php else: ?>
-                                            <span class="text-muted small">Unassigned</span>
+                                            <i class="ti ti-nfc-off me-1 fs-5"></i> Unassigned
                                         <?php endif; ?>
-                                    </td>
-                                    <td class="border-bottom-0">
-                                        <?php
-                                        // Dynamic badge styling
-                                        $badge = 'bg-secondary';
-                                        if ($item['status'] === 'approved') $badge = 'bg-success';
-                                        if ($item['status'] === 'missing') $badge = 'bg-danger shadow-sm border border-danger-subtle';
-                                        if ($item['status'] === 'pending') $badge = 'bg-warning text-dark';
+                                    </div>
+                                </div>
 
-                                        // Location tag
-                                        $location = (isset($item['in_campus']) && $item['in_campus'] == 1) ? ' (Inside)' : ' (Outside)';
-                                        ?>
-                                        <span class="badge <?= $badge ?> px-2 py-1 fs-3">
-                                            <?= ucfirst(esc($item['status'])) ?> <?= ($item['status'] === 'approved') ? $location : '' ?>
-                                        </span>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                                <div class="mt-3">
+                                    <?php
+                                    $locationText = (isset($item['in_campus']) && $item['in_campus'] == 1) ? 'Inside' : 'Outside';
+                                    $locClass = (isset($item['in_campus']) && $item['in_campus'] == 1) ? 'btn-primary' : 'btn-outline-primary';
+                                    $locIcon  = (isset($item['in_campus']) && $item['in_campus'] == 1) ? 'ti-building' : 'ti-building-off';
 
+                                    if ($item['status'] !== 'approved') {
+                                        $locationText = 'Disabled';
+                                        $locClass = 'btn-light text-muted border';
+                                        $locIcon  = 'ti-ban';
+                                    }
+                                    ?>
+                                    <div class="btn <?= $locClass ?> w-100 fw-bold py-2 rounded-3" style="pointer-events: none; font-size: 0.85rem;">
+                                        <i class="ti <?= $locIcon ?> fs-5 me-1"></i> <?= $locationText ?> <span class="d-none d-md-inline">Campus</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
-        </div>
+        <?php endif; ?>
+
     </div>
 
 <?= $this->endSection() ?>

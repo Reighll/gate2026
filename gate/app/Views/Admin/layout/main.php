@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title><?= $this->renderSection('title') ?? 'Admin Portal | Gatepass System' ?></title>
+    <title><?= $this->renderSection('title') ?? 'Admin Portal | GATE System' ?></title>
 
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
 
@@ -37,7 +37,7 @@
         </div>
 
         <div class="py-6 px-6 text-center">
-            <p class="mb-0 fs-4 text-muted">Student Gatepass System - Admin Portal</p>
+            <p class="mb-0 fs-4 text-muted">Student GATE System - Admin Portal</p>
         </div>
     </div>
 </div>
@@ -48,7 +48,8 @@
 <script src="<?= base_url('assets/js/app.min.js') ?>"></script>
 <script src="<?= base_url('assets/libs/simplebar/dist/simplebar.js') ?>"></script>
 <script src="<?= base_url('assets/js/admin/admin.js') ?>"></script>
-
+<script src="<?= base_url('assets/js/mobile.js') ?>"></script>
+<script src="<?= base_url('assets/js/theme.js') ?>"></script>
 <?= $this->renderSection('scripts') ?>
 
 <?= $this->include('Admin/modals/delete_confirm') ?>

@@ -1,21 +1,22 @@
 #include "UNIT_UHF_RFID.h"
 #include <WiFi.h> // Include the ESP32 Wi-Fi library
 #include <HTTPClient.h> // Include HTTP Client for sending data
+#include <WiFiClientSecure.h>
 
 // --- PRIMARY Wi-Fi & Server ---
-const char* ssid1 = "Quest";
-const char* pass1 = "cNnNqN5T";
-String server1 = "http://192.168.100.29:8080/api/scan"; 
+const char* ssid1 = "REDMI Turbo 4 Pro";
+const char* pass1 = "12345678";
+String server1 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
 
 // --- SECONDARY Wi-Fi & Server ---
 const char* ssid2 = "Converge_2.4GHz_5DE7";
 const char* pass2 = "HEHEHEHEHE";
-String server2 = "http://192.168.1.60:8080/api/scan";
+String server2 = "http://192.168.1.60:8080/api/scan"; // <-- CHANGED TO HTTPS
 
 // --- TERTIARY Wi-Fi & Server ---
 const char* ssid3 = "Nothing Phone (1)";
 const char* pass3 = "password";
-String server3 = "http://172.34.95.183/GATE/public/api/scan"; 
+String server3 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
 
 // This variable will hold whichever server we actually connect to
 String activeServerName = "";
@@ -49,12 +50,12 @@ bool isDuplicate(String epc) {
 
 void setup() {
     Serial.begin(115200);
-    delay(2000); 
-    
+    delay(2000);
+
     // --- Initialize Button & Buzzer ---
     pinMode(BUTTON_PIN, INPUT_PULLUP);
     pinMode(BUZZER_PIN, OUTPUT_OPEN_DRAIN); // Fixes the 3.3V vs 5V clash
-    digitalWrite(BUZZER_PIN, HIGH); // HIGH means OFF for a low-level trigger buzzer
+    digitalWrite(BUZZER_PIN, HIGH);         // HIGH means OFF for a low-level trigger buzzer
     
     Serial.println("\n--- Gatepass System Initialization ---");
 
@@ -148,7 +149,6 @@ void loop() {
     // --- 1. BUTTON IS HELD DOWN: SCANNING MODE ---
     if (buttonState == LOW) {
         uint8_t tagsFound = uhf.pollingOnce();
-        
         if (tagsFound > 0) {
             for (uint8_t i = 0; i < tagsFound; i++) {
                 String currentEPC = uhf.cards[i].epc_str;
@@ -192,7 +192,6 @@ void loop() {
                 
                 // We send them all under the "epc" variable separated by commas
                 String httpRequestData = "epc=" + payloadList;
-                
                 Serial.print("Sending payload: ");
                 Serial.println(httpRequestData);
                 
@@ -205,17 +204,22 @@ void loop() {
                     Serial.println("Server says: " + serverResponse);
                     
                     // Long success beep for successful upload
-                    digitalWrite(BUZZER_PIN, LOW); delay(500); digitalWrite(BUZZER_PIN, HIGH);
+                    digitalWrite(BUZZER_PIN, LOW);
+                    delay(500); 
+                    digitalWrite(BUZZER_PIN, HIGH);
                 } else {
                     Serial.print("Error connecting to server. Code: ");
                     Serial.println(httpResponseCode);
                     
                     // Three quick angry beeps for error
                     for(int i=0; i<3; i++) {
-                        digitalWrite(BUZZER_PIN, LOW); delay(100); digitalWrite(BUZZER_PIN, HIGH); delay(100);
+                        digitalWrite(BUZZER_PIN, LOW);
+                        delay(100); 
+                        digitalWrite(BUZZER_PIN, HIGH); 
+                        delay(100);
                     }
                 }
-                http.end(); 
+                http.end();
             } else {
                 Serial.println("⚠️ Wi-Fi Disconnected!");
             }
@@ -227,7 +231,6 @@ void loop() {
     }
     
     lastButtonState = buttonState;
-    
     // Only rest when the button is NOT pressed. When held down, scan at max speed!
     if (buttonState == HIGH) {
         delay(20); 
