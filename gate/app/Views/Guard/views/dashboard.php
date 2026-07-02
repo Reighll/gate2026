@@ -218,10 +218,9 @@
                             <?php endif; ?>
 
                         <?php else: ?>
-                            <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted opacity-50 py-5">
+                            <div class="d-flex flex-column align-items-center justify-content-center h-75    text-muted opacity-50 py-5">
                                 <h3 class="fw-bold text-center text-dark">Ready for next scan</h3>
-                                <p class="text-center">Tap an RFID card to display details.</p>
-                                <small class="mt-4"><kbd class="bg-secondary">Esc</kbd> to exit text boxes</small>
+                                <p class="text-center">Scan an RFID card to display details.</p>
                             </div>
                         <?php endif; ?>
 

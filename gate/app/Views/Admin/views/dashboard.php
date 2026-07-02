@@ -2,15 +2,7 @@
 <?= $this->section('title') ?>Dashboard | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <style>
-        @media print {
-            body * { visibility: hidden; }
-            #printableTable, #printableTable * { visibility: visible; }
-            #printableTable { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
-            .no-print { display: none !important; }
-            #printableTable .card { border: none !important; box-shadow: none !important; }
-        }
-    </style>
+    <link rel="stylesheet" href="<?= base_url('assets/css/admin/print.css') ?>" media="print" />
 
     <div class="pt-5 mt-4">
 
@@ -147,14 +139,13 @@
                                             </td>
                                             <td class="py-3">
                                                 <div class="d-flex flex-column">
-                                                    <span class="fw-semibold text-dark" style="color: #2a3547 !important;"><?= esc($log['first_name'] . ' ' . $log['last_name']) ?></span>
+                                                    <span class="fw-semibold"><?= esc($log['first_name'] . ' ' . $log['last_name']) ?></span>
                                                     <span class="text-muted small font-monospace"><?= esc($log['student_number'] ?? 'N/A') ?> &bull; <?= esc($log['department'] ?? '') ?></span>
                                                 </div>
                                             </td>
                                             <td class="py-3">
                                                 <div class="d-flex flex-column">
-                                                    <span class="fw-semibold text-dark" style="color: #2a3547 !important;"><?= esc($log['brand_model'] ?? $log['item_name_fallback'] ?? 'Unknown Item') ?></span>
-                                                    <span class="text-muted small font-monospace">SN: <?= esc($log['serial_number'] ?? 'N/A') ?></span>
+                                                    <span class="fw-semibold"><?= esc($log['brand_model'] ?? $log['item_name_fallback'] ?? 'Unknown Item') ?></span>                                                    <span class="text-muted small font-monospace">SN: <?= esc($log['serial_number'] ?? 'N/A') ?></span>
                                                 </div>
                                             </td>
                                         </tr>

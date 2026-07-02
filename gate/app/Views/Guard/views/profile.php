@@ -95,9 +95,13 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-3 mt-4">
-                            <a href="<?= base_url('guard/dashboard') ?>" class="btn btn-light btn-lg fw-bold text-muted px-4 rounded-3 border">Cancel</a>
-                            <button type="submit" class="btn btn-primary btn-lg fw-bold px-5 shadow-sm rounded-3">Save Changes</button>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="<?= base_url('guard/dashboard') ?>" class="btn btn-light btn-lg fw-bold text-muted px-3 px-md-4 rounded-3 border d-flex align-items-center justify-content-center text-nowrap">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold px-3 px-md-5 shadow-sm rounded-3 d-flex align-items-center justify-content-center text-nowrap">
+                                Save Changes
+                            </button>
                         </div>
                     </form>
                 </div>

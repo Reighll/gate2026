@@ -16225,6 +16225,41 @@ ul {
   color: #f1f9ff !important;
 }
 
+[data-bs-theme="dark"] .table-hover tbody tr:hover td,
+[data-bs-theme="dark"] .table-hover tbody tr:hover th,
+[data-bs-theme="dark"] .table tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.05) !important; /* A very soft, transparent white for a clean highlight */
+  color: #f1f9ff !important; /* Keeps the text readable */
+  box-shadow: none !important;
+}
+
+
+[data-bs-theme="dark"] .text-dark,
+[data-bs-theme="dark"] .table .text-dark,
+[data-bs-theme="dark"] td .text-dark {
+  color: #f1f9ff !important;
+}
+
+/* Specifically keep the "empty state" text muted on hover so it doesn't look like a clickable button */
+[data-bs-theme="dark"] .table tbody tr:hover td.text-muted {
+  color: #a1aab2 !important;
+}
+
+
+/* =========================================
+   TABLE DATA COLOR FIX (LIGHT & DARK)
+   ========================================= */
+
+/* 1. LIGHT MODE: Force the bold spans back to that crisp, deep dark color */
+.table tbody tr td span.fw-semibold {
+  color: #2a3547 !important;
+}
+
+/* 2. DARK MODE: Flip them instantly to readable white */
+[data-bs-theme="dark"] .table tbody tr td span.fw-semibold {
+  color: #f1f9ff !important;
+}
+
 /* Table Borders */
 [data-bs-theme="dark"] .table th,
 [data-bs-theme="dark"] .table td,
@@ -16269,4 +16304,65 @@ ul {
 [data-bs-theme="dark"] .digital-id-body .bg-body-secondary h6,
 [data-bs-theme="dark"] .digital-id-body .bg-body-secondary strong {
   color: #f1f9ff !important;
+}
+/* =========================================
+   CANCEL BUTTON VISIBILITY (LIGHT & DARK)
+   ========================================= */
+.btn-light {
+  background-color: #f6f8fb !important;
+  border: 1px solid #ced4da !important;
+  color: #546269 !important;
+}
+
+.btn-light:hover {
+  background-color: #ecf0f2 !important;
+  border-color: #adb5bd !important;
+  color: #11142d !important;
+}
+
+
+[data-bs-theme="dark"] .btn-light {
+  background-color: #2a414f !important;
+  border: 1px solid #616e7a !important;
+  color: #f1f9ff !important;
+}
+
+[data-bs-theme="dark"] .btn-light:hover {
+  background-color: #365263 !important;
+  border-color: #8bb4fa !important;
+  color: #ffffff !important;
+}
+
+
+.btn-light.text-muted {
+  color: inherit !important;
+}
+/* =========================================
+   THEME TOGGLE BUTTON FIX (MINIMALIST)
+   ========================================= */
+
+/* --- LIGHT MODE (The Moon) --- */
+#theme-toggle {
+  color: #546269 !important; /* Solid dark grey */
+  background-color: transparent !important; /* Forces no background */
+}
+
+/* Restores the default raw blue link hover from your screenshot */
+#theme-toggle:hover {
+  color: #0a58ca !important;
+  background-color: transparent !important;
+}
+
+/* --- DARK MODE (The Sun) --- */
+[data-bs-theme="dark"] #theme-toggle {
+  background-color: transparent !important; /* Strips the weird oval background */
+}
+
+[data-bs-theme="dark"] #theme-toggle i {
+  color: #fdc90f !important; /* Bright, sunny yellow */
+}
+
+/* Simply brightens the sun on hover without drawing a box around it */
+[data-bs-theme="dark"] #theme-toggle:hover i {
+  color: #ffffff !important;
 }
