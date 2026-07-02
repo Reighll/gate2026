@@ -146,3 +146,61 @@
         margin-bottom: 1.2rem !important;
     }
 }
+/* ==========================================================================
+   DARK MODE OVERRIDES (auth.css)
+   ========================================================================== */
+
+[data-bs-theme="dark"] .auth-bg {
+    /* Deep navy gradient */
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+}
+
+/* Invert the background glows for Dark Mode */
+[data-bs-theme="dark"] .auth-bg::before {
+    background: #1e3a8a; /* Deep blue glow */
+    opacity: 0.4;
+}
+
+[data-bs-theme="dark"] .auth-bg::after {
+    background: #0f172a; /* Muted dark glow */
+    opacity: 0.3;
+}
+
+/* Dark Glassmorphism Card */
+[data-bs-theme="dark"] .auth-transition {
+    background: rgba(30, 41, 59, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Dark Mode Inputs & Buttons */
+[data-bs-theme="dark"] .auth-transition .form-control,
+[data-bs-theme="dark"] .auth-transition .form-select,
+[data-bs-theme="dark"] .auth-transition .input-group-text,
+[data-bs-theme="dark"] .auth-transition .btn-light {
+    background-color: #0f172a !important; /* Deep dark input background */
+    border: 1px solid #334155 !important;
+    color: #f1f9ff !important;
+}
+
+[data-bs-theme="dark"] .auth-transition .form-control:focus {
+    background-color: #1e293b !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .input-group-lg .form-control:focus + .btn-toggle-pass {
+    border-color: #3b82f6 !important;
+    background-color: #1e293b !important;
+}
+
+/* Typography adjustment for Dark Mode */
+[data-bs-theme="dark"] .auth-transition h3 {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .auth-transition p,
+[data-bs-theme="dark"] .auth-transition label,
+[data-bs-theme="dark"] .auth-transition span {
+    color: #94a3b8 !important; /* Lighter grey for better readability */
+}

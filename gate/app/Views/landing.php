@@ -10,8 +10,17 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/icons/tabler-icons/tabler-icons.css') ?>" />
     <link rel="manifest" href="/manifest.json">
+    <script>
+        // Check if dark mode was enabled inside the system and apply it instantly
+        // (Adjust 'theme' to whatever key your dashboard toggle uses in localStorage)
+        const savedTheme = localStorage.getItem('theme') || localStorage.getItem('bs-theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
+
     <style>
-        /* Modern Soft Background */
+        /* Modern Soft Background (Light Mode) */
         .landing-bg {
             background: radial-gradient(circle at 10% 20%, #ffffff 0%, #e6eff7 100%);
             min-height: 100vh;
@@ -20,6 +29,12 @@
             justify-content: center;
             font-family: 'Plus Jakarta Sans', sans-serif;
             overflow-x: hidden;
+            transition: background 0.3s ease;
+        }
+
+        /* Dark Mode: Landing Background */
+        html[data-bs-theme="dark"] .landing-bg {
+            background: radial-gradient(circle at 10% 20%, #11142d 0%, #1b2e38 100%);
         }
 
         /* Floating Interactive Cards */
@@ -39,6 +54,18 @@
             flex-direction: column;
         }
 
+        /* Dark Mode: Portal Cards */
+        html[data-bs-theme="dark"] .portal-card {
+            background: rgba(34, 54, 64, 0.85); /* Dark Navy Glass */
+            border-color: #4f5467;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        html[data-bs-theme="dark"] .portal-card h3,
+        html[data-bs-theme="dark"] h1 {
+            color: #f1f9ff !important;
+        }
+
         /* Hover Effects */
         .portal-card:hover {
             transform: translateY(-12px);
@@ -46,10 +73,22 @@
             border-color: #5d87ff;
         }
 
+        html[data-bs-theme="dark"] .portal-card:hover {
+            box-shadow: 0 20px 40px rgba(139, 180, 250, 0.15);
+            border-color: #8bb4fa;
+        }
+
         .portal-card:hover .btn-go {
             background-color: #5d87ff;
             color: #ffffff;
             border-color: #5d87ff;
+        }
+
+        /* Dark Mode: Hover Button */
+        html[data-bs-theme="dark"] .portal-card:hover .btn-go {
+            background-color: #8bb4fa;
+            color: #11142d;
+            border-color: #8bb4fa;
         }
 
         /* Icon Wrapper Styles */
@@ -69,6 +108,8 @@
         .role-guard .icon-box { background: rgba(19, 222, 185, 0.1); color: #13deb9; }
         .role-admin .icon-box { background: rgba(42, 53, 71, 0.1); color: #2a3547; }
 
+        html[data-bs-theme="dark"] .role-admin .icon-box { color: #f1f9ff; background: rgba(241, 249, 255, 0.1); }
+
         .portal-card:hover .icon-box {
             transform: scale(1.1) rotate(5deg);
         }
@@ -85,6 +126,11 @@
             text-decoration: none;
             display: inline-block;
             width: 100%;
+        }
+
+        html[data-bs-theme="dark"] .btn-go {
+            border-color: #4f5467;
+            color: #a1aab2;
         }
 
         /* Slide Up Animations */

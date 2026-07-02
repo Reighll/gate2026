@@ -4,7 +4,33 @@
 
 <?= $this->section('content') ?>
 
+    <script>
+        const savedTheme = localStorage.getItem('theme') || localStorage.getItem('bs-theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
+
     <style>
+
+        /* Dark Mode fixes for Auth Wrappers */
+        html[data-bs-theme="dark"] .auth-bg {
+            background-color: #11142d !important;
+        }
+        html[data-bs-theme="dark"] .auth-card-wrapper {
+            background-color: #223640 !important;
+            border: 1px solid #4f5467 !important;
+        }
+        /* Override the hardcoded Home Button */
+        html[data-bs-theme="dark"] .btn-home-back {
+            background: rgba(34, 54, 64, 0.9) !important;
+            border-color: #4f5467 !important;
+            color: #f1f9ff !important;
+        }
+        html[data-bs-theme="dark"] .auth-brand-panel h6 {
+            color: #f1f9ff !important;
+        }
+
         html, body {
             overflow-x: hidden !important;
         }
