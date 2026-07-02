@@ -2,6 +2,7 @@
     <div class="modal-dialog modal-dialog-centered px-2 px-sm-0">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
             <form action="<?= base_url('admin/users/updateStudent/' . $student['id']) ?>" method="post">
+                <?= csrf_field() ?>
                 <div class="modal-header border-bottom-0 pt-4 px-4 pb-2">
                     <h5 class="modal-title fw-bolder text-dark d-flex align-items-center">
                         <div class="bg-light-primary text-primary rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 40px; height: 40px;">

@@ -38,6 +38,7 @@ $routes->group('admin', static function ($routes) {
     $routes->post('users/createStudent', 'Admin\Users::createStudent', ['filter' => 'authGuard']);
     $routes->post('users/editStudent/(:num)', 'Admin\Users::editStudent/$1', ['filter' => 'authGuard']);
     $routes->get('users/deleteStudent/(:num)', 'Admin\Users::deleteStudent/$1', ['filter' => 'authGuard']);
+    $routes->post('users/updateStudent/(:num)', 'Admin\Users::updateStudent/$1', ['filter' => 'authGuard']);
 
     // Routes for Admin Items Management
     $routes->get('items', 'Admin\Items::index', ['filter' => 'authGuard']);
@@ -49,12 +50,14 @@ $routes->group('admin', static function ($routes) {
     $routes->post('users/createGuard', 'Admin\Users::createGuard', ['filter' => 'authGuard']);
     $routes->post('users/editGuard/(:num)', 'Admin\Users::editGuard/$1', ['filter' => 'authGuard']);
     $routes->get('users/deleteGuard/(:num)', 'Admin\Users::deleteGuard/$1', ['filter' => 'authGuard']);
+    $routes->post('users/updateGuard/(:num)', 'Admin\Users::updateGuard/$1', ['filter' => 'authGuard']);
 
     // Admins CRUD
     $routes->post('users/generate-admin-key', 'Admin\Users::generateAdminKey', ['filter' => 'authGuard']);
     $routes->post('users/createAdmin', 'Admin\Users::createAdmin', ['filter' => 'authGuard']);
     $routes->post('users/editAdmin/(:num)', 'Admin\Users::editAdmin/$1', ['filter' => 'authGuard']);
     $routes->get('users/deleteAdmin/(:num)', 'Admin\Users::deleteAdmin/$1', ['filter' => 'authGuard']);
+    $routes->post('users/updateAdmin/(:num)', 'Admin\Users::updateAdmin/$1', ['filter' => 'authGuard']);
 
     // Visitors Management Routes
     $routes->get('visitors', 'Admin\Visitors::index', ['filter' => 'authGuard']);

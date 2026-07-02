@@ -16,7 +16,6 @@ class Email extends BaseConfig
     public string $SMTPHost = 'smtp-relay.brevo.com';
     public string $SMTPUser = 'b00a28001@smtp-brevo.com';
 
-    // ✅ FIX: load from .env instead of hardcoding
     public string $SMTPPass;
 
     public int $SMTPPort = 587;
