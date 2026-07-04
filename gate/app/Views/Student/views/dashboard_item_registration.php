@@ -19,7 +19,28 @@
                     Register your personal equipment to bring inside the campus.
                 </div>
 
-                <form action="<?= base_url('student/items/store') ?>" method="post" enctype="multipart/form-data">
+                <div class="skeleton-wrapper mt-4">
+                    <div class="mb-4">
+                        <div class="skeleton skeleton-text w-25 mb-2"></div>
+                        <div class="skeleton rounded-3 w-100" style="height: 42px;"></div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="skeleton skeleton-text w-25 mb-2"></div>
+                        <div class="skeleton rounded-3 w-100" style="height: 42px;"></div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="skeleton skeleton-text w-50 mb-2"></div>
+                        <div class="skeleton rounded-3 w-100" style="height: 42px;"></div>
+                        <div class="skeleton skeleton-text w-75 mt-2 mb-0" style="height: 10px;"></div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="skeleton skeleton-text w-25 mb-2"></div>
+                        <div class="skeleton rounded-3 w-100" style="height: 42px;"></div>
+                    </div>
+                    <div class="skeleton rounded-3 w-100 mt-2" style="height: 45px;"></div>
+                </div>
+
+                <form class="real-wrapper d-none" action="<?= base_url('student/items/store') ?>" method="post" enctype="multipart/form-data">
                     <?= csrf_field() ?>
 
                     <div class="mb-3">
@@ -62,4 +83,15 @@
         </div>
     </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
+    </script>
 <?= $this->endSection() ?>

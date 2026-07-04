@@ -8,6 +8,7 @@
 
     <div class="mt-5 pt-5 d-flex flex-column gap-3">
 
+        <!-- ALERTS (Loads Instantly) -->
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
                 <i class="ti ti-check-circle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('success') ?></span>
@@ -24,8 +25,69 @@
             </div>
         <?php endif; ?>
 
-        <div class="row g-4 pb-5">
+        <div class="row g-4 pb-5 skeleton-wrapper">
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-0 rounded-4 mb-4 h-auto">
+                    <div class="card-body p-3 p-md-4">
+                        <div class="skeleton skeleton-title w-50 mb-4" style="height: 18px;"></div>
+                        <div class="row">
+                            <div class="col-12 col-xl-7">
+                                <div class="mb-3"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
+                                <div class="mb-3"><div class="skeleton skeleton-text w-25 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
+                                <div class="mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
+                                <div class="skeleton rounded-2 w-100 mb-3 mb-xl-0" style="height: 40px;"></div>
+                            </div>
+                            <div class="col-12 col-xl-5 text-center d-flex flex-column mt-2 mt-xl-0">
+                                <div class="skeleton skeleton-text w-50 mb-2 text-start d-none d-xl-block"></div>
+                                <div class="skeleton rounded-3 w-100 mb-3 flex-grow-1" style="min-height: 150px;"></div>
+                                <div class="d-flex flex-column gap-2 mt-auto">
+                                    <div class="skeleton rounded-2 w-100" style="height: 38px;"></div>
+                                    <div class="skeleton rounded-2 w-100" style="height: 38px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-3 p-md-4 text-center text-xl-start">
+                        <div class="skeleton skeleton-title w-75 mb-3" style="height: 18px;"></div>
+                        <div class="skeleton w-25 mt-2 mb-0" style="height: 60px;"></div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="col-lg-7">
+                <!-- Scanner Skeleton -->
+                <div class="card shadow-sm border-0 rounded-4 h-100">
+                    <div class="card-body p-3 p-md-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                            <div class="skeleton skeleton-title w-25 mb-0" style="height: 20px;"></div>
+                            <div class="skeleton skeleton-badge rounded-pill" style="width: 100px; height: 32px;"></div>
+                        </div>
+
+                        <div class="skeleton rounded-3 w-100 mb-4" style="height: 60px;"></div>
+
+                        <div class="skeleton rounded-3 w-100 mb-2" style="height: 60px;"></div>
+                        <div class="skeleton rounded-3 w-100 mb-4" style="height: 45px;"></div>
+
+                        <div class="row align-items-center mb-4">
+                            <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
+                                <div class="skeleton skeleton-badge rounded-3 mb-4" style="width: 120px; height: 38px;"></div>
+                                <div class="skeleton skeleton-title w-100 mb-4" style="height: 28px;"></div>
+                                <div class="skeleton skeleton-text w-75 mb-2"></div>
+                                <div class="skeleton skeleton-text w-75 mb-2"></div>
+                                <div class="skeleton skeleton-text w-50 mb-0"></div>
+                            </div>
+                            <div class="col-md-6 order-1 order-md-2">
+                                <div class="skeleton rounded-4 w-100" style="height: 200px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 pb-5 real-wrapper d-none">
             <div class="col-lg-5">
                 <div class="card shadow-sm border-0 rounded-4 mb-4 h-auto">
                     <div class="card-body p-3 p-md-4">
@@ -116,23 +178,15 @@
                         </form>
 
                         <?php
-                        $scannedItem = session()->getFlashdata('scanned_item');
-                        $scannedStudent = session()->getFlashdata('scanned_student');
-                        ?>
-
-                        <?php
-                        // Safely handle both single item ('scanned_item') and multiple items ('scanned_items')
                         $scannedData = session()->getFlashdata('scanned_items') ?? session()->getFlashdata('scanned_item');
                         $scannedStudent = session()->getFlashdata('scanned_student');
 
-                        // Normalize data into an array so we can count it
                         $scannedItems = [];
                         if (!empty($scannedData)) {
-                            // If it's a single associative array, wrap it in a list
                             if (isset($scannedData['brand_model']) || isset($scannedData['name'])) {
                                 $scannedItems = [$scannedData];
                             } else {
-                                $scannedItems = $scannedData; // It's already a list of multiple items
+                                $scannedItems = $scannedData;
                             }
                         }
                         ?>
@@ -218,7 +272,7 @@
                             <?php endif; ?>
 
                         <?php else: ?>
-                            <div class="d-flex flex-column align-items-center justify-content-center h-75    text-muted opacity-50 py-5">
+                            <div class="d-flex flex-column align-items-center justify-content-center h-75 text-muted opacity-50 py-5">
                                 <h3 class="fw-bold text-center text-dark">Ready for next scan</h3>
                                 <p class="text-center">Scan an RFID card to display details.</p>
                             </div>
@@ -229,4 +283,30 @@
             </div>
         </div>
     </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
+    </script>
+    <script>
+        document.getElementById('togglePassword')?.addEventListener('click', function (e) {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('ti-eye');
+                icon.classList.add('ti-eye-off');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('ti-eye-off');
+                icon.classList.add('ti-eye');
+            }
+        });
+    </script>
 <?= $this->endSection() ?>

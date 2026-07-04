@@ -83,5 +83,19 @@
     .left-sidebar:hover ~ .body-wrapper {
         margin-left: 270px !important;
     }
+    /* ==========================================================================
+       SIDEBAR HORIZONTAL SCROLLBAR FIX
+       ========================================================================== */
 
+    /* 1. Hides any native horizontal scroll overflow on the sidebar */
+    .left-sidebar,
+    .sidebar-nav.scroll-sidebar {
+        overflow-x: hidden !important;
+    }
+
+    /* 2. Forces the SimpleBar plugin to completely disable its horizontal track */
+    .simplebar-track.simplebar-horizontal {
+        display: none !important;
+        visibility: hidden !important;
+    }
 }

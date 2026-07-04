@@ -10,9 +10,25 @@
                     <h4 class="fw-semibold mb-0">Student Equipment Management</h4>
                 </div>
 
-                <!-- Item Registration Summary Overview Row -->
-                <div class="row mb-4">
-                    <!-- Pending Item Requests -->
+                <div class="row mb-4 skeleton-wrapper">
+                    <?php for($i=0; $i<3; $i++): ?>
+                        <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                            <div class="card border-0 shadow-sm h-100 rounded-4">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="w-100">
+                                            <div class="skeleton skeleton-text w-75 mb-3"></div>
+                                            <div class="skeleton skeleton-title w-25 mb-0"></div>
+                                        </div>
+                                        <div class="skeleton skeleton-avatar ms-3" style="width: 54px; height: 54px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+
+                <div class="row mb-4 real-wrapper d-none">
                     <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
                         <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-warning rounded-4">
                             <div class="card-body p-4">
@@ -29,7 +45,6 @@
                         </div>
                     </div>
 
-                    <!-- Approved Items -->
                     <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
                         <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-success rounded-4">
                             <div class="card-body p-4">
@@ -46,7 +61,6 @@
                         </div>
                     </div>
 
-                    <!-- Declined/Rejected Items -->
                     <div class="col-lg-4 col-md-6">
                         <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4">
                             <div class="card-body p-4">
@@ -78,7 +92,7 @@
                 ?>
 
                 <?php if (!empty($unregisterRequests)): ?>
-                    <div class="card border-0 shadow-sm mb-4 rounded-4 border-top border-4 border-warning">
+                    <div class="card border-0 shadow-sm mb-4 rounded-4 border-top border-4 border-warning real-wrapper d-none">
                         <div class="card-body p-4">
                             <h5 class="fw-bold text-warning-dark mb-2"><i class="ti ti-alert-triangle me-2"></i> Pending Unregistration Requests</h5>
                             <p class="text-muted small mb-4">The following students have requested to remove items from their active gatepass.</p>
@@ -125,11 +139,9 @@
                     </div>
                 <?php endif; ?>
 
-                <!-- Main Items Table -->
                 <div class="card border-0 shadow-sm rounded-4">
                     <div class="card-body p-4">
 
-                        <!-- Search Bar Header -->
                         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                             <h5 class="fw-bold text-dark mb-0"><i class="ti ti-device-laptop me-2 text-primary"></i> Master Equipment List</h5>
                             <div class="input-group shadow-sm" style="max-width: 350px;">
@@ -153,7 +165,24 @@
                                     <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Actions</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+
+                                <tbody class="skeleton-wrapper">
+                                <?php for($i=0; $i<5; $i++): ?>
+                                    <tr>
+                                        <td><div class="skeleton skeleton-text w-50 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
+                                        <td><div class="skeleton rounded-3" style="width: 45px; height: 45px;"></div></td>
+                                        <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-badge rounded-1" style="width: 80px; height: 26px;"></div></td>
+                                        <td><div class="skeleton skeleton-badge rounded-1" style="width: 70px; height: 26px;"></div></td>
+                                        <td><div class="skeleton skeleton-badge rounded-2" style="width: 85px; height: 30px;"></div></td>
+                                    </tr>
+                                <?php endfor; ?>
+                                </tbody>
+
+                                <tbody class="real-wrapper d-none">
                                 <?php if (empty($items)) : ?>
                                     <tr class="no-data-row">
                                         <td colspan="9" class="text-center py-5 text-muted">No items found in the system.</td>
@@ -246,11 +275,8 @@
                 </div>
             </div>
         </div>
-    </div> <!-- END pt-5 mt-4 WRAPPER -->
-
-<?php if (!empty($items)) : ?>
+    </div> <?php if (!empty($items)) : ?>
     <?php foreach ($items as $item) : ?>
-        <!-- Approval & RFID Link Modal -->
         <div class="modal fade" id="approveModal<?= $item['id'] ?>" tabindex="-1" aria-labelledby="approveModalLabel<?= $item['id'] ?>" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow-lg">
@@ -283,9 +309,16 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-    <!-- Pass the PHP base_url to JS so fetch() works correctly -->
     <script>
         const scanApiUrl = "<?= base_url('admin/items/check-latest-scan') ?>";
+
+        // SKELETON LOADER
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
     </script>
     <script src="<?= base_url('assets/js/admin/admin-items.js') ?>"></script>
 <?= $this->endSection() ?>

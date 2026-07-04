@@ -12,12 +12,12 @@
     </script>
 
     <style>
-
         /* Dark Mode fixes for Auth Wrappers */
         html[data-bs-theme="dark"] .auth-bg {
             background-color: #11142d !important;
         }
-        html[data-bs-theme="dark"] .auth-card-wrapper {
+        html[data-bs-theme="dark"] .auth-card-wrapper,
+        html[data-bs-theme="dark"] .card {
             background-color: #223640 !important;
             border: 1px solid #4f5467 !important;
         }
@@ -149,7 +149,8 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
 
             <div class="text-center">
                 <span class="text-muted">New student?</span>
-                <a href="#" id="btn-to-register" data-target-url="<?= base_url('student/register') ?>" class="text-primary fw-bold ms-1 text-decoration-none p-2">Create Account</a>            </div>
+                <a href="#" id="btn-to-register" data-target-url="<?= base_url('student/register') ?>" class="text-primary fw-bold ms-1 text-decoration-none p-2">Create Account</a>
+            </div>
         </form>
     </div>
 
@@ -237,4 +238,61 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Sliding & Height Logic
+            const btnToRegister = document.getElementById('btn-to-register');
+            const btnToLogin = document.getElementById('btn-to-login');
+            const loginView = document.getElementById('login-view');
+            const registerView = document.getElementById('register-view');
+            const cardWrapper = document.querySelector('.auth-card-wrapper');
+
+            // Enable smooth height transitions
+            if(cardWrapper) {
+                cardWrapper.style.transition = 'height 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+            }
+
+            function triggerSlide(target, url) {
+                if(!cardWrapper) return;
+
+                const startHeight = cardWrapper.offsetHeight;
+                cardWrapper.style.height = startHeight + 'px';
+
+                if (target === 'register') {
+                    loginView.className = 'auth-form-view form-slide-out-left';
+                    registerView.className = 'auth-form-view form-slide-in';
+                } else {
+                    registerView.className = 'auth-form-view form-slide-out-right';
+                    loginView.className = 'auth-form-view form-slide-in';
+                }
+
+                cardWrapper.style.height = 'auto';
+                const endHeight = cardWrapper.offsetHeight;
+
+                cardWrapper.style.height = startHeight + 'px';
+                cardWrapper.offsetHeight;
+                cardWrapper.style.height = endHeight + 'px';
+
+                setTimeout(() => { cardWrapper.style.height = 'auto'; }, 600);
+                if (url) window.history.pushState({}, '', url);
+            }
+
+            if (btnToRegister) {
+                btnToRegister.addEventListener('click', e => {
+                    e.preventDefault();
+                    triggerSlide('register', btnToRegister.getAttribute('data-target-url'));
+                });
+            }
+
+            if (btnToLogin) {
+                btnToLogin.addEventListener('click', e => {
+                    e.preventDefault();
+                    triggerSlide('login', btnToLogin.getAttribute('data-target-url'));
+                });
+            }
+        });
+    </script>
+
 <?= $this->endSection() ?>

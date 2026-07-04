@@ -13,6 +13,20 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
     <link rel="manifest" href="<?= base_url('manifest.json') ?>">
     <script src="<?= base_url('assets/js/mobile.js') ?>"></script>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || localStorage.getItem('bs-theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
+    <style>
+        /* MAGIC ANTI-FLASH FIX: Forces the dark background instantly before CSS loads */
+        html[data-bs-theme="dark"],
+        html[data-bs-theme="dark"] body {
+            background-color: #11142d !important;
+            color: #f1f9ff !important;
+        }
+    </style>
 </head>
 
 <body>

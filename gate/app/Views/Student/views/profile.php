@@ -33,7 +33,28 @@
                 <?php endif; ?>
 
                 <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4 p-md-5">
+
+                    <div class="card-body p-4 p-md-5 skeleton-wrapper">
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center mb-4 mb-md-0 d-flex flex-column align-items-center">
+                                <div class="skeleton rounded-circle mb-3 border border-3 border-light" style="width: 150px; height: 150px; flex-shrink: 0;"></div>
+                                <div class="skeleton skeleton-text w-50 mb-2"></div>
+                                <div class="skeleton rounded-3 w-75" style="height: 30px;"></div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="skeleton skeleton-title w-50 mb-4" style="height: 24px;"></div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                    <div class="col-md-6 mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                    <div class="col-md-12 mb-4"><div class="skeleton skeleton-text w-25 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                    <div class="col-md-6 mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                    <div class="col-md-6 mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5 real-wrapper d-none">
                         <form action="<?= base_url('student/profile/update') ?>" method="POST" enctype="multipart/form-data">
                             <?= csrf_field() ?>
 
@@ -119,30 +140,39 @@
 
             </div>
         </div>
-    </div> <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg border-0 rounded-4">
-            <div class="modal-header border-bottom-0">
-                <h5 class="modal-title fw-bold text-primary" id="cropModalLabel"><i class="ti ti-crop me-2"></i>Crop Profile Picture</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center bg-light">
-                <div style="max-height: 400px; width: 100%; overflow: hidden;">
-                    <img id="cropperImage" src="" style="max-width: 100%; display: block;">
+    </div>
+
+    <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0 rounded-4">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title fw-bold text-primary" id="cropModalLabel"><i class="ti ti-crop me-2"></i>Crop Profile Picture</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
-            <div class="modal-footer border-top-0">
-                <button type="button" class="btn btn-light text-muted fw-bold" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary fw-bold px-4" id="btnCrop">Crop & Apply</button>
+                <div class="modal-body text-center bg-light">
+                    <div style="max-height: 400px; width: 100%; overflow: hidden;">
+                        <img id="cropperImage" src="" style="max-width: 100%; display: block;">
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-light text-muted fw-bold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary fw-bold px-4" id="btnCrop">Crop & Apply</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
     <script src="<?= base_url('assets/js/student/student-profile.js') ?>"></script>
 <?= $this->endSection() ?>

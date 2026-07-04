@@ -10,6 +10,21 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/auth.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/auth-background.css?v=13') ?>" />
     <link rel="manifest" href="<?= base_url('manifest.json') ?>">
+
+    <script>
+        const savedTheme = localStorage.getItem('theme') || localStorage.getItem('bs-theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
+    <style>
+        /* MAGIC ANTI-FLASH FIX: Forces the dark background instantly before CSS loads */
+        html[data-bs-theme="dark"],
+        html[data-bs-theme="dark"] body {
+            background-color: #11142d !important;
+            color: #f1f9ff !important;
+        }
+    </style>
 </head>
 <body class="auth-bg position-relative">
 

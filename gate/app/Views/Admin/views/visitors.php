@@ -4,9 +4,30 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin-visitors.css') ?>">
 
 
-    <div class="pt-5 mt-4"> <div class="row">
+    <div class="pt-5 mt-4">
+
+        <div class="row skeleton-wrapper">
+            <?php for($i=0; $i<2; $i++): ?>
+                <div class="col-md-6">
+                    <div class="card shadow-none border-0 rounded-4 mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="skeleton skeleton-avatar me-3" style="width: 40px; height: 40px;"></div>
+                                <div class="w-75">
+                                    <div class="skeleton skeleton-title w-50 mb-1"></div>
+                                    <div class="skeleton skeleton-text w-25 mb-0"></div>
+                                </div>
+                            </div>
+                            <div class="skeleton skeleton-title w-25 mt-3 mb-0" style="height: 38px;"></div>
+                        </div>
+                    </div>
+                </div>
+            <?php endfor; ?>
+        </div>
+
+        <div class="row real-wrapper d-none">
             <div class="col-md-6">
-                <div class="card bg-light-info shadow-none border-0">
+                <div class="card bg-light-info shadow-none border-0 mb-4 rounded-4">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
                             <div class="round-40 bg-info d-flex align-items-center justify-content-center rounded-circle text-white me-3">
@@ -23,7 +44,7 @@
             </div>
 
             <div class="col-md-6">
-                <div class="card bg-light-success shadow-none border-0">
+                <div class="card bg-light-success shadow-none border-0 mb-4 rounded-4">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
                             <div class="round-40 bg-success d-flex align-items-center justify-content-center rounded-circle text-white me-3">
@@ -40,7 +61,7 @@
             </div>
         </div>
 
-        <div class="card w-100">
+        <div class="card w-100 rounded-4 border-0 shadow-sm">
             <div class="card-body p-4">
 
                 <?php if (session()->getFlashdata('success')) : ?>
@@ -75,7 +96,30 @@
                                     <th>Action</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+
+                                <tbody class="skeleton-wrapper">
+                                <?php for($i=0; $i<5; $i++): ?>
+                                    <tr>
+                                        <td>
+                                            <div class="skeleton skeleton-title w-75 mb-1" style="height: 18px;"></div>
+                                            <div class="skeleton skeleton-text w-50 mb-0"></div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="skeleton skeleton-avatar me-2" style="width: 35px; height: 35px;"></div>
+                                                <div class="skeleton skeleton-text w-50 mb-0"></div>
+                                            </div>
+                                        </td>
+                                        <td><div class="skeleton skeleton-badge rounded-pill" style="width: 70px; height: 24px;"></div></td>
+                                        <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-badge rounded-pill" style="width: 60px; height: 22px;"></div></td>
+                                        <td><div class="skeleton skeleton-badge rounded-2" style="width: 110px; height: 30px;"></div></td>
+                                    </tr>
+                                <?php endfor; ?>
+                                </tbody>
+
+                                <tbody class="real-wrapper d-none">
                                 <?php if(empty($logs)): ?>
                                     <tr><td colspan="7" class="text-center text-muted">No visitor history yet.</td></tr>
                                 <?php else: ?>
@@ -145,7 +189,19 @@
                                     <th>Action</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+
+                                <tbody class="skeleton-wrapper">
+                                <?php for($i=0; $i<4; $i++): ?>
+                                    <tr>
+                                        <td><div class="skeleton skeleton-title w-50 mb-0" style="height: 20px;"></div></td>
+                                        <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-badge rounded-pill" style="width: 70px; height: 24px;"></div></td>
+                                        <td><div class="skeleton skeleton-badge rounded-2" style="width: 65px; height: 30px;"></div></td>
+                                    </tr>
+                                <?php endfor; ?>
+                                </tbody>
+
+                                <tbody class="real-wrapper d-none">
                                 <?php if(empty($tags)): ?>
                                     <tr><td colspan="4" class="text-center">No passes found. Scan some cards!</td></tr>
                                 <?php else: ?>
@@ -183,47 +239,16 @@
         </div>
     </div>
 
-    <div class="modal fade" id="addPassModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <form id="scanForm" action="<?= base_url('admin/visitors/add-tag') ?>" method="post">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="pass_number" value="<?= esc($next_label ?? 'Visitor Pass') ?>">
-                    <input type="text" id="rfidInput" name="rfid_uid" required autocomplete="off" style="position: absolute; opacity: 0; top: -1000px;">
-                    <div class="modal-body text-center p-5">
-                        <div id="scanState">
-                            <div class="mb-4"><div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status"></div></div>
-                            <h4 class="fw-bold">Ready to Scan</h4>
-                            <p class="text-muted">Place card on reader...</p>
-                            <button type="button" class="btn btn-sm btn-light mt-4" data-bs-dismiss="modal">Cancel</button>
-                        </div>
-                        <div id="checkingState" style="display: none;"><div class="spinner-border text-info mb-3" role="status"></div><h5>Checking...</h5></div>
-                        <div id="errorState" style="display: none;">
-                            <i class="ti ti-alert-circle text-danger" style="font-size: 60px;"></i>
-                            <h4 class="fw-bold text-danger">Duplicate Found!</h4>
-                            <button type="button" class="btn btn-danger w-100" onclick="resetScan()">Scan Different</button>
-                        </div>
-                        <div id="confirmState" style="display: none;">
-                            <i class="ti ti-circle-check text-success" style="font-size: 60px;"></i>
-                            <h4 class="fw-bold text-dark">Card Detected!</h4>
-                            <button type="button" class="btn btn-primary w-100" onclick="finalSubmit()">Save</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="idModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body text-center bg-light p-0"><img id="modalImage" src="" class="img-fluid rounded" alt="ID"></div>
-            </div>
-        </div>
-    </div>
-
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
+    </script>
     <script src="<?= base_url('assets/js/admin/admin-visitors.js') ?>"></script>
 <?= $this->endSection() ?>

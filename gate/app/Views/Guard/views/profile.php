@@ -2,13 +2,11 @@
 <?= $this->section('title') ?>My Profile | Guard Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <!-- Cropper.js CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <style>
         .cropper-container { max-height: 400px; }
     </style>
 
-    <!-- FIXED: Added mt-5 and pt-4 to forcefully push the content down below the fixed navbar -->
     <div class="row mt-5 pt-4">
         <div class="col-12 col-lg-8 mx-auto">
 
@@ -19,7 +17,6 @@
                 <h4 class="fw-semibold mb-0">Guard Profile Settings</h4>
             </div>
 
-            <!-- Alerts -->
             <?php if (session()->getFlashdata('success')): ?>
                 <div class="alert alert-success shadow-sm border-0 mb-4 d-flex align-items-center rounded-3">
                     <i class="ti ti-check-circle fs-4 me-2"></i>
@@ -35,12 +32,30 @@
             <?php endif; ?>
 
             <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body p-4 p-md-5">
+
+                <div class="card-body p-4 p-md-5 skeleton-wrapper">
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-center mb-4 mb-md-0 d-flex flex-column align-items-center">
+                            <div class="skeleton rounded-circle mb-3 border border-3 border-light" style="width: 150px; height: 150px; flex-shrink: 0;"></div>
+                            <div class="skeleton skeleton-text w-50 mb-2"></div>
+                            <div class="skeleton rounded-3 w-75" style="height: 30px;"></div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="skeleton skeleton-title w-50 mb-4" style="height: 24px;"></div>
+                            <div class="row">
+                                <div class="col-md-6 mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                <div class="col-md-6 mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                <div class="col-md-12 mb-4"><div class="skeleton skeleton-text w-25 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5 real-wrapper d-none">
                     <form action="<?= base_url('guard/profile/update') ?>" method="POST" enctype="multipart/form-data">
                         <?= csrf_field() ?>
 
                         <div class="row mb-4">
-                            <!-- Profile Picture Section -->
                             <div class="col-md-4 text-center mb-4 mb-md-0">
                                 <?php
                                 $pic = !empty($guard['profile_pic']) ? $guard['profile_pic'] : 'default.png';
@@ -53,7 +68,6 @@
                                 </div>
                             </div>
 
-                            <!-- Personal Details Section -->
                             <div class="col-md-8">
                                 <h5 class="fw-bold text-primary mb-3">Guard Details</h5>
                                 <div class="row">
@@ -110,7 +124,6 @@
         </div>
     </div>
 
-    <!-- Cropper Modal -->
     <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg border-0 rounded-4">
@@ -133,8 +146,15 @@
 
 <?= $this->endSection() ?>
 
-    <!-- Scripts Section for Cropper Logic -->
 <?= $this->section('scripts') ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="<?= base_url('assets/js/guard/guard-profile.js') ?>"></script>
 <?= $this->endSection() ?>

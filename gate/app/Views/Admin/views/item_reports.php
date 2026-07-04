@@ -6,7 +6,25 @@
             <h4 class="fw-semibold  mb-0">Reported Items & Flags</h4>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-4 skeleton-wrapper">
+            <?php for($i=0; $i<3; $i++): ?>
+                <div class="col-lg-4 col-md-6 mb-3 mb-md-4">
+                    <div class="card border-0 shadow-sm h-100 rounded-4">
+                        <div class="card-body p-3 p-md-4">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="w-100">
+                                    <div class="skeleton skeleton-text w-75 mb-3"></div>
+                                    <div class="skeleton skeleton-title w-50 mb-0"></div>
+                                </div>
+                                <div class="skeleton skeleton-avatar ms-3" style="width: 45px; height: 45px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endfor; ?>
+        </div>
+
+        <div class="row mb-4 real-wrapper d-none">
             <div class="col-lg-4 col-md-6 mb-3 mb-md-4">
                 <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-danger rounded-4">
                     <div class="card-body p-3 p-md-4">
@@ -72,7 +90,20 @@
                             <th>Reporter Name</th><th>Item Name</th><th>Date Reported</th><th>Action</th><th>Status</th>
                         </tr>
                         </thead>
-                        <tbody>
+
+                        <tbody class="skeleton-wrapper">
+                        <?php for($i=0; $i<4; $i++): ?>
+                            <tr>
+                                <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-text w-50 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-badge rounded-pill" style="width: 60px; height: 28px;"></div></td>
+                                <td><div class="skeleton skeleton-badge rounded-pill" style="width: 50px; height: 20px;"></div></td>
+                            </tr>
+                        <?php endfor; ?>
+                        </tbody>
+
+                        <tbody class="real-wrapper d-none">
                         <?php if(empty($reports)): ?>
                             <tr>
                                 <td colspan="5" class="text-center">
@@ -103,4 +134,12 @@
 
 <?= $this->section('scripts') ?>
     <script src="<?= base_url('assets/js/admin.js') ?>"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
+    </script>
 <?= $this->endSection() ?>

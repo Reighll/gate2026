@@ -12,7 +12,6 @@
                     <h4 class="fw-semibold mb-0">My Profile Settings</h4>
                 </div>
 
-                <!-- Alerts -->
                 <?php if (session()->getFlashdata('success')): ?>
                     <div class="alert alert-success shadow-sm border-0 mb-4 d-flex align-items-center rounded-3">
                         <i class="ti ti-check-circle fs-4 me-2"></i>
@@ -28,12 +27,45 @@
                 <?php endif; ?>
 
                 <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4 p-md-5">
+
+                    <div class="card-body p-4 p-md-5 skeleton-wrapper">
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center mb-4 mb-md-0 d-flex flex-column align-items-center">
+                                <div class="skeleton rounded-circle mb-3 border border-3 border-light" style="width: 150px; height: 150px; flex-shrink: 0;"></div>
+                                <div class="skeleton skeleton-text w-75 mb-3"></div>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <?php for($i=0; $i<5; $i++): ?><div class="skeleton rounded-circle" style="width: 45px; height: 45px; flex-shrink: 0;"></div><?php endfor; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="skeleton skeleton-title w-50 mb-4" style="height: 24px;"></div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <div class="skeleton skeleton-text w-50 mb-2"></div>
+                                        <div class="skeleton rounded-3 w-100" style="height: 48px;"></div>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <div class="skeleton skeleton-text w-50 mb-2"></div>
+                                        <div class="skeleton rounded-3 w-100" style="height: 48px;"></div>
+                                    </div>
+                                    <div class="col-md-12 mb-4">
+                                        <div class="skeleton skeleton-text w-25 mb-2"></div>
+                                        <div class="skeleton rounded-3 w-100" style="height: 48px;"></div>
+                                    </div>
+                                    <div class="col-md-12 mb-4">
+                                        <div class="skeleton skeleton-text w-25 mb-2"></div>
+                                        <div class="skeleton rounded-3 w-100" style="height: 48px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5 real-wrapper d-none">
                         <form action="<?= base_url('admin/profile/update') ?>" method="POST" enctype="multipart/form-data">
                             <?= csrf_field() ?>
 
                             <div class="row mb-4">
-                                <!-- Profile Picture Section -->
                                 <div class="col-md-4 text-center mb-4 mb-md-0" style="position: relative; z-index: 20;">
                                     <?php
                                     // Checks DB first, falls back to default user-1
@@ -44,10 +76,8 @@
                                     <div>
                                         <label class="form-label fw-bold small text-muted mb-2">Choose an Avatar</label>
 
-                                        <!-- Hidden input -->
                                         <input type="hidden" name="profile_pic" id="selected_profile_pic" value="<?= esc($pic) ?>">
 
-                                        <!-- The clickable avatar grid -->
                                         <div class="d-flex justify-content-center gap-2">
                                             <?php for($i = 1; $i <= 5; $i++): ?>
                                                 <?php $filename = 'user-' . $i . '.jpg'; ?>
@@ -59,7 +89,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Personal Details Section -->
                                 <div class="col-md-8">
                                     <h5 class="fw-bold text-primary mb-3">Personal Details</h5>
                                     <div class="row">
@@ -117,7 +146,6 @@
         </div>
     </div>
 
-    <!-- Cropper Modal -->
     <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg border-0 rounded-4">
@@ -141,5 +169,13 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
+    </script>
     <script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>
 <?= $this->endSection() ?>

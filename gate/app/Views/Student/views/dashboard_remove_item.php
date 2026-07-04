@@ -8,36 +8,50 @@
             <div class="card-body p-4">
                 <p class="text-muted mb-4">Select an item to request unregistration (e.g., if lost, sold, or no longer used). An admin must approve this request.</p>
 
-                <?php
-                // Filter only approved items for this view
-                $approvedItems = array_filter($items, function($item) {
-                    return $item['status'] === 'approved';
-                });
-                ?>
-
-                <?php if (empty($approvedItems)): ?>
-                    <div class="text-center text-muted py-4">
-                        <i class="ti ti-device-laptop fs-1 d-block mb-2"></i>
-                        No active items available to unregister.
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($approvedItems as $item): ?>
-                        <div class="border rounded p-3 d-flex justify-content-between align-items-center mb-3 border-warning bg-light">
-                            <div>
-                                <h6 class="fw-bold mb-0"><?= esc($item['brand_model']) ?></h6>
-                                <small class="text-muted">SN: <?= esc($item['serial_number']) ?></small>
+                <div class="skeleton-wrapper">
+                    <?php for($i=0; $i<3; $i++): ?>
+                        <div class="border rounded p-3 d-flex justify-content-between align-items-center mb-3 bg-light">
+                            <div class="w-75">
+                                <div class="skeleton skeleton-title w-50 mb-1" style="height: 18px;"></div>
+                                <div class="skeleton skeleton-text w-25 mb-0" style="height: 12px;"></div>
                             </div>
-                            <button type="button"
-                                    class="btn btn-outline-warning btn-sm fw-bold"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#unregisterModal"
-                                    data-item-name="<?= esc($item['brand_model']) ?>"
-                                    data-action-url="<?= base_url('student/items/request-unregister/' . $item['id']) ?>">
-                                Unregister
-                            </button>
+                            <div class="skeleton rounded-2" style="width: 90px; height: 30px;"></div>
                         </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                    <?php endfor; ?>
+                </div>
+
+                <div class="real-wrapper d-none">
+                    <?php
+                    $approvedItems = array_filter($items, function($item) {
+                        return $item['status'] === 'approved';
+                    });
+                    ?>
+
+                    <?php if (empty($approvedItems)): ?>
+                        <div class="text-center text-muted py-4">
+                            <i class="ti ti-device-laptop fs-1 d-block mb-2"></i>
+                            No active items available to unregister.
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($approvedItems as $item): ?>
+                            <div class="border rounded p-3 d-flex justify-content-between align-items-center mb-3 border-warning bg-light">
+                                <div>
+                                    <h6 class="fw-bold mb-0"><?= esc($item['brand_model']) ?></h6>
+                                    <small class="text-muted">SN: <?= esc($item['serial_number']) ?></small>
+                                </div>
+                                <button type="button"
+                                        class="btn btn-outline-warning btn-sm fw-bold"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#unregisterModal"
+                                        data-item-name="<?= esc($item['brand_model']) ?>"
+                                        data-action-url="<?= base_url('student/items/request-unregister/' . $item['id']) ?>">
+                                    Unregister
+                                </button>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
             </div>
         </div>
     </div>
@@ -80,5 +94,13 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
+        });
+    </script>
     <script src="<?= base_url('assets/js/student/student-remove-item.js') ?>"></script>
 <?= $this->endSection() ?>
