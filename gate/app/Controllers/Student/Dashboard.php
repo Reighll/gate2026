@@ -27,13 +27,63 @@ class Dashboard extends BaseController
 
     public function index()
     {
-        $student = $this->getCurrentStudent();
-        if (!$student) return redirect()->to('student/login');
+        $session = session();
+        $studentModel = new StudentModel();
 
-        // Note: The dashboard view file should now ONLY contain the dashboard_home code
-        return view('Student/views/dashboard', ['student' => $student]);
+        // 1. Get the logged-in student's ID
+        // Checking common session keys you might have used in your Auth controller
+        $studentId = $session->get('student_id') ?? $session->get('user_id') ?? $session->get('id');
+
+        // Safety Check: If no session ID is found, redirect to login
+        if (!$studentId) {
+            return redirect()->to('/student/login')->with('error', 'Please log in to access the dashboard.');
+        }
+
+        // 2. Fetch the student details from the database
+        $student = $studentModel->find($studentId);
+
+        // Safety Check: If the student doesn't exist in the database, redirect
+        if (!$student) {
+            $session->destroy();
+            return redirect()->to('/student/login')->with('error', 'Student record not found. Please log in again.');
+        }
+
+        // 3. Check Campus Status logic
+        $db = \Config\Database::connect();
+
+        // Find the most recent log for any item owned by this student
+        $latestLog = $db->table('item_logs')
+            ->join('student_items', 'student_items.id = item_logs.item_id')
+            ->where('student_items.student_id', $studentId)
+            ->orderBy('item_logs.created_at', 'DESC')
+            ->get()
+            ->getRowArray();
+
+        // Default properties for Outside Campus
+        $campusStatus = 'Outside Campus';
+        $badgeClass   = 'bg-light-danger text-danger';
+
+        if ($latestLog) {
+            // Check the action/status of the latest log.
+            $action = strtolower($latestLog['action'] ?? $latestLog['status'] ?? '');
+
+            // Adjust 'time_in' to match whatever string you save in the database when they enter
+            if (in_array($action, ['time_in', 'in', 'time in', 'entered', '1'])) {
+                $campusStatus = 'Inside Campus';
+                $badgeClass   = 'bg-light-success text-success';
+            }
+        }
+
+        // 4. Pass everything to the view
+        $data = [
+            'title'        => 'Student Dashboard',
+            'student'      => $student,     // This passes first_name, last_name, etc. safely
+            'campusStatus' => $campusStatus,
+            'badgeClass'   => $badgeClass
+        ];
+
+        return view('Student/views/dashboard', $data);
     }
-
     public function itemRegistration()
     {
         if (!$this->getCurrentStudent()) return redirect()->to('student/login');

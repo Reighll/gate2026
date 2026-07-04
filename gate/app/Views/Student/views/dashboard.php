@@ -55,8 +55,8 @@
                             <h6 class="mb-0 fw-semibold">Campus Status</h6>
                             <small class="text-muted">Your current location</small>
                         </div>
-                        <span class="badge bg-light-primary text-primary fs-3 rounded-pill px-3 py-2">
-                            <i class="ti ti-building me-1"></i> Outside Campus
+                        <span class="badge <?= esc($badgeClass ?? 'bg-light-primary text-primary') ?> fs-3 rounded-pill px-3 py-2">
+                            <i class="ti ti-building me-1"></i> <?= esc($campusStatus ?? 'Outside Campus') ?>
                         </span>
                     </div>
                 </div>
