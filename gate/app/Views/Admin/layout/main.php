@@ -23,7 +23,7 @@
         }
     </script>
     <style>
-        /* MAGIC ANTI-FLASH FIX: Forces the dark background instantly before CSS loads */
+
         html[data-bs-theme="dark"],
         html[data-bs-theme="dark"] body {
             background-color: #11142d !important;

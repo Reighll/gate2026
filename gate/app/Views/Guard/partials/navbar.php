@@ -40,7 +40,7 @@
 
                     </a>
 
-                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up shadow-lg rounded-3 border-0"
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up dropdown-menu-with-caret shadow-lg rounded-3 border-0"
                          aria-labelledby="drop2"
                          style="min-width: 200px; margin-top: 10px;">
                         <div class="message-body">

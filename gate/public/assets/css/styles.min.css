@@ -16341,28 +16341,24 @@ ul {
    THEME TOGGLE BUTTON FIX (MINIMALIST)
    ========================================= */
 
-/* --- LIGHT MODE (The Moon) --- */
 #theme-toggle {
-  color: #546269 !important; /* Solid dark grey */
-  background-color: transparent !important; /* Forces no background */
+  color: #546269 !important;
+  background-color: transparent !important;
 }
 
-/* Restores the default raw blue link hover from your screenshot */
 #theme-toggle:hover {
   color: #0a58ca !important;
   background-color: transparent !important;
 }
 
-/* --- DARK MODE (The Sun) --- */
 [data-bs-theme="dark"] #theme-toggle {
-  background-color: transparent !important; /* Strips the weird oval background */
+  background-color: transparent !important;
 }
 
 [data-bs-theme="dark"] #theme-toggle i {
-  color: #fdc90f !important; /* Bright, sunny yellow */
+  color: #fdc90f !important;
 }
 
-/* Simply brightens the sun on hover without drawing a box around it */
 [data-bs-theme="dark"] #theme-toggle:hover i {
   color: #ffffff !important;
 }
@@ -16370,7 +16366,6 @@ ul {
    SKELETON LOADER (HIGH CONTRAST & PERFECT ALIGNMENT)
    ========================================================================== */
 
-/* 1. Base Skeleton - Strictly for color and animation */
 .skeleton {
   background-color: #cbd5e1;
   background-image: linear-gradient(
@@ -16383,9 +16378,9 @@ ul {
   animation: shimmer 1.5s infinite linear;
 }
 
-/* 2. Modifier Classes - Forces strict block sizing so things never misalign */
+
 .skeleton-text {
-  display: block; /* Forces it to act like a clean line of text */
+  display: block;
   height: 14px;
   border-radius: 4px;
 }
@@ -16401,22 +16396,21 @@ ul {
   height: 54px;
   width: 54px;
   border-radius: 50%;
-  flex-shrink: 0 !important; /* STOPS flexbox from squishing your circle into an oval */
+  flex-shrink: 0 !important;
 }
 
 .skeleton-badge {
   display: block;
   height: 32px;
-  border-radius: 50rem; /* Perfect pill shape */
+  border-radius: 50rem;
 }
 
-/* The Shimmer Animation */
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-/* --- DARK MODE ADAPTATION --- */
+
 [data-bs-theme="dark"] .skeleton {
   background-color: #2a3547;
   background-image: linear-gradient(
@@ -16425,4 +16419,182 @@ ul {
           rgba(255, 255, 255, 0.08) 50%,
           rgba(255, 255, 255, 0) 100%
   );
+}
+/* ==========================================================================
+   DROPDOWN CARET & BOX OUTLINE
+   ========================================================================== */
+
+/* 1. Outlines the entire dropdown box */
+.dropdown-menu-with-caret {
+  overflow: visible !important;
+  background-color: var(--bs-dropdown-bg);
+
+  /* LIGHT MODE BOX BORDER */
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 2. Creates the upward pointing arrow */
+.dropdown-menu-with-caret::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 22px;
+  width: 14px;
+  height: 14px;
+  background-color: inherit;
+  transform: rotate(45deg);
+  z-index: -1;
+  border-radius: 2px;
+
+  /* LIGHT MODE ARROW BORDER (Matches the box) */
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  border-left: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+   DARK MODE ADJUSTMENTS
+   ========================================================================== */
+
+[data-bs-theme="dark"] .dropdown-menu-with-caret {
+  /* DARK MODE BOX BORDER */
+  border: 1px solid #4f5467 !important;
+}
+
+[data-bs-theme="dark"] .dropdown-menu-with-caret::before {
+  /* DARK MODE ARROW BORDER (Matches the box) */
+  border-top: 1px solid #4f5467;
+  border-left: 1px solid #4f5467;
+}
+/* ==========================================================================
+   MOBILE BOTTOM NAVIGATION & FAB (UNIFIED FINAL VERSION)
+   ========================================================================== */
+
+/* 1. Body Padding & Hamburger Menu Fix */
+@media (max-width: 991px) {
+  body {
+    padding-bottom: 80px !important;
+  }
+  #headerCollapse {
+    display: none !important;
+  }
+}
+
+/* 2. Main Nav Container */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--bs-body-bg);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 1050;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px 15px 10px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+/* 3. Base Item Text & Layout */
+.mobile-bottom-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--bs-gray-500);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+  transition: all 0.2s ease-in-out;
+}
+
+/* 4. Base Icon Styling (Prepared for Pill Shape) */
+.mobile-bottom-item i {
+  font-size: 1.4rem;
+  padding: 4px 18px; /* Creates the horizontal pill shape */
+  border-radius: 50px; /* Perfectly rounds the edges */
+  margin-bottom: 4px;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Hover/Touch State */
+.mobile-bottom-item:hover,
+.mobile-bottom-item:active {
+  color: var(--bs-primary);
+}
+
+/* ==========================================================================
+   MODERN ACTIVE HIGHLIGHT (SOFT PILL)
+   ========================================================================== */
+
+/* Active Text Color */
+.mobile-bottom-item.active {
+  color: var(--bs-primary) !important;
+}
+
+/* Safely remove the old dot design if it lingers */
+.mobile-bottom-item.active::after {
+  display: none !important;
+}
+
+/* The Magic: Soft background pill and a slight zoom effect */
+.mobile-bottom-item.active i {
+  background-color: rgba(93, 135, 255, 0.15);
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   FLOATING ACTION BUTTON (FAB)
+   ========================================================================== */
+
+.mobile-fab {
+  position: fixed;
+  bottom: 85px;
+  right: 15px;
+  width: 58px;
+  height: 58px;
+  background: var(--bs-primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1060;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-fab i {
+  font-size: 1.8rem;
+}
+
+.mobile-fab:active {
+  transform: scale(0.92);
+  color: white;
+}
+
+/* ==========================================================================
+   DARK MODE ADJUSTMENTS (EYE-FRIENDLY)
+   ========================================================================== */
+
+[data-bs-theme="dark"] .mobile-bottom-nav {
+  /* Seamless native dark background */
+  background-color: var(--bs-body-bg, #11142d);
+  /* Softer, semi-transparent top border */
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  /* Deeper shadow to separate content without bright colors */
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+}
+
+[data-bs-theme="dark"] .mobile-bottom-item.active {
+  /* Brighter, softer pastel blue text for readability */
+  color: #8bb4ff !important;
+}
+
+[data-bs-theme="dark"] .mobile-bottom-item.active i {
+  /* 10% opacity for a clean, non-glowing subtle pill */
+  background-color: rgba(139, 180, 255, 0.10);
 }

@@ -22,7 +22,7 @@
         }
     </script>
     <style>
-        /* MAGIC ANTI-FLASH FIX: Forces the dark background instantly before CSS loads */
+
         html[data-bs-theme="dark"],
         html[data-bs-theme="dark"] body {
             background-color: #11142d !important;
@@ -48,7 +48,6 @@
             <?= $this->renderSection('content') ?>
         </div>
 
-        <!-- Matching Student Footer -->
         <div class="py-6 px-6 text-center">
             <p class="mb-0 fs-4">Guard GATE System</p>
         </div>

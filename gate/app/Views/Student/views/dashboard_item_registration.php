@@ -3,7 +3,13 @@
 <?= $this->section('content') ?>
 
     <div class="pt-5 mt-4">
-        <h4 class="fw-semibold mb-3">Item Registration</h4>
+        <div class="d-flex align-items-center mb-3">
+            <a href="<?= base_url('student/dashboard') ?>" class="btn btn-sm btn-light border shadow-sm rounded-circle me-3 d-flex d-lg-none align-items-center justify-content-center" style="width: 35px; height: 35px; transition: transform 0.2s;">
+                <i class="ti ti-arrow-left fs-5 text-muted"></i>
+            </a>
+
+            <h4 class="fw-semibold mb-0">Item Registration</h4>
+        </div>
 
         <?php if (session()->getFlashdata('error')) : ?>
             <div class="alert alert-danger p-3 rounded-3 shadow-sm"><?= session()->getFlashdata('error') ?></div>
