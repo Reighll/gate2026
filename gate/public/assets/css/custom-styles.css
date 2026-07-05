@@ -47,3 +47,34 @@ ng-fix {
         z-index: 1200 !important;
     }
 }
+/* ==========================================================================
+   DROPDOWN ANIMATION (Spring Enter & Pop Exit)
+   ========================================================================== */
+
+/* 1. The Hidden State (The "Pop" Exit) */
+.dropdown-menu-animate-up {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+
+    /* THE FIX: Removes the slide, shrinks directly towards the caret */
+    transform: scale(0.7);
+    transform-origin: top right;
+
+    /* Extremely fast, crisp 0.15s exit transition */
+    transition: visibility 0.15s, opacity 0.15s ease, transform 0.15s ease-in;
+    pointer-events: none;
+}
+
+/* 2. The Open State (The "Spring" Enter) */
+.dropdown-menu-animate-up.show {
+    visibility: visible;
+    opacity: 1;
+
+    /* Snaps to full size */
+    transform: scale(1);
+    pointer-events: auto;
+
+    /* Bouncy 0.3s spring entrance */
+    transition: visibility 0.3s, opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}

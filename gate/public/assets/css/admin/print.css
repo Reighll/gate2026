@@ -118,3 +118,12 @@ body * { visibility: hidden; }
 .btn-print {
     display: none !important;
 }
+/* ==========================================================================
+   7. THE SKELETON FIX (Keep hidden elements dead!)
+   ========================================================================== */
+#printableTable .d-none,
+#printableTable .skeleton-wrapper,
+#printableTable tbody.d-none,
+#printableTable tr.d-none {
+    display: none !important;
+}
