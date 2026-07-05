@@ -28,7 +28,7 @@
             </form>
         </div>
 
-        <div class="row" id="skeleton-cards">
+        <div class="row skeleton-wrapper">
             <?php for($i=0; $i<3; $i++): ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card border-0 shadow-sm h-100">
@@ -49,7 +49,7 @@
             <?php endfor; ?>
         </div>
 
-        <div class="row d-none" id="real-cards">
+        <div class="row real-wrapper d-none">
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
@@ -131,7 +131,7 @@
                                 </tr>
                                 </thead>
 
-                                <tbody id="skeleton-table-body">
+                                <tbody class="skeleton-wrapper">
                                 <?php for($i=0; $i<5; $i++): ?>
                                     <tr style="border-bottom: 1px solid #f6f6f6;">
                                         <td class="py-3">
@@ -153,7 +153,7 @@
                                 <?php endfor; ?>
                                 </tbody>
 
-                                <tbody id="real-table-body" class="d-none">
+                                <tbody class="real-wrapper d-none">
                                 <?php if(empty($recentLogs)): ?>
                                     <tr>
                                         <td colspan="4" class="text-center py-5 text-muted">
@@ -208,20 +208,17 @@
 <?= $this->section('scripts') ?>
     <script src="<?= base_url('assets/js/admin.js') ?>"></script>
     <script>
-        // SKELETON LOADER LOGIC
-        // Wait for the DOM to finish rendering
-        document.addEventListener("DOMContentLoaded", function() {
-            // We use a slight delay (600ms) to ensure the aesthetic shimmer animation is actually seen
-            // If you load your data via AJAX later, you would trigger this swap inside your AJAX .then() block instead!
+        // 5. UPDATED: Standardized HTMX-compatible skeleton script
+        function hideMySkeletons() {
             setTimeout(() => {
-                // Swap Cards
-                document.getElementById('skeleton-cards').classList.add('d-none');
-                document.getElementById('real-cards').classList.remove('d-none');
-
-                // Swap Table
-                document.getElementById('skeleton-table-body').classList.add('d-none');
-                document.getElementById('real-table-body').classList.remove('d-none');
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
-        });
+        }
+
+        // Run on normal refresh
+        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+        // Run on HTMX navigation
+        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
 <?= $this->endSection() ?>

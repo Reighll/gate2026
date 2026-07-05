@@ -1,10 +1,22 @@
-<?= $this->extend('Student/layout/main') ?>
+<?php
+$layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 'student/layout/main';
+?>
+<?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Item Registration | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div id="registration-container" class="pt-5 mt-4 page-slide-in">
         <div class="d-flex align-items-center mb-3">
-            <a href="<?= base_url('student/dashboard') ?>" class="btn btn-sm btn-light border shadow-sm rounded-circle me-3 d-flex d-lg-none align-items-center justify-content-center" style="width: 35px; height: 35px; transition: transform 0.2s;">
+
+            <a href="javascript:void(0);"
+               hx-get="<?= base_url('student/dashboard') ?>"
+               hx-target="#app-content"
+               hx-select="#app-content"
+               hx-push-url="true"
+               hx-swap="outerHTML swap:300ms"
+               onclick="document.getElementById('registration-container').classList.add('page-slide-out');"
+               class="btn btn-sm btn-light border shadow-sm rounded-circle me-3 d-flex d-lg-none align-items-center justify-content-center"
+               style="width: 35px; height: 35px;">
                 <i class="ti ti-arrow-left fs-5 text-muted"></i>
             </a>
 
@@ -93,11 +105,15 @@
 
 <?= $this->section('scripts') ?>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
-        });
+        }
+
+        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+
+        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
 <?= $this->endSection() ?>

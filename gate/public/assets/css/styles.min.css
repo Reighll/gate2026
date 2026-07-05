@@ -16466,92 +16466,107 @@ ul {
   border-left: 1px solid #4f5467;
 }
 /* ==========================================================================
-   MOBILE BOTTOM NAVIGATION & FAB (UNIFIED FINAL VERSION)
+   FLOATING EXPANDING PILL NAVIGATION (MODERN UI)
    ========================================================================== */
 
-/* 1. Body Padding & Hamburger Menu Fix */
+/* 1. Body Padding Fix */
 @media (max-width: 991px) {
   body {
-    padding-bottom: 80px !important;
+    padding-bottom: 100px !important; /* Increased to account for the floating bar */
   }
   #headerCollapse {
     display: none !important;
   }
 }
 
-/* 2. Main Nav Container */
+/* 2. Floating Container (Light Mode Default) */
 .mobile-bottom-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: var(--bs-body-bg);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 500px;
+
+  /* LIGHT MODE COLORS */
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05); /* Subtle border */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Soft, airy shadow */
+
+  border-radius: 50px;
   z-index: 1050;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 10px 15px 10px;
-  border-top: 1px solid rgba(0,0,0,0.05);
+  padding: 8px 12px;
 }
 
-/* 3. Base Item Text & Layout */
+/* 3. Inactive Items (Light Mode Default) */
 .mobile-bottom-item {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   text-decoration: none;
-  color: var(--bs-gray-500);
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  flex: 1;
-  transition: all 0.2s ease-in-out;
+  color: #6c757d;
+  background-color: transparent;
+  padding: 10px;
+  border-radius: 50px;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  flex-shrink: 1;
 }
 
-/* 4. Base Icon Styling (Prepared for Pill Shape) */
-.mobile-bottom-item i {
-  font-size: 1.4rem;
-  padding: 4px 18px; /* Creates the horizontal pill shape */
-  border-radius: 50px; /* Perfectly rounds the edges */
-  margin-bottom: 4px;
-  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+.mobile-bottom-item svg {
+  margin: 0;
+  transition: color 0.3s;
 }
 
-/* Hover/Touch State */
-.mobile-bottom-item:hover,
-.mobile-bottom-item:active {
-  color: var(--bs-primary);
+/* Hide text by default with smooth collapse */
+.mobile-bottom-item span {
+  max-width: 0; /* Collapses the text completely */
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap; /* Prevents text from wrapping while animating */
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: 0;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* ==========================================================================
-   MODERN ACTIVE HIGHLIGHT (SOFT PILL)
+   THE MAGIC ACTIVE STATE (EXPANDING BLUE PILL)
    ========================================================================== */
-
-/* Active Text Color */
+/* THIS WAS MISSING: Paints the blue pill and expands the padding */
 .mobile-bottom-item.active {
-  color: var(--bs-primary) !important;
+  background-color: var(--bs-primary);
+  color: #ffffff !important;
+  padding: 10px 20px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
-/* Safely remove the old dot design if it lingers */
-.mobile-bottom-item.active::after {
-  display: none !important;
+.mobile-bottom-item.active svg {
+  color: #ffffff;
 }
 
-/* The Magic: Soft background pill and a slight zoom effect */
 .mobile-bottom-item.active i {
-  background-color: rgba(93, 135, 255, 0.15);
-  transform: scale(1.1);
+  color: #ffffff;
+}
+
+/* Expand the text smoothly */
+.mobile-bottom-item.active span {
+  max-width: 100px; /* Opens up enough space to reveal the word */
+  opacity: 1;
+  margin-left: 8px; /* Adds space between the icon and the text */
 }
 
 /* ==========================================================================
-   FLOATING ACTION BUTTON (FAB)
+   FLOATING ACTION BUTTON (Adjusted to not overlap)
    ========================================================================== */
 
 .mobile-fab {
   position: fixed;
-  bottom: 85px;
+  bottom: 105px; /* Lifted higher so it doesn't collide with the new floating nav */
   right: 15px;
   width: 58px;
   height: 58px;
@@ -16567,34 +16582,62 @@ ul {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.mobile-fab i {
-  font-size: 1.8rem;
-}
-
-.mobile-fab:active {
-  transform: scale(0.92);
-  color: white;
-}
+.mobile-fab i { font-size: 1.8rem; }
+.mobile-fab:active { transform: scale(0.92); color: white; }
 
 /* ==========================================================================
-   DARK MODE ADJUSTMENTS (EYE-FRIENDLY)
+   DARK MODE ADJUSTMENTS
    ========================================================================== */
-
 [data-bs-theme="dark"] .mobile-bottom-nav {
-  /* Seamless native dark background */
-  background-color: var(--bs-body-bg, #11142d);
-  /* Softer, semi-transparent top border */
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  /* Deeper shadow to separate content without bright colors */
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  /* Matches the dark, sleek look from your reference image */
+  background-color: #1e2126;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-[data-bs-theme="dark"] .mobile-bottom-item.active {
-  /* Brighter, softer pastel blue text for readability */
-  color: #8bb4ff !important;
+[data-bs-theme="dark"] .mobile-bottom-item {
+  color: #7b8493; /* Muted grey for inactive icons on dark backgrounds */
 }
+/* ==========================================================================
+   MOBILE PAGE TRANSITIONS (SLIDE LEFT/RIGHT)
+   ========================================================================== */
+@media (max-width: 991px) {
+  .page-slide-in {
+    animation: slideInRight 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
 
-[data-bs-theme="dark"] .mobile-bottom-item.active i {
-  /* 10% opacity for a clean, non-glowing subtle pill */
-  background-color: rgba(139, 180, 255, 0.10);
+  /* The !important ensures it overrides the slide-in when the back button is clicked */
+  .page-slide-out {
+    animation: slideOutRight 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+  }
+
+  @keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
 }
+==========================================================================
+EXTRA SMALL SCREEN RESPONSIVENESS (Phones under 400px wide)
+========================================================================== */
+@media (max-width: 400px) {
+  .mobile-bottom-nav {
+    width: calc(100% - 20px);
+    padding: 6px 8px;
+  }
+
+  .mobile-bottom-item {
+    padding: 8px;
+  }
+
+  .mobile-bottom-item.active {
+    padding: 8px 16px;
+  }
+
+  .mobile-bottom-item.active span {
+    font-size: 0.75rem;
+  }

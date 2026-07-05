@@ -12,7 +12,9 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
     <link rel="manifest" href="<?= base_url('manifest.json') ?>">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/fonts/tabler-icons.woff2" as="font" type="font/woff2" crossorigin>
     <script src="<?= base_url('assets/js/mobile.js') ?>"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
     <script>
         const savedTheme = localStorage.getItem('theme') || localStorage.getItem('bs-theme') || 'light';
         if (savedTheme === 'dark') {
@@ -40,7 +42,7 @@
     <?= $this->include('Student/partials/sidebar') ?>
 
     <div class="body-wrapper">
-        <div class="container-fluid">
+        <div class="container-fluid" id="app-content">
             <?= $this->renderSection('content') ?>
         </div>
 
@@ -65,6 +67,50 @@
                 .catch(err => console.log('Service Worker Registration failed: ', err));
         });
     }
+    document.body.addEventListener('htmx:afterSettle', function(evt) {
+
+        // --- 1. DYNAMIC NAVBAR VISIBILITY ---
+        const currentPath = window.location.pathname;
+        const bottomNav = document.querySelector('.mobile-bottom-nav');
+        const mobileFab = document.querySelector('.mobile-fab');
+
+        const shouldHideNav = currentPath.includes('item-registration') || currentPath.includes('profile');
+
+        if (bottomNav) {
+            bottomNav.classList.toggle('d-none', shouldHideNav);
+            bottomNav.classList.toggle('d-flex', !shouldHideNav);
+        }
+        if (mobileFab) {
+            mobileFab.classList.toggle('d-none', shouldHideNav);
+            mobileFab.classList.toggle('d-flex', !shouldHideNav);
+        }
+
+        // --- 2. MOVE THE BLUE ACTIVE PILL ---
+        const activePath = window.location.pathname;
+
+        const allNavLinks = document.querySelectorAll('.mobile-bottom-item, .sidebar-link');
+
+        allNavLinks.forEach(link => {
+            link.classList.remove('active');
+
+            const linkPath = link.getAttribute('href');
+            if (linkPath && activePath.includes(new URL(link.href).pathname)) {
+                link.classList.add('active');
+            }
+        });
+
+        // --- 3. HIDE STUCK PRELOADERS/SKELETONS ---
+        const preloader = document.querySelector('.preloader');
+        if (preloader) {
+            preloader.style.display = 'none';
+        }
+
+        // --- 4. RE-INITIALIZE JAVASCRIPT ---
+        window.dispatchEvent(new Event('load'));
+        if (typeof jQuery !== 'undefined') {
+            $(window).trigger('load');
+        }
+    });
 </script>
 
 

@@ -1,4 +1,7 @@
-<?= $this->extend('Student/layout/main') ?>
+<?php
+$layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 'student/layout/main';
+?>
+<?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Remove Item | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
@@ -95,12 +98,15 @@
 
 <?= $this->section('scripts') ?>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
-        });
+        }
+
+        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+
+        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
-    <script src="<?= base_url('assets/js/student/student-remove-item.js') ?>"></script>
 <?= $this->endSection() ?>

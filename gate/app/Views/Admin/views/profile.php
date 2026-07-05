@@ -170,12 +170,17 @@
 
 <?= $this->section('scripts') ?>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
-        });
+        }
+
+        // Run on normal refresh
+        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+        // Run on HTMX navigation
+        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
     <script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>
 <?= $this->endSection() ?>
