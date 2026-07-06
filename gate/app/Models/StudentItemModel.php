@@ -19,8 +19,9 @@ class StudentItemModel extends Model
         'serial_number',
         'photo',
         'status',
+        'created_at',
+        'updated_at',
         'rfid',
-        'in_campus',
-        'pending'
+        'in_campus'
     ];
 }

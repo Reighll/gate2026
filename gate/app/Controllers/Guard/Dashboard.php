@@ -42,15 +42,15 @@ class Dashboard extends BaseController
 
         $db = \Config\Database::connect();
 
-        // 1. EXPLODE THE BATCH: Turn the comma string into an array and remove duplicates
-        // (prevents hardware bouncing if the scanner read the same tag twice in a split second)
+        // 1. EXPLODE THE BATCH
         $rfidArray = array_unique(array_map('trim', array_filter(explode(',', $rfidRaw))));
 
-        $successCount  = 0;
-        $errorMessages = [];
-        $lastItem      = null;
-        $lastStudent   = null;
-        $lastAction    = '';
+        $successCount    = 0;
+        $errorMessages   = [];
+        $warningMessages = []; // NEW: Dedicated array for missing items
+        $lastItem        = null;
+        $lastStudent     = null;
+        $lastAction      = '';
 
         // 2. LOOP THROUGH EVERY TAG IN THE BATCH
         foreach ($rfidArray as $rfid) {
@@ -90,7 +90,7 @@ class Dashboard extends BaseController
                             }
                         }
 
-                        // If it's a NEW visitor, we must stop the batch and show the visitor details form!
+                        // If it's a NEW visitor, stop the batch and show the visitor details form
                         if (!$isVisitorHandled) {
                             session()->setFlashdata('visitor_rfid', $rfid);
                             return redirect()->to('guard/dashboard')->with('info', 'VISITOR PASS DETECTED. Please enter details.');
@@ -113,13 +113,16 @@ class Dashboard extends BaseController
                     $itemName = $item['brand_model'] ?? $item['name'] ?? 'Item';
                     $studentName = $student ? ($student['first_name'] . ' ' . $student['last_name']) : 'Unknown Student';
 
+                    // Setting these here ensures the UI can still show the photo/details of the MISSING item to the guard
                     $lastItem = $item;
                     $lastStudent = $student;
 
+                    // --- NEW WARNING LOGIC ---
                     if ($item['status'] === 'missing') {
-                        $errorMessages[] = "🚨 MISSING DETECTED: {$itemName} ({$studentName})";
+                        $warningMessages[] = "🚨 MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
                         continue;
                     }
+
                     if ($item['status'] !== 'approved') {
                         $errorMessages[] = "DENIED: {$itemName} status is '{$item['status']}'.";
                         continue;
@@ -152,7 +155,12 @@ class Dashboard extends BaseController
         // 3. BATCH SUMMARY RESULTS
         if (count($rfidArray) == 1) {
             // Single Item Scanned
-            if ($lastItem && $lastStudent) {
+            if (!empty($warningMessages)) {
+                // Send the missing item details to the frontend so the guard sees the photo
+                session()->setFlashdata('scanned_item', $lastItem);
+                session()->setFlashdata('scanned_student', $lastStudent);
+                return redirect()->to('guard/dashboard')->with('warning', implode('<br>', $warningMessages));
+            } elseif ($lastItem && $lastStudent && $successCount > 0) {
                 session()->setFlashdata('scanned_item', $lastItem);
                 session()->setFlashdata('scanned_student', $lastStudent);
                 return redirect()->to('guard/dashboard')->with('success', "{$lastAction} LOGGED: " . esc($lastItem['brand_model'] ?? 'Item'));
@@ -160,14 +168,21 @@ class Dashboard extends BaseController
                 return redirect()->to('guard/dashboard')->with('error', implode('<br>', $errorMessages));
             }
         } else {
-            // Multiple Items Scanned
+            // Multiple Items Scanned (Batch)
             if ($successCount > 0) {
                 session()->setFlashdata('success', "BATCH COMPLETE: {$successCount} items logged successfully!");
             }
+
+            // Output warnings separately from standard errors
+            if (!empty($warningMessages)) {
+                session()->setFlashdata('warning', "🚨 SECURITY ALERT:<br>" . implode('<br>', $warningMessages));
+            }
+
             if (!empty($errorMessages)) {
                 session()->setFlashdata('error', "Some scans failed:<br>" . implode('<br>', $errorMessages));
             }
-            // Show the very last item on screen just for visual feedback
+
+            // Show the very last item on screen just for visual feedback (this will show the missing item if it was the last one scanned)
             if ($lastItem && $lastStudent) {
                 session()->setFlashdata('scanned_item', $lastItem);
                 session()->setFlashdata('scanned_student', $lastStudent);
