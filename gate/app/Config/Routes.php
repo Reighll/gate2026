@@ -62,6 +62,10 @@ $routes->group('admin', static function ($routes) {
     // Visitors Management Routes
     $routes->get('visitors', 'Admin\Visitors::index', ['filter' => 'authGuard']);
     $routes->get('visitors/force-checkout/(:num)', 'Admin\Visitors::forceCheckout/$1', ['filter' => 'authGuard']);
+    $routes->get('visitors/delete-tag/(:num)', 'Admin\Visitors::deleteTag/$1');
+    $routes->post('visitors/add-tag', 'Admin\Visitors::addTag', ['filter' => 'authGuard']);
+    $routes->get('visitors/check-tag', 'Admin\Visitors::checkTag', ['filter' => 'authGuard']);
+    $routes->get('visitors/delete-log/(:num)', 'Admin\Visitors::deleteLog/$1');
 
     // Item Reports Routes
     $routes->get('item-reports', 'Admin\ItemReports::index');

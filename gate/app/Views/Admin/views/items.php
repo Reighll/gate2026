@@ -275,7 +275,8 @@
                 </div>
             </div>
         </div>
-    </div> <?php if (!empty($items)) : ?>
+    </div>
+<?php if (!empty($items)) : ?>
     <?php foreach ($items as $item) : ?>
         <div class="modal fade" id="approveModal<?= $item['id'] ?>" tabindex="-1" aria-labelledby="approveModalLabel<?= $item['id'] ?>" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -284,14 +285,24 @@
                         <h5 class="modal-title fw-bold text-success" id="approveModalLabel<?= $item['id'] ?>"><i class="ti ti-nfc me-2"></i> Approve & Link RFID</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="<?= base_url('admin/items/approveItem/' . $item['id']) ?>" method="POST">
+
+                    <!-- THE FIX 1: We removed HTMX from here entirely and added a specific class "rfid-approval-form" to control it securely with Javascript -->
+                    <form action="<?= base_url('admin/items/approveItem/' . $item['id']) ?>" method="POST" class="rfid-approval-form">
+
                         <?= csrf_field() ?>
                         <div class="modal-body text-start bg-light rounded-3 mx-3 p-4">
-                            <p class="mb-3">Assigning an RFID/NFC card to <strong><?= esc($item['name'] ?? $item['item_name'] ?? 'Item') ?></strong> <br><small class="text-muted">(Owned by: <?= esc($item['first_name'] . ' ' . $item['last_name']) ?>)</small></p>
+                            <p class="mb-3">Assigning an RFID/NFC card to a student</p>
 
                             <div class="mb-2">
                                 <label for="rfid_<?= $item['id'] ?>" class="form-label fw-bold text-dark">Scan RFID/NFC Card</label>
-                                <input type="text" class="form-control form-control-lg border-success text-success fw-bold shadow-sm" id="rfid_<?= $item['id'] ?>" name="rfid" placeholder="Tap card on scanner..." required autofocus autocomplete="off">
+
+                                <!-- The scanner acts as a keyboard. We let it naturally press "Enter" which triggers the form submit instantly! -->
+                                <input type="text" class="form-control form-control-lg border-success text-success fw-bold shadow-sm"
+                                       id="rfid_<?= $item['id'] ?>"
+                                       name="rfid"
+                                       placeholder="Tap card on scanner..."
+                                       required autofocus autocomplete="off">
+
                                 <small class="text-muted d-block mt-2"><i class="ti ti-info-circle me-1"></i> Ensure your cursor is in the field above before tapping the card.</small>
                             </div>
                         </div>
@@ -306,21 +317,18 @@
     <?php endforeach; ?>
 <?php endif; ?>
 
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
     <script>
+        window.scanApiUrl = "<?= base_url('admin/items/check-latest-scan') ?>";
+
         function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
         }
-
-        // Run on normal refresh
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        // Run on HTMX navigation
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
     <script src="<?= base_url('assets/js/admin/admin-items.js') ?>"></script>
+
 <?= $this->endSection() ?>

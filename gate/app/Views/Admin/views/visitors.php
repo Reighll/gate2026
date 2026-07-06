@@ -124,6 +124,10 @@
                                     <tr><td colspan="7" class="text-center text-muted">No visitor history yet.</td></tr>
                                 <?php else: ?>
                                     <?php foreach ($logs as $log): ?>
+                                        <?php
+                                        // Initialize variable to prevent Undefined variable error
+                                        $isInside = (empty($log['time_out']) || strpos($log['time_out'], '0000') !== false || $log['status'] === 'active');
+                                        ?>
                                         <tr>
                                             <td data-label="Visitor">
                                                 <h6 class="fw-semibold mb-1"><?= esc($log['name']) ?></h6>
@@ -155,13 +159,20 @@
                                                 <?php endif; ?>
                                             </td>
                                             <td data-label="Action">
-                                                <?php if ($log['status'] === 'active'): ?>
-                                                    <a href="<?= base_url('admin/visitors/force-checkout/' . $log['id']) ?>" class="btn btn-sm btn-outline-danger shadow-sm" onclick="return confirm('Force checkout this visitor?');">
-                                                        <i class="ti ti-logout me-1"></i> Force Check-out
+                                                <?php if ($isInside): ?>
+                                                    <a href="<?= base_url('admin/visitors/force-checkout/' . $log['id']) ?>" class="btn btn-sm btn-outline-danger shadow-sm me-1" onclick="return confirm('Force checkout this visitor?');">
+                                                        <i class="ti ti-logout"></i>
                                                     </a>
-                                                <?php else: ?>
-                                                    <span class="text-muted small">--</span>
                                                 <?php endif; ?>
+
+                                                <a href="javascript:void(0)"
+                                                   class="btn btn-sm btn-outline-dark shadow-sm"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#deleteConfirmModal"
+                                                   data-bs-url="<?= base_url('admin/visitors/delete-log/'.$log['id']) ?>"
+                                                   data-bs-message="Permanently delete this visitor log entry? This cannot be undone.">
+                                                    <i class="ti ti-trash"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -220,8 +231,10 @@
                                                 <?php endif; ?>
                                             </td>
                                             <td data-label="Action">
-                                                <a href="javascript:void(0)" class="btn btn-sm btn-outline-danger"
-                                                   data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                                <a href="javascript:void(0)"
+                                                   class="btn btn-sm btn-outline-danger"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#deleteConfirmModal"
                                                    data-bs-url="<?= base_url('admin/visitors/delete-tag/'.$tag['id']) ?>"
                                                    data-bs-message="Delete this pass?">
                                                     Delete
@@ -239,6 +252,19 @@
         </div>
     </div>
 
+<?= $this->include('Admin/modals/admin/add_pass') ?>
+<?= $this->include('Admin/modals/admin/delete_confirm') ?>
+
+    <div class="modal fade" id="idModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <img id="modalIdImage" src="" class="img-fluid rounded" alt="ID Proof">
+                    <p id="modalIdText" class="mt-2 fw-bold text-muted"></p>
+                </div>
+            </div>
+        </div>
+    </div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>

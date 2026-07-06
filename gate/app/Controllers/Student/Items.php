@@ -17,7 +17,6 @@ class Items extends BaseController
         $model = new StudentItemModel();
 
         // 2. Validate user input
-        // CHANGED: Increased max_size to 51200 KB (50MB) to allow modern phone cameras to upload!
         $rules = [
             'category'      => 'required',
             'brand_model'   => 'required',
@@ -27,6 +26,15 @@ class Items extends BaseController
 
         if (!$this->validate($rules)) {
             $errorString = implode('<br>', $this->validator->getErrors());
+
+            // THE FIX: Respond with clean JSON if the background script is listening
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => $errorString
+                ]);
+            }
+
             return redirect()->to('student/dashboard')->withInput()->with('error', $errorString);
         }
 
@@ -35,22 +43,17 @@ class Items extends BaseController
         $photoName = '';
 
         if ($photo->isValid() && !$photo->hasMoved()) {
-            // Generate a random secure filename
             $photoName = $photo->getRandomName();
-
-            // FIX: Use FCPATH to get the absolute system path to your public folder!
             $uploadPath = FCPATH . 'uploads/items/';
             $photo->move($uploadPath, $photoName);
 
-            // 🗜️ NEW: MESSENGER-STYLE IMAGE COMPRESSION 🗜️
             $filepath = $uploadPath . $photoName;
             try {
                 \Config\Services::image()
                     ->withFile($filepath)
-                    ->resize(800, 800, true, 'auto') // Shrinks massive 4K images down to a max of 800px proportionally
-                    ->save($filepath, 60);           // Crushes the file quality to 60% (unnoticeable to the eye, but drops MBs to KBs!)
+                    ->resize(800, 800, true, 'auto')
+                    ->save($filepath, 60);
             } catch (\Exception $e) {
-                // If compression fails, log the exact reason to gate/writable/logs/ so we can see it!
                 log_message('error', 'Image Compression Failed: ' . $e->getMessage());
             }
         }
@@ -64,6 +67,12 @@ class Items extends BaseController
             'photo'         => $photoName,
             'status'        => 'pending'
         ]);
+
+        // THE FIX: Set the flashdata and send a JSON success signal!
+        if ($this->request->isAJAX()) {
+            session()->setFlashdata('success', 'Item registered successfully! Awaiting admin verification.');
+            return $this->response->setJSON(['status' => 'success']);
+        }
 
         return redirect()->to('student/dashboard')->with('success', 'Item registered successfully! Awaiting admin verification.');
     }

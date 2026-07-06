@@ -7,7 +7,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 
 
     <div id="registration-container" class="pt-5 mt-4 page-slide-in">
         <div class="d-flex align-items-center mb-3">
-
             <a href="javascript:void(0);"
                hx-get="<?= base_url('student/dashboard') ?>"
                hx-target="#app-content"
@@ -19,16 +18,18 @@ $layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 
                style="width: 35px; height: 35px;">
                 <i class="ti ti-arrow-left fs-5 text-muted"></i>
             </a>
-
             <h4 class="fw-semibold mb-0">Item Registration</h4>
         </div>
 
-        <?php if (session()->getFlashdata('error')) : ?>
-            <div class="alert alert-danger p-3 rounded-3 shadow-sm"><?= session()->getFlashdata('error') ?></div>
-        <?php endif; ?>
-        <?php if (session()->getFlashdata('success')) : ?>
-            <div class="alert alert-success p-3 rounded-3 shadow-sm"><?= session()->getFlashdata('success') ?></div>
-        <?php endif; ?>
+        <div id="alertContainer">
+            <?php if (session()->getFlashdata('error')) : ?>
+                <div class="alert alert-dismissible fade show shadow-sm rounded-3 mb-4 d-flex align-items-center bg-danger-subtle text-danger border border-danger-subtle" role="alert" style="padding: 1rem 1.25rem;">
+                    <i class="ti ti-alert-circle fs-5 me-2"></i>
+                    <span class="fw-medium" style="opacity: 0.9;"><?= session()->getFlashdata('error') ?></span>
+                    <button type="button" class="btn-close m-0 ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+        </div>
 
         <div class="card border-0 shadow-sm">
             <div class="card-body p-4">
@@ -58,7 +59,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 
                     <div class="skeleton rounded-3 w-100 mt-2" style="height: 45px;"></div>
                 </div>
 
-                <form class="real-wrapper d-none" action="<?= base_url('student/items/store') ?>" method="post" enctype="multipart/form-data">
+                <form id="registrationForm" class="real-wrapper d-none" action="<?= base_url('student/items/store') ?>" method="post" enctype="multipart/form-data" onsubmit="window.submitRegistration(event, this)">
                     <?= csrf_field() ?>
 
                     <div class="mb-3">
@@ -101,9 +102,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 
         </div>
     </div>
 
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
     <script>
         function hideMySkeletons() {
             setTimeout(() => {
@@ -111,9 +109,103 @@ $layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
         }
-
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
-
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+        // Alert Injector
+        window.showInlineAlert = function(message, type = 'danger') {
+            const alertContainer = document.getElementById('alertContainer');
+            if (alertContainer) {
+                const icon = type === 'success' ? 'ti-check-circle' : 'ti-alert-circle';
+                const bgClass = type === 'success' ? 'bg-success-subtle text-success border-success-subtle' : 'bg-danger-subtle text-danger border-danger-subtle';
+
+                alertContainer.innerHTML = `
+                    <div class="alert alert-dismissible fade show shadow-sm rounded-3 mb-4 d-flex align-items-center ${bgClass} border" role="alert" style="padding: 1rem 1.25rem;">
+                        <i class="ti ${icon} fs-5 me-2"></i>
+                        <span class="fw-medium" style="opacity: 0.9;">${message}</span>
+                        <button type="button" class="btn-close m-0 ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+
+        // Form Processor
+        // Form Processor
+        window.submitRegistration = async function(e, form) {
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+            submitBtn.classList.add('disabled');
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    body: new FormData(form)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'error') {
+                    // Inject error and stop!
+                    window.showInlineAlert(data.message, 'danger');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.classList.remove('disabled');
+                    submitBtn.disabled = false;
+                } else {
+                    // SUCCESS: Setup the slide to Dashboard
+                    const successLink = document.createElement('a');
+                    successLink.setAttribute('hx-get', '<?= base_url('student/dashboard') ?>?nocache=' + Date.now());
+                    successLink.setAttribute('hx-push-url', '<?= base_url('student/dashboard') ?>');
+                    successLink.setAttribute('hx-target', '#app-content');
+                    successLink.setAttribute('hx-select', '#app-content');
+                    successLink.setAttribute('hx-swap', 'outerHTML swap:300ms');
+
+                    // --- THE MOBILE-PROOF INJECTOR ---
+                    const injectAlert = function(event) {
+                        if (event.detail.target.id === 'app-content') {
+
+                            // 1. Grab the very first container securely (ignoring CSS classes)
+                            const appContent = event.detail.target;
+                            const targetWrapper = appContent.querySelector('div') || appContent;
+
+                            // 2. Added mobile-friendly margins (mt-3 mx-3) so it doesn't get stuck under mobile navbars!
+                            const alertHtml = `
+                                <div class="alert alert-dismissible fade show shadow-sm rounded-3 mt-3 mt-lg-0 mx-3 mx-lg-0 mb-4 d-flex align-items-center bg-success-subtle text-success border border-success-subtle" role="alert" style="padding: 1rem 1.25rem;">
+                                    <i class="ti ti-check-circle fs-5 me-2"></i>
+                                    <span class="fw-medium" style="opacity: 0.9;">Item registered successfully! Awaiting admin verification.</span>
+                                    <button type="button" class="btn-close m-0 ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            `;
+
+                            targetWrapper.insertAdjacentHTML('afterbegin', alertHtml);
+
+                            // 3. Force mobile devices to scroll to the absolute top to see the alert!
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                            document.body.removeEventListener('htmx:afterSettle', injectAlert);
+                        }
+                    };
+
+                    document.body.addEventListener('htmx:afterSettle', injectAlert);
+
+                    document.getElementById('registration-container').classList.add('page-slide-out');
+                    document.body.appendChild(successLink);
+                    htmx.process(successLink);
+                    successLink.click();
+                }
+            } catch (err) {
+                console.error("Submission failed:", err);
+                window.showInlineAlert("A network error occurred. Please try again.", "danger");
+                submitBtn.innerHTML = originalText;
+                submitBtn.classList.remove('disabled');
+                submitBtn.disabled = false;
+            }
+        };
     </script>
+
 <?= $this->endSection() ?>

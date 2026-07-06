@@ -88,7 +88,7 @@
                     <div class="card-body p-3 p-md-4">
                         <h5 class="guard-card-title">LOG A VISITOR</h5>
 
-                        <form action="<?= base_url('guard/log-visitor') ?>" method="POST" enctype="multipart/form-data">
+                        <form id="visitorLogForm" action="<?= base_url('guard/log-visitor') ?>" method="POST" enctype="multipart/form-data">
                             <?= csrf_field() ?>
                             <input type="hidden" name="rfid" value="<?= esc(session()->getFlashdata('visitor_rfid') ?? '') ?>">
 
@@ -123,10 +123,6 @@
                                         <button type="button" id="startCameraBtn" class="btn btn-blue w-100 py-2"><i class="ti ti-camera me-1"></i> START CAMERA</button>
                                         <button type="button" id="takePhotoBtn" class="btn btn-success w-100 py-2 shadow-sm" style="display:none;"><i class="ti ti-capture me-1"></i> SNAP PHOTO</button>
                                         <button type="button" id="retakePhotoBtn" class="btn btn-warning w-100 py-2" style="display:none;"><i class="ti ti-reload me-1"></i> RETAKE</button>
-                                        <label class="btn btn-outline-secondary w-100 py-2 mb-0" id="manualUploadLabel">
-                                            <i class="ti ti-upload me-1"></i> UPLOAD INSTEAD
-                                            <input type="file" name="manual_photo" id="manualPhotoInput" class="d-none" accept="image/*">
-                                        </label>
                                     </div>
                                     <input type="hidden" name="webcam_photo" id="webcamPhotoInput">
                                 </div>
@@ -414,6 +410,18 @@
                 passwordInput.type = 'password';
                 icon.classList.remove('ti-eye-off');
                 icon.classList.add('ti-eye');
+            }
+        });
+        // ==========================================
+        // 4. MANDATORY PHOTO VALIDATION
+        // ==========================================
+        document.getElementById('visitorLogForm')?.addEventListener('submit', function(e) {
+            const webcamInput = document.getElementById('webcamPhotoInput').value;
+            const manualInput = document.getElementById('manualPhotoInput').files.length;
+
+            if (!webcamInput && manualInput === 0) {
+                e.preventDefault(); // Stop the form from submitting
+                alert("SECURITY ALERT: An ID Photo is mandatory. Please snap a picture or upload an image before logging this visitor.");
             }
         });
     </script>

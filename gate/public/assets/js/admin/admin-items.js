@@ -1,59 +1,110 @@
-document.addEventListener('DOMContentLoaded', function() {
+// ==========================================================================
+// 1. INSTANT UI UPDATE (Fixes the visual delay completely)
+// ==========================================================================
 
-    // 1. REAL-TIME SEARCH FILTER
-    const searchInput = document.getElementById('itemSearch');
-    const tableRows = document.querySelectorAll('#itemsTable tbody tr:not(.no-data-row)');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const filter = this.value.toLowerCase().trim();
-
-            tableRows.forEach(row => {
-                const rowText = row.textContent.toLowerCase();
-                if (rowText.includes(filter)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
+// This fires the exact millisecond you click the button (before animation finishes)
+document.addEventListener('show.bs.modal', function (event) {
+    const modal = event.target;
+    const rfidInput = modal.querySelector('input[name="rfid"]');
+    if (rfidInput) {
+        rfidInput.placeholder = "Listening to Wi-Fi Scanner..."; // Instant text change!
     }
+});
 
-    // 2. ADMIN IOT BRIDGE: Background Scanner for Modals
+// This fires after the animation finishes (Bootstrap requires this for focus)
+document.addEventListener('shown.bs.modal', function (event) {
+    const modal = event.target;
+    const rfidInput = modal.querySelector('input[name="rfid"]');
+    if (rfidInput) {
+        rfidInput.focus();
+    }
+});
+
+// ==========================================================================
+// 2. ADMIN IOT BRIDGE: GLOBAL SCANNER
+// ==========================================================================
+if (!window.iotScannerRunning) {
+    window.iotScannerRunning = true;
+    let isSubmitting = false;
+
     setInterval(() => {
-        // Check if any modal is currently open on the screen
         const openModal = document.querySelector('.modal.show');
 
-        if (openModal) {
+        if (openModal && !isSubmitting) {
             const rfidInput = openModal.querySelector('input[name="rfid"]');
-            const form = openModal.querySelector('form');
+            const form = openModal.querySelector('form.rfid-approval-form');
 
-            if (rfidInput && form) {
-                // Change placeholder to show we are actively listening to the ESP32
-                rfidInput.placeholder = "Listening to Wi-Fi Scanner...";
+            // Make sure the input, form, and our global URL exist
+            if (rfidInput && form && window.scanApiUrl) {
 
-                // Uses the scanApiUrl declared in the PHP view
-                fetch(scanApiUrl, {
-                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                // Poll the ESP32 via CodeIgniter
+                fetch(window.scanApiUrl, {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Cache-Control": "no-cache"
+                    }
                 })
                     .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            // WE GOT A SCAN! Fill the input, flash green, and auto-submit!
+                    .then(async data => {
+                        if (data.status === 'success' && data.epc) {
+
+                            // Lock the script so it doesn't double-submit
+                            isSubmitting = true;
+
+                            // Fill the input and flash green
                             rfidInput.value = data.epc;
                             rfidInput.classList.remove('border-success', 'text-success');
                             rfidInput.classList.add('bg-success', 'text-white');
 
-                            setTimeout(() => {
-                                form.submit();
-                            }, 300); // 300ms delay just so the admin sees it happened
+                            // Show loading state
+                            const submitBtn = form.querySelector('button[type="submit"]');
+                            if (submitBtn) {
+                                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+                                submitBtn.disabled = true;
+                            }
+
+                            // Short pause so the user sees the success state
+                            await new Promise(resolve => setTimeout(resolve, 400));
+
+                            // SECURE POST & REFRESH
+                            try {
+                                await fetch(form.action, {
+                                    method: 'POST',
+                                    body: new FormData(form)
+                                });
+                                // Force bypass the cache with a fresh timestamp
+                                window.location.href = window.location.pathname + "?refresh=" + new Date().getTime();
+                            } catch (err) {
+                                console.error('Submission failed', err);
+                                isSubmitting = false;
+                            }
                         }
                     })
-                    .catch(err => {
-                        // Silent fail for network blips
-                    });
+                    .catch(err => { /* Silent fail for network blips */ });
             }
         }
     }, 1000); // Check every 1 second
+}
 
-});
+// ==========================================================================
+// 3. UI INITIALIZATION (Search Bar)
+// ==========================================================================
+function initAdminItemsUI() {
+    const searchInput = document.getElementById('itemSearch');
+    if (searchInput) {
+        searchInput.replaceWith(searchInput.cloneNode(true));
+        const newSearchInput = document.getElementById('itemSearch');
+
+        newSearchInput.addEventListener('input', function() {
+            const filter = this.value.toLowerCase().trim();
+            const tableRows = document.querySelectorAll('#itemsTable tbody tr:not(.no-data-row)');
+
+            tableRows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initAdminItemsUI);
+document.body.addEventListener('htmx:afterSettle', initAdminItemsUI);

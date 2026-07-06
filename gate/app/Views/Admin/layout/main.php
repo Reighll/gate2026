@@ -73,6 +73,11 @@
 <?= $this->include('Admin/modals/delete_confirm') ?>
 
 <script>
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+        evt.detail.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+        evt.detail.headers['Pragma'] = 'no-cache';
+        evt.detail.headers['Expires'] = '0';
+    });
     document.body.addEventListener('htmx:afterSettle', function(evt) {
 
         // --- 1. DYNAMIC NAVBAR VISIBILITY ---

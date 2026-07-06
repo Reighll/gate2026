@@ -47,10 +47,14 @@ class Dashboard extends BaseController
 
         $successCount    = 0;
         $errorMessages   = [];
-        $warningMessages = []; // NEW: Dedicated array for missing items
+        $warningMessages = [];
         $lastItem        = null;
         $lastStudent     = null;
         $lastAction      = '';
+
+        // NEW: Track visitor states for the UI messages
+        $lastVisitorName  = null;
+        $isVisitorHandled = false;
 
         // 2. LOOP THROUGH EVERY TAG IN THE BATCH
         foreach ($rfidArray as $rfid) {
@@ -58,6 +62,7 @@ class Dashboard extends BaseController
 
             $isVisitorHandled = false;
 
+            // --- VISITOR CHECK ---
             // --- VISITOR CHECK ---
             if ($db->tableExists('visitor_tags')) {
                 $fields = $db->getFieldNames('visitor_tags');
@@ -69,28 +74,53 @@ class Dashboard extends BaseController
                     if ($visitorTag) {
                         if ($db->tableExists('visitor_logs')) {
                             $logFields = $db->getFieldNames('visitor_logs');
-                            $logVisitorColumn = in_array('rfid', $logFields) ? 'rfid' : null;
+
+                            // FIX 1: Ensure we check both possible column names so the query doesn't fail!
+                            $logVisitorColumn = in_array('rfid_uid', $logFields) ? 'rfid_uid' : (in_array('rfid', $logFields) ? 'rfid' : null);
 
                             if ($logVisitorColumn) {
-                                $activeVisit = $db->table('visitor_logs')->where($logVisitorColumn, $rfid)->orderBy('time_in', 'DESC')->limit(1)->get()->getRowArray();
+                                $activeVisit = $db->table('visitor_logs')
+                                    ->where($logVisitorColumn, $rfid)
+                                    ->orderBy('time_in', 'DESC')
+                                    ->limit(1)
+                                    ->get()
+                                    ->getRowArray();
 
                                 if ($activeVisit) {
-                                    $timeOutValue = $activeVisit['time_out'] ?? '';
-                                    $isInside = empty($timeOutValue) || strpos($timeOutValue, '0000-00-00') !== false;
+                                    // (Inside your checkIn function)
+
+                                    // FIX 2: Make the "inside" check much more accurate by checking the status
+                                    $isInside = false;
+
+                                    if (in_array('status', $logFields) && isset($activeVisit['status'])) {
+                                        // Change 'inside' to 'active'
+                                        $isInside = ($activeVisit['status'] === 'active');
+                                    } else {
+                                        // Fallback to checking time_out if status column doesn't exist
+                                        $timeOutValue = $activeVisit['time_out'] ?? null;
+                                        $isInside = (empty($timeOutValue) || strpos((string)$timeOutValue, '0000-00-00') !== false);
+                                    }
 
                                     if ($isInside) {
+                                        // LOGGING THE VISITOR OUT
                                         $updateData = ['time_out' => date('Y-m-d H:i:s')];
-                                        if ($db->fieldExists('status', 'visitor_logs')) $updateData['status'] = 'outside';
+                                        if (in_array('status', $logFields)) {
+                                            // Change 'outside' to 'completed'
+                                            $updateData['status'] = 'completed';
+                                        }
 
                                         $db->table('visitor_logs')->where('id', $activeVisit['id'])->update($updateData);
                                         $successCount++;
                                         $isVisitorHandled = true;
+
+                                        // Capture the name for the success banner
+                                        $lastVisitorName = $activeVisit['name'] ?? 'Visitor';
                                     }
                                 }
                             }
                         }
 
-                        // If it's a NEW visitor, stop the batch and show the visitor details form
+                        // If it's a NEW visitor (or they are already checked out), show the details form
                         if (!$isVisitorHandled) {
                             session()->setFlashdata('visitor_rfid', $rfid);
                             return redirect()->to('guard/dashboard')->with('info', 'VISITOR PASS DETECTED. Please enter details.');
@@ -113,11 +143,9 @@ class Dashboard extends BaseController
                     $itemName = $item['brand_model'] ?? $item['name'] ?? 'Item';
                     $studentName = $student ? ($student['first_name'] . ' ' . $student['last_name']) : 'Unknown Student';
 
-                    // Setting these here ensures the UI can still show the photo/details of the MISSING item to the guard
                     $lastItem = $item;
                     $lastStudent = $student;
 
-                    // --- NEW WARNING LOGIC ---
                     if ($item['status'] === 'missing') {
                         $warningMessages[] = "🚨 MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
                         continue;
@@ -154,26 +182,31 @@ class Dashboard extends BaseController
 
         // 3. BATCH SUMMARY RESULTS
         if (count($rfidArray) == 1) {
-            // Single Item Scanned
+
             if (!empty($warningMessages)) {
-                // Send the missing item details to the frontend so the guard sees the photo
                 session()->setFlashdata('scanned_item', $lastItem);
                 session()->setFlashdata('scanned_student', $lastStudent);
                 return redirect()->to('guard/dashboard')->with('warning', implode('<br>', $warningMessages));
+
+            } elseif ($isVisitorHandled && $successCount > 0) {
+                // NEW: Trigger the success banner specifically for Visitors!
+                return redirect()->to('guard/dashboard')->with('success', "VISITOR DEPARTED: " . esc($lastVisitorName));
+
             } elseif ($lastItem && $lastStudent && $successCount > 0) {
                 session()->setFlashdata('scanned_item', $lastItem);
                 session()->setFlashdata('scanned_student', $lastStudent);
                 return redirect()->to('guard/dashboard')->with('success', "{$lastAction} LOGGED: " . esc($lastItem['brand_model'] ?? 'Item'));
+
             } elseif (!empty($errorMessages)) {
                 return redirect()->to('guard/dashboard')->with('error', implode('<br>', $errorMessages));
             }
+
         } else {
             // Multiple Items Scanned (Batch)
             if ($successCount > 0) {
-                session()->setFlashdata('success', "BATCH COMPLETE: {$successCount} items logged successfully!");
+                session()->setFlashdata('success', "BATCH COMPLETE: {$successCount} scans logged successfully!");
             }
 
-            // Output warnings separately from standard errors
             if (!empty($warningMessages)) {
                 session()->setFlashdata('warning', "🚨 SECURITY ALERT:<br>" . implode('<br>', $warningMessages));
             }
@@ -182,7 +215,6 @@ class Dashboard extends BaseController
                 session()->setFlashdata('error', "Some scans failed:<br>" . implode('<br>', $errorMessages));
             }
 
-            // Show the very last item on screen just for visual feedback (this will show the missing item if it was the last one scanned)
             if ($lastItem && $lastStudent) {
                 session()->setFlashdata('scanned_item', $lastItem);
                 session()->setFlashdata('scanned_student', $lastStudent);
@@ -195,81 +227,97 @@ class Dashboard extends BaseController
 
     public function logVisitor()
     {
-        // ... (Keep your exact logVisitor logic here, unchanged!)
         if (!session()->get('guard_logged_in')) return redirect()->to('guard/login');
 
         $db = \Config\Database::connect();
+
+        // 1. Get the basic inputs
         $rfid    = $this->request->getPost('rfid');
         $name    = $this->request->getPost('visitor_name');
         $purpose = $this->request->getPost('purpose');
 
+        // 2. VALIDATION: Check if RFID is empty
+        if (empty($rfid)) {
+            return redirect()->to('guard/dashboard')->with('error', 'No RFID tag detected. Please scan a valid visitor card first.');
+        }
+
+        // 3. FETCH THE ACTUAL TAG DETAILS
+        $tagFields = $db->getFieldNames('visitor_tags');
+        $tagColumn = in_array('rfid_uid', $tagFields) ? 'rfid_uid' : 'rfid';
+
+        $visitorTag = $db->table('visitor_tags')->where($tagColumn, $rfid)->get()->getRowArray();
+
+        if (!$visitorTag) {
+            return redirect()->to('guard/dashboard')->with('error', 'Unregistered Card: The RFID tag (' . esc($rfid) . ') is not registered as a Visitor Tag in the system.');
+        }
+
+        $passName = $visitorTag['pass_number'] ?? 'Unknown Pass';
+
+        // --- NEW: MANDATORY PHOTO VALIDATION ---
+        $manualPhoto = $this->request->getFile('manual_photo');
+        $webcamPhoto = $this->request->getPost('webcam_photo');
+
+        $hasManualPhoto = ($manualPhoto && $manualPhoto->isValid() && !$manualPhoto->hasMoved());
+        $hasWebcamPhoto = !empty($webcamPhoto);
+
+        if (!$hasManualPhoto && !$hasWebcamPhoto) {
+            // Kick them back to the dashboard with an error if both are missing
+            return redirect()->to('guard/dashboard')->withInput()->with('error', 'SECURITY ALERT: An ID Photo is mandatory. Please snap a picture or upload an image.');
+        }
+        // ---------------------------------------
+
+        // 4. Proceed with Image Uploads & Compression
         $photoName = null;
         $uploadDir = FCPATH . 'uploads/visitor_ids/';
 
         if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
-        $manualPhoto = $this->request->getFile('manual_photo');
-
-        if ($manualPhoto && $manualPhoto->isValid() && !$manualPhoto->hasMoved()) {
-
+        if ($hasManualPhoto) {
             $photoName = $manualPhoto->getRandomName();
             $manualPhoto->move($uploadDir, $photoName);
-
             $filepath = $uploadDir . $photoName;
 
             try {
-                \Config\Services::image()
-                    ->withFile($filepath)
-                    ->resize(800, 800, true, 'auto') // adjust if needed
-                    ->save($filepath, 70);           // balanced compression
-
+                \Config\Services::image()->withFile($filepath)->resize(800, 800, true, 'auto')->save($filepath, 70);
             } catch (\Exception $e) {
                 log_message('error', 'Visitor image compression failed: ' . $e->getMessage());
             }
 
-        } else if ($webcamPhoto = $this->request->getPost('webcam_photo')) {
-
+        } else if ($hasWebcamPhoto) {
             $imageParts = explode(";base64,", $webcamPhoto);
-
             if (count($imageParts) == 2) {
-
                 $imageTypeAux = explode("image/", $imageParts[0]);
                 $imageType = $imageTypeAux[1] ?? 'png';
-
                 $imageBase64 = base64_decode($imageParts[1]);
 
                 $photoName = 'visitor_webcam_' . time() . '_' . uniqid() . '.' . $imageType;
-
                 $filepath = $uploadDir . $photoName;
 
                 file_put_contents($filepath, $imageBase64);
 
-                // 🧠 compress webcam image too
                 try {
-                    \Config\Services::image()
-                        ->withFile($filepath)
-                        ->resize(800, 800, true, 'auto')
-                        ->save($filepath, 70);
-
+                    \Config\Services::image()->withFile($filepath)->resize(800, 800, true, 'auto')->save($filepath, 70);
                 } catch (\Exception $e) {
                     log_message('error', 'Visitor webcam compression failed: ' . $e->getMessage());
                 }
             }
         }
 
+        // 5. Insert into Database
         if ($db->tableExists('visitor_logs')) {
             $logFields = $db->getFieldNames('visitor_logs');
             $logVisitorColumn = in_array('rfid', $logFields) ? 'rfid' : 'rfid_uid';
 
             $insertData = [
                 $logVisitorColumn => $rfid,
-                'name'       => $name,
-                'purpose'    => $purpose,
-                'time_in'    => date('Y-m-d H:i:s'),
+                'name'            => $name,
+                'purpose'         => $purpose,
+                'time_in'         => date('Y-m-d H:i:s'),
             ];
 
-            if ($photoName && $db->fieldExists('id_photo', 'visitor_logs')) $insertData['id_photo'] = $photoName;
-            if ($db->fieldExists('status', 'visitor_logs')) $insertData['status'] = 'inside';
+            if (in_array('tag_id', $logFields)) $insertData['tag_id'] = $passName;
+            if ($photoName && in_array('id_photo', $logFields)) $insertData['id_photo'] = $photoName;
+            if (in_array('status', $logFields)) $insertData['status'] = 'active';
 
             $db->table('visitor_logs')->insert($insertData);
         }

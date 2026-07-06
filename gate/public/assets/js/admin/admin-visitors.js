@@ -91,6 +91,20 @@ document.addEventListener('click', function(e) {
         }
     }
 });
-function showId(url) {
-    document.getElementById('modalImage').src = url;
+function showId(url, idText) {
+    // 1. Match the ID you have in your HTML (modalIdImage)
+    const modalImg = document.getElementById('modalIdImage');
+
+    // 2. Add safety check
+    if (modalImg) {
+        modalImg.src = url;
+    } else {
+        console.error("Error: Could not find element with ID 'modalIdImage'");
+    }
+
+    // 3. Update the text if the ID exists
+    const modalText = document.getElementById('modalIdText');
+    if (modalText) {
+        modalText.textContent = idText;
+    }
 }

@@ -37,29 +37,58 @@ class Visitors extends BaseController
     public function addTag()
     {
         $tagModel = new VisitorTagModel();
-        $rfid = $this->request->getPost('rfid_uid');
+        $db = \Config\Database::connect();
 
-        // --- VALIDATION START ---
+        // 1. Get the RFID from the scanner
+        $rfid = trim((string) $this->request->getPost('rfid'));
 
-        // 1. Check if this specific RFID is already in the database
+        if (empty($rfid)) {
+            return redirect()->back()->with('error', 'RFID Tag cannot be empty. Please scan a card.');
+        }
+
+        // --- VALIDATION: Duplicate & Student Tag Checks ---
         $existingTag = $tagModel->where('rfid_uid', $rfid)->first();
-
         if ($existingTag) {
-            // STOP! It is a duplicate.
             return redirect()->back()->with('error', 'DUPLICATE: This card is already registered as "' . $existingTag['pass_number'] . '"');
         }
 
-        // --- VALIDATION END ---
+        if ($db->tableExists('student_items') && $db->fieldExists('rfid', 'student_items')) {
+            $studentItemCheck = $db->table('student_items')->where('rfid', $rfid)->countAllResults();
+            if ($studentItemCheck > 0) {
+                return redirect()->back()->with('error', 'DENIED: This RFID Tag is currently assigned to a Student Item.');
+            }
+        }
 
+        // --- SMART AUTO-NAMING LOGIC ---
+        // Fetch all current tags to figure out which numbers are in use
+        $allTags = $tagModel->findAll();
+        $usedNumbers = [];
+
+        foreach ($allTags as $tag) {
+            // Extract the integer from names like "Visitor Pass 1" or "Visitor Pass 4"
+            if (preg_match('/Visitor Pass (\d+)/i', $tag['pass_number'], $matches)) {
+                $usedNumbers[] = (int)$matches[1];
+            }
+        }
+
+        // Find the lowest missing number starting from 1
+        $nextNumber = 1;
+        while (in_array($nextNumber, $usedNumbers)) {
+            $nextNumber++;
+        }
+
+        $autoPassName = 'Visitor Pass ' . $nextNumber;
+
+        // --- SAVE NEW TAG ---
         $data = [
-            'pass_number' => $this->request->getPost('pass_number'),
+            'pass_number' => $autoPassName,
             'rfid_uid'    => $rfid,
             'status'      => 'available'
         ];
 
         $tagModel->save($data);
 
-        return redirect()->to('admin/visitors')->with('success', 'New Visitor Pass registered successfully.');
+        return redirect()->to('admin/visitors')->with('success', 'Success! ' . $autoPassName . ' registered.');
     }
 
     // AJAX Handler: Checks if RFID exists without reloading page
@@ -104,5 +133,17 @@ class Visitors extends BaseController
         }
 
         return redirect()->to('admin/visitors')->with('error', 'Visitor log not found.');
+    }
+    public function deleteLog($id)
+    {
+        $logModel = new \App\Models\VisitorLogModel();
+
+        // Safety check: Does the ID exist?
+        if ($logModel->find($id)) {
+            $logModel->delete($id);
+            return redirect()->to('admin/visitors')->with('success', 'Visitor log entry deleted.');
+        }
+
+        return redirect()->to('admin/visitors')->with('error', 'Log entry not found.');
     }
 }

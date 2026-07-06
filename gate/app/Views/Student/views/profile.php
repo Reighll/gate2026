@@ -36,7 +36,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 
                 <?php endif; ?>
 
                 <div class="card border-0 shadow-sm rounded-4">
-
                     <div class="card-body p-4 p-md-5 skeleton-wrapper">
                         <div class="row mb-4">
                             <div class="col-md-4 text-center mb-4 mb-md-0 d-flex flex-column align-items-center">
@@ -165,19 +164,100 @@ $layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 
         </div>
     </div>
 
-<?= $this->endSection() ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
-<?= $this->section('scripts') ?>
     <script>
+        // 1. Skeleton Loaders
         function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
         }
-
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
-
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+        // 2. The Cropper.js Logic
+        function initProfileCropper() {
+            const fileInput = document.getElementById('profile_pic');
+            const cropperImage = document.getElementById('cropperImage');
+            const previewImage = document.getElementById('profilePicPreview');
+            const cropModalEl = document.getElementById('cropModal');
+            const btnCrop = document.getElementById('btnCrop');
+
+            // Prevent duplicate initializations on HTMX swaps
+            if (!fileInput || fileInput.hasAttribute('data-cropper-init')) return;
+            fileInput.setAttribute('data-cropper-init', 'true');
+
+            let cropper = null;
+            let bootstrapModal = new bootstrap.Modal(cropModalEl);
+
+            // Step 1: When user selects a file
+            fileInput.addEventListener('change', function (e) {
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        // Load image into modal and show it
+                        cropperImage.src = event.target.result;
+                        bootstrapModal.show();
+                    };
+                    reader.readAsDataURL(files[0]);
+                }
+            });
+
+            // Step 2: Initialize Cropper.js ONLY after the modal is fully visible
+            cropModalEl.addEventListener('shown.bs.modal', function () {
+                cropper = new Cropper(cropperImage, {
+                    aspectRatio: 1, // Forces a perfect square
+                    viewMode: 2,
+                    autoCropArea: 1,
+                    responsive: true,
+                });
+            });
+
+            // Step 3: Destroy Cropper when modal closes to prevent memory leaks/glitches
+            cropModalEl.addEventListener('hidden.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                // If they cancelled, reset the input field so they can try again
+                if (previewImage.getAttribute('data-updated') !== 'true') {
+                    fileInput.value = '';
+                }
+                previewImage.removeAttribute('data-updated');
+            });
+
+            // Step 4: When they click "Crop & Apply"
+            btnCrop.addEventListener('click', function () {
+                if (!cropper) return;
+
+                // Extract the cropped image canvas
+                const canvas = cropper.getCroppedCanvas({
+                    width: 500, // Standardize size to save bandwidth
+                    height: 500,
+                });
+
+                // Update the visual preview on the screen instantly
+                previewImage.src = canvas.toDataURL('image/jpeg');
+                previewImage.setAttribute('data-updated', 'true'); // Flag to prevent reset on close
+
+                // The Magic Trick: Convert the cropped canvas to a file and stuff it BACK into the HTML file input!
+                // This means your CodeIgniter controller doesn't need to change at all. It just receives the perfect cropped image.
+                canvas.toBlob(function (blob) {
+                    const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg", lastModified: new Date().getTime() });
+                    const container = new DataTransfer(); // Simulates a user drag-and-drop
+                    container.items.add(file);
+                    fileInput.files = container.files; // Replace the original file with the cropped one
+
+                    bootstrapModal.hide(); // Close modal
+                }, 'image/jpeg', 0.9); // 90% quality compression
+            });
+        }
+
+        // Initialize on both F5 reloads and HTMX navigation
+        document.addEventListener("DOMContentLoaded", initProfileCropper);
+        document.body.addEventListener('htmx:afterSettle', initProfileCropper);
     </script>
 <?= $this->endSection() ?>

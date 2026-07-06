@@ -147,6 +147,8 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => {
@@ -155,6 +157,5 @@
             }, 600);
         });
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="<?= base_url('assets/js/guard/guard-profile.js') ?>"></script>
 <?= $this->endSection() ?>
