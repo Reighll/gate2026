@@ -8,7 +8,6 @@
 
     <div class="mt-5 pt-5 d-flex flex-column gap-3">
 
-        <!-- ALERTS (Loads Instantly) -->
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
                 <i class="ti ti-check-circle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('success') ?></span>
@@ -57,19 +56,15 @@
             </div>
 
             <div class="col-lg-7">
-                <!-- Scanner Skeleton -->
                 <div class="card shadow-sm border-0 rounded-4 h-100">
                     <div class="card-body p-3 p-md-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
                             <div class="skeleton skeleton-title w-25 mb-0" style="height: 20px;"></div>
                             <div class="skeleton skeleton-badge rounded-pill" style="width: 100px; height: 32px;"></div>
                         </div>
-
                         <div class="skeleton rounded-3 w-100 mb-4" style="height: 60px;"></div>
-
                         <div class="skeleton rounded-3 w-100 mb-2" style="height: 60px;"></div>
                         <div class="skeleton rounded-3 w-100 mb-4" style="height: 45px;"></div>
-
                         <div class="row align-items-center mb-4">
                             <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
                                 <div class="skeleton skeleton-badge rounded-3 mb-4" style="width: 120px; height: 38px;"></div>
@@ -119,7 +114,6 @@
 
                                     <div class="image-placeholder-box mb-3 flex-grow-1" id="cameraBox">
                                         <i class="ti ti-id fs-1 text-muted opacity-50" id="cameraIcon" style="font-size: 5rem !important;"></i>
-
                                         <video id="webcamVideo" autoplay playsinline style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"></video>
                                         <img id="photoPreview" style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2;" />
                                         <canvas id="photoCanvas" style="display:none;"></canvas>
@@ -129,13 +123,11 @@
                                         <button type="button" id="startCameraBtn" class="btn btn-blue w-100 py-2"><i class="ti ti-camera me-1"></i> START CAMERA</button>
                                         <button type="button" id="takePhotoBtn" class="btn btn-success w-100 py-2 shadow-sm" style="display:none;"><i class="ti ti-capture me-1"></i> SNAP PHOTO</button>
                                         <button type="button" id="retakePhotoBtn" class="btn btn-warning w-100 py-2" style="display:none;"><i class="ti ti-reload me-1"></i> RETAKE</button>
-
                                         <label class="btn btn-outline-secondary w-100 py-2 mb-0" id="manualUploadLabel">
                                             <i class="ti ti-upload me-1"></i> UPLOAD INSTEAD
                                             <input type="file" name="manual_photo" id="manualPhotoInput" class="d-none" accept="image/*">
                                         </label>
                                     </div>
-
                                     <input type="hidden" name="webcam_photo" id="webcamPhotoInput">
                                 </div>
                             </div>
@@ -204,7 +196,11 @@
                                 <?php $item = $scannedItems[0]; ?>
                                 <div class="row align-items-center mb-4">
                                     <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
-                                        <?php $isTimeIn = !(isset($item['in_campus']) && $item['in_campus'] == 1); ?>
+                                        <?php
+                                        // SINGLE ITEM LOGIC
+                                        $currentStatus = strtoupper($item['status'] ?? 'OUT');
+                                        $isTimeIn = ($currentStatus === 'OUT' || $currentStatus === 'OUTSIDE' || $currentStatus === 'UNKNOWN');
+                                        ?>
                                         <div class="mb-3">
                                             <?php if ($isTimeIn): ?>
                                                 <span class="badge bg-success text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
@@ -241,7 +237,11 @@
                                     <?php foreach ($scannedItems as $item): ?>
                                         <div class="row align-items-center p-3 border rounded-3 bg-light shadow-sm mx-0">
                                             <div class="col-md-7 order-2 order-md-1 mt-3 mt-md-0">
-                                                <?php $isTimeIn = !(isset($item['in_campus']) && $item['in_campus'] == 1); ?>
+                                                <?php
+                                                // MULTIPLE ITEM LOGIC (Fixed!)
+                                                $currentStatus = strtoupper($item['status'] ?? 'OUT');
+                                                $isTimeIn = ($currentStatus === 'OUT' || $currentStatus === 'OUTSIDE' || $currentStatus === 'UNKNOWN');
+                                                ?>
                                                 <div class="mb-2">
                                                     <?php if ($isTimeIn): ?>
                                                         <span class="badge bg-success text-white fw-bold px-2 py-1 fs-2 rounded-2 shadow-sm">
@@ -286,8 +286,8 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<?= $this->section('scripts') ?>
     <script>
+        // SKELETON LOADER (with HTMX support)
         function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
@@ -295,12 +295,114 @@
             }, 600);
         }
 
-        // Run on normal refresh
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        // Run on HTMX navigation
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-    </script>
-    <script>
+
+        // ==========================================
+        // 1. WEBCAM CAPTURE LOGIC
+        // ==========================================
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const takePhotoBtn = document.getElementById('takePhotoBtn');
+        const retakePhotoBtn = document.getElementById('retakePhotoBtn');
+        const webcamVideo = document.getElementById('webcamVideo');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoCanvas = document.getElementById('photoCanvas');
+        const cameraIcon = document.getElementById('cameraIcon');
+        const webcamPhotoInput = document.getElementById('webcamPhotoInput');
+        const manualPhotoInput = document.getElementById('manualPhotoInput');
+
+        let videoStream = null;
+
+        startCameraBtn?.addEventListener('click', async () => {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                webcamVideo.srcObject = videoStream;
+                webcamVideo.style.display = 'block';
+                cameraIcon.style.display = 'none';
+                photoPreview.style.display = 'none';
+                startCameraBtn.style.display = 'none';
+                takePhotoBtn.style.display = 'block';
+                retakePhotoBtn.style.display = 'none';
+            } catch (err) {
+                alert("Camera access denied or not available. Please check your browser permissions.");
+                console.error(err);
+            }
+        });
+
+        takePhotoBtn?.addEventListener('click', () => {
+            const context = photoCanvas.getContext('2d');
+            photoCanvas.width = webcamVideo.videoWidth;
+            photoCanvas.height = webcamVideo.videoHeight;
+            context.drawImage(webcamVideo, 0, 0, photoCanvas.width, photoCanvas.height);
+            const imageData = photoCanvas.toDataURL('image/png');
+            webcamPhotoInput.value = imageData;
+            photoPreview.src = imageData;
+            webcamVideo.style.display = 'none';
+            photoPreview.style.display = 'block';
+            takePhotoBtn.style.display = 'none';
+            retakePhotoBtn.style.display = 'block';
+        });
+
+        retakePhotoBtn?.addEventListener('click', () => {
+            webcamPhotoInput.value = '';
+            webcamVideo.style.display = 'block';
+            photoPreview.style.display = 'none';
+            takePhotoBtn.style.display = 'block';
+            retakePhotoBtn.style.display = 'none';
+        });
+
+        manualPhotoInput?.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    photoPreview.src = event.target.result;
+                    if (videoStream) {
+                        videoStream.getTracks().forEach(track => track.stop());
+                    }
+                    photoPreview.style.display = 'block';
+                    cameraIcon.style.display = 'none';
+                    webcamVideo.style.display = 'none';
+                    startCameraBtn.style.display = 'none';
+                    takePhotoBtn.style.display = 'none';
+                    retakePhotoBtn.style.display = 'block';
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // ==========================================
+        // 2. IoT BRIDGE (ESP32 Polling)
+        // ==========================================
+        const rfidInput = document.getElementById('hiddenRfidInput');
+        const hiddenForm = document.getElementById('hiddenScanForm');
+        const debugOutput = document.getElementById('debugOutput');
+        const debugStatus = document.getElementById('debugStatus');
+
+        if (rfidInput && hiddenForm) {
+            const checkUrl = hiddenForm.getAttribute('data-check-url');
+            setInterval(() => {
+                fetch(checkUrl, {
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            if (debugOutput && debugStatus) {
+                                debugOutput.textContent = `Scanned EPC: ${data.epc}`;
+                                debugStatus.textContent = "PROCESSING...";
+                                debugStatus.className = "text-info fw-bold small";
+                            }
+                            rfidInput.value = data.epc;
+                            hiddenForm.submit();
+                        }
+                    })
+                    .catch(err => {});
+            }, 1000);
+        }
+
+        // ==========================================
+        // 3. PASSWORD TOGGLE
+        // ==========================================
         document.getElementById('togglePassword')?.addEventListener('click', function (e) {
             const passwordInput = document.getElementById('password');
             const icon = this.querySelector('i');
@@ -315,5 +417,4 @@
             }
         });
     </script>
-<?= $this->endSection() ?>
 <?= $this->endSection() ?>
