@@ -34,7 +34,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 <div class="card border-0 shadow-sm w-100 rounded-4">
                     <div class="card-body p-5 text-center">
                         <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="ti ti-device-laptop text-muted fs-1"></i>
+                            <i class="ti ti-device-laptop d-block mb-3 text-muted" style="font-size: 2rem; opacity: 0.5;"></i>
                         </div>
                         <h5 class="fw-bold text-dark">No Items Found</h5>
                         <p class="text-muted">You have no registered items yet.</p>
