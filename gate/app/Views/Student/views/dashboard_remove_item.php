@@ -1,5 +1,5 @@
 <?php
-$layout = service('request')->hasHeader('HX-Request') ? 'student/layout/htmx' : 'student/layout/main';
+$layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 'Student/layout/main';
 ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Remove Item | Student Portal<?= $this->endSection() ?>
