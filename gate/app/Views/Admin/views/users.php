@@ -219,7 +219,7 @@
 <?= $this->include('Admin/modals/admin/add_student') ?>
 <?= $this->include('Admin/modals/admin/add_guard') ?>
 <?= $this->include('Admin/modals/admin/add_admin') ?>
-
+<?= $this->include('Admin/modals/admin/delete_confirm') ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>

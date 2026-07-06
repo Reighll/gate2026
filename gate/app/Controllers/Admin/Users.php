@@ -24,6 +24,40 @@ class Users extends BaseController
         return view('Admin/views/users', $data);
     }
 
+    public function createStudent()
+    {
+        $studentModel = new \App\Models\StudentModel();
+
+        // 1. Validate Input (Ensures no duplicate student numbers)
+        $rules = [
+            'student_number' => 'required|is_unique[students.student_number]',
+            'first_name'     => 'required',
+            'last_name'      => 'required',
+            'password'       => 'required|min_length[6]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->with('error', 'Error: Student Number is already registered or password is too short.');
+        }
+
+        // 2. Prepare Data
+        $data = [
+            'student_number' => $this->request->getPost('student_number'),
+            'first_name'     => $this->request->getPost('first_name'),
+            'last_name'      => $this->request->getPost('last_name'),
+            'email'          => $this->request->getPost('email'),
+            // Securely hash the password!
+            'password'       => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+            'status'         => 'active',
+            'created_at'     => date('Y-m-d H:i:s')
+        ];
+
+        // 3. Save to Database
+        $studentModel->insert($data);
+
+        return redirect()->to('admin/users')->with('success', 'New Student account created successfully.');
+    }
+
     public function deleteStudent($id = null)
     {
         $studentModel = new StudentModel();

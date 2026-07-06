@@ -121,7 +121,14 @@
 
                                 <tbody class="real-wrapper d-none">
                                 <?php if(empty($logs)): ?>
-                                    <tr><td colspan="7" class="text-center text-muted">No visitor history yet.</td></tr>
+                                    <tr>
+                                        <td colspan="7" class="text-center border-0 py-5">
+                                            <div class="d-flex flex-column align-items-center justify-content-center text-muted my-3 opacity-75">
+                                                <span class="fw-medium fs-6">No visitor history yet.</span>
+                                                <small class="mt-1">Logs will appear here once visitors are recorded.</small>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 <?php else: ?>
                                     <?php foreach ($logs as $log): ?>
                                         <?php
