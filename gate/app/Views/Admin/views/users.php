@@ -224,6 +224,7 @@
 
 <?= $this->section('scripts') ?>
     <script>
+        // Smooth skeleton loading effect
         function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
@@ -233,7 +234,7 @@
 
         // Run on normal refresh
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        // Run on HTMX navigation
+        // Run on HTMX navigation (from your sidebar)
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
 <?= $this->endSection() ?>

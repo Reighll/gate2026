@@ -33,29 +33,32 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const deleteModal = document.getElementById('deleteConfirmModal');
+    // Safety check to prevent duplicate listeners from crashing the page
+    if (!window.deleteModalInitialized) {
+        window.deleteModalInitialized = true;
 
-        if (deleteModal) {
-            deleteModal.addEventListener('show.bs.modal', function (event) {
-                // Find the specific button that triggered the modal
-                const button = event.relatedTarget;
+        function setupDeleteModal() {
+            const deleteModal = document.getElementById('deleteConfirmModal');
+            if (deleteModal) {
+                deleteModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const targetUrl = button.getAttribute('data-bs-url');
+                    const targetMessage = button.getAttribute('data-bs-message');
 
-                // Extract the URL and custom message from the button's data attributes
-                const targetUrl = button.getAttribute('data-bs-url');
-                const targetMessage = button.getAttribute('data-bs-message');
-
-                // Inject the correct delete URL into our "Yes, delete it" button
-                const confirmBtn = document.getElementById('deleteModalConfirmBtn');
-                if (targetUrl) {
-                    confirmBtn.setAttribute('href', targetUrl);
-                }
-
-                // Update the text message if one was provided
-                if (targetMessage) {
-                    document.getElementById('deleteModalMessage').textContent = targetMessage;
-                }
-            });
+                    if (targetUrl) {
+                        document.getElementById('deleteModalConfirmBtn').setAttribute('href', targetUrl);
+                    }
+                    if (targetMessage) {
+                        document.getElementById('deleteModalMessage').textContent = targetMessage;
+                    }
+                });
+            }
         }
-    });
+
+        // Run on initial load
+        document.addEventListener('DOMContentLoaded', setupDeleteModal);
+
+        // Run safely on HTMX swaps without duplicating
+        document.body.addEventListener('htmx:afterSettle', setupDeleteModal);
+    }
 </script>
