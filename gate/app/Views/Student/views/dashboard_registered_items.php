@@ -33,7 +33,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             <?php if (empty($items)): ?>
                 <div class="card border-0 shadow-sm w-100 rounded-4">
                     <div class="card-body p-5 text-center">
-                        <i class="ti ti-device-laptop d-block mb-3 text-muted" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <i class="ti ti-device-laptop d-block mb-3 text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
                         <h5 class="fw-bold text-dark">No Items Found</h5>
                         <p class="text-muted">You have no registered items yet.</p>
                     </div>

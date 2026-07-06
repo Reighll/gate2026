@@ -35,7 +35,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                     <?php if (empty($approvedItems)): ?>
                         <div class="text-center text-muted py-4">
-                            <i class="ti ti-device-laptop d-block mb-3 text-muted" style="font-size: 2rem; opacity: 0.5;"></i>
+                            <i class="ti ti-device-laptop d-block mb-3 text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
                             No active items available to unregister.
                         </div>
                     <?php else: ?>
