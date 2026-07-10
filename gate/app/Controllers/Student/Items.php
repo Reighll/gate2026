@@ -70,11 +70,11 @@ class Items extends BaseController
 
         // THE FIX: Set the flashdata and send a JSON success signal!
         if ($this->request->isAJAX()) {
-            session()->setFlashdata('success', 'Item registered successfully! Awaiting admin verification.');
+            session()->setFlashdata('success', 'Item registered successfully! Please proceed to the Administration Office for item verification to claim your RFID sticker.');
             return $this->response->setJSON(['status' => 'success']);
         }
 
-        return redirect()->to('student/dashboard')->with('success', 'Item registered successfully! Awaiting admin verification.');
+        return redirect()->to('student/dashboard')->with('success', 'Item registered successfully! Please proceed to the Administration Office for item verification to claim your RFID sticker.');
     }
 
     public function requestUnregister($id)
