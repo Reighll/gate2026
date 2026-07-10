@@ -99,7 +99,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                         $locIcon  = (isset($item['in_campus']) && $item['in_campus'] == 1) ? 'ti-building' : 'ti-building-off';
 
                                         if ($item['status'] !== 'approved') {
-                                            $locationText = 'Disabled';
+                                            $locationText = 'Outside';
                                             $locClass = 'btn-light text-muted border';
                                             $locIcon  = 'ti-ban';
                                         }
