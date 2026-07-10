@@ -194,8 +194,7 @@
                                     <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
                                         <?php
                                         // SINGLE ITEM LOGIC
-                                        $currentStatus = strtoupper($item['status'] ?? 'OUT');
-                                        $isTimeIn = ($currentStatus === 'OUT' || $currentStatus === 'OUTSIDE' || $currentStatus === 'UNKNOWN');
+                                        $isTimeIn = (isset($item['action_taken']) && $item['action_taken'] === 'TIME-IN');
                                         ?>
                                         <div class="mb-3">
                                             <?php if ($isTimeIn): ?>
@@ -234,9 +233,8 @@
                                         <div class="row align-items-center p-3 border rounded-3 bg-light shadow-sm mx-0">
                                             <div class="col-md-7 order-2 order-md-1 mt-3 mt-md-0">
                                                 <?php
-                                                // MULTIPLE ITEM LOGIC (Fixed!)
-                                                $currentStatus = strtoupper($item['status'] ?? 'OUT');
-                                                $isTimeIn = ($currentStatus === 'OUT' || $currentStatus === 'OUTSIDE' || $currentStatus === 'UNKNOWN');
+                                                // MULTIPLE ITEM LOGIC
+                                                $isTimeIn = (isset($item['action_taken']) && $item['action_taken'] === 'TIME-IN');
                                                 ?>
                                                 <div class="mb-2">
                                                     <?php if ($isTimeIn): ?>
