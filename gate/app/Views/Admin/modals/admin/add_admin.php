@@ -40,86 +40,85 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const btnGenerate = document.getElementById('modalBtnGenerateKey');
-        const inputKey = document.getElementById('modalGeneratedKey');
-        const btnCopy = document.getElementById('modalBtnCopyKey');
-        const alertContainer = document.getElementById('keyAlertContainer');
+    // Using Event Delegation so this works perfectly with HTMX!
+    document.addEventListener('click', function(e) {
 
-        // Helper function to show beautiful in-modal alerts
-        function showModalAlert(message, type) {
-            alertContainer.innerHTML = `
-            <div class="alert alert-${type} text-start small p-2 mb-3 fw-medium d-flex align-items-center">
-                <i class="ti ti-info-circle me-2 fs-5"></i> ${message}
-            </div>
-        `;
-        }
-
+        // 1. GENERATE KEY BUTTON LOGIC
+        const btnGenerate = e.target.closest('#modalBtnGenerateKey');
         if (btnGenerate) {
-            btnGenerate.addEventListener('click', function() {
+            const inputKey = document.getElementById('modalGeneratedKey');
+            const alertContainer = document.getElementById('keyAlertContainer');
 
-                // Clear previous alerts
-                alertContainer.innerHTML = '';
+            // Clear previous alerts
+            alertContainer.innerHTML = '';
 
-                // Show loading state on the button
-                const originalText = btnGenerate.innerHTML;
-                btnGenerate.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating...';
-                btnGenerate.disabled = true;
+            // Show loading state on the button
+            const originalText = btnGenerate.innerHTML;
+            btnGenerate.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating...';
+            btnGenerate.disabled = true;
 
-                // Fetch the key from the server
-                fetch('<?= base_url('admin/users/generate-admin-key') ?>', {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+            // Fetch the key from the server
+            fetch('<?= base_url('admin/users/generate-admin-key') ?>', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        inputKey.value = data.key;
+                        alertContainer.innerHTML = `
+                        <div class="alert alert-success text-start small p-2 mb-3 fw-medium d-flex align-items-center">
+                            <i class="ti ti-info-circle me-2 fs-5"></i> Key generated successfully! Copy and send it to the new admin.
+                        </div>`;
+                    } else {
+                        alertContainer.innerHTML = `
+                        <div class="alert alert-danger text-start small p-2 mb-3 fw-medium d-flex align-items-center">
+                            <i class="ti ti-alert-triangle me-2 fs-5"></i> Error: ${data.message}
+                        </div>`;
                     }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            inputKey.value = data.key;
-                            showModalAlert('Key generated successfully! Copy and send it to the new admin.', 'success');
-                        } else {
-                            showModalAlert('Error: ' + data.message, 'danger');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showModalAlert('Something went wrong. Please check your connection.', 'danger');
-                    })
-                    .finally(() => {
-                        // Restore the button state
-                        btnGenerate.innerHTML = originalText;
-                        btnGenerate.disabled = false;
-                    });
-            });
+                .catch(error => {
+                    console.error('Error:', error);
+                    alertContainer.innerHTML = `
+                    <div class="alert alert-danger text-start small p-2 mb-3 fw-medium d-flex align-items-center">
+                        <i class="ti ti-alert-triangle me-2 fs-5"></i> Something went wrong. Please check your connection.
+                    </div>`;
+                })
+                .finally(() => {
+                    // Restore the button state
+                    btnGenerate.innerHTML = originalText;
+                    btnGenerate.disabled = false;
+                });
         }
 
+        // 2. COPY BUTTON LOGIC
+        const btnCopy = e.target.closest('#modalBtnCopyKey');
         if (btnCopy) {
-            btnCopy.addEventListener('click', function() {
-                if (!inputKey.value) return;
+            const inputKey = document.getElementById('modalGeneratedKey');
+            if (!inputKey.value) return;
 
-                // Copy the text
-                inputKey.select();
-                document.execCommand('copy');
+            // Copy the text
+            inputKey.select();
+            document.execCommand('copy');
 
-                // Visual feedback
-                const originalIcon = this.innerHTML;
-                this.innerHTML = '<i class="ti ti-check fs-5 text-success"></i>';
-                setTimeout(() => {
-                    this.innerHTML = originalIcon;
-                }, 2000);
-            });
+            // Visual feedback
+            const originalIcon = btnCopy.innerHTML;
+            btnCopy.innerHTML = '<i class="ti ti-check fs-5 text-success"></i>';
+            setTimeout(() => {
+                btnCopy.innerHTML = originalIcon;
+            }, 2000);
         }
+    });
 
-        // Clear the input and alerts when the modal is closed so it's fresh next time
-        const adminModalEl = document.getElementById('addAdminModal');
-        if(adminModalEl) {
-            adminModalEl.addEventListener('hidden.bs.modal', function () {
-                inputKey.value = '';
-                alertContainer.innerHTML = '';
-            });
+    // 3. CLEAR MODAL ON CLOSE LOGIC (Also attached to document)
+    document.addEventListener('hidden.bs.modal', function (e) {
+        if (e.target.id === 'addAdminModal') {
+            document.getElementById('modalGeneratedKey').value = '';
+            document.getElementById('keyAlertContainer').innerHTML = '';
         }
     });
 </script>

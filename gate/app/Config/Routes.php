@@ -69,6 +69,7 @@ $routes->group('admin', static function ($routes) {
 
     // Item Reports Routes
     $routes->get('item-reports', 'Admin\ItemReports::index');
+    $routes->post('item-reports/approve/(:num)', 'Admin\ItemReports::approve/$1');
     $routes->post('item-reports/resolve/(:num)', 'Admin\ItemReports::resolve/$1');
     // Admin Profile Route
     $routes->get('profile', 'Admin\Profile::index', ['filter' => 'authGuard']);
@@ -124,7 +125,7 @@ $routes->group('student', function($routes) {
 
     // Item Management Actions (POST/Logic)
     $routes->post('items/store', 'Student\Items::store');
-    $routes->get('items/request-unregister/(:num)', 'Student\Items::requestUnregister/$1');
+    $routes->post('items/request-unregister/(:num)', 'Student\Items::requestUnregister/$1');
     $routes->post('items/report', 'Student\Items::report');
     $routes->get('items/mark-found/(:num)', 'Student\Items::markFound/$1');
 });

@@ -60,8 +60,13 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-semibold" for="details">Incident Details</label>
-                        <textarea class="form-control bg-light" id="details" name="details" rows="3" placeholder="Provide more information..." required></textarea>
+                        <label class="form-label fw-semibold" for="notes">Notes</label>
+                        <textarea class="form-control bg-light"
+                                  id="notes"
+                                  name="notes"
+                                  rows="3"
+                                  placeholder="Briefly explain incident details, item colors, specific signs, or other info that might help..."
+                                  required></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-warning w-100 py-2 text-dark fw-bold shadow-sm rounded-3">Submit Report to Guards</button>
