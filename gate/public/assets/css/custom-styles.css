@@ -39,6 +39,17 @@ ng-fix {
     }
 }
 /* ==========================================
+   TABLET FIX (769px - 991px)
+   ========================================== */
+@media (min-width: 769px) and (max-width: 991.98px) {
+    /* styles.min.css drops .app-header to top: 131px at this range,
+       creating a gap under the banner. Pin it back to 65px so it
+       stays flush, matching desktop. */
+    .app-header {
+        top: 65px !important;
+    }
+}
+/* ==========================================
    MOBILE SIDEBAR OVERLAY FIX
    ========================================== */
 @media (max-width: 1199px) {
