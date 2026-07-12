@@ -125,12 +125,47 @@
                                             <td data-label="Item Name" class="py-3 text-muted"><?= esc($req['name'] ?? $req['item_name'] ?? 'Unknown Item') ?></td>
                                             <td data-label="Serial Number" class="py-3 text-muted"><?= esc($req['serial_number'] ?? 'N/A') ?></td>
                                             <td data-label="Action" class="py-3">
-                                                <div class="d-flex gap-2">
-                                                    <a href="<?= base_url('admin/items/process/approve_unregister/' . $req['id']) ?>" class="btn btn-sm btn-success rounded-pill px-3 fw-bold shadow-sm" style="background-color: #39cb7f; border: none;">Approve</a>
-                                                    <a href="<?= base_url('admin/items/process/deny_unregister/' . $req['id']) ?>" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" style="background-color: #e46a76; border: none;">Deny</a>
-                                                </div>
+                                                <button class="btn btn-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#viewUnregisterModal<?= $req['id'] ?>">VIEW</button>
                                             </td>
                                         </tr>
+
+                                        <!-- Modal: Unregistration Request -->
+                                        <div class="modal fade" id="viewUnregisterModal<?= $req['id'] ?>" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                <div class="modal-content border-0 rounded-4 shadow">
+                                                    <div class="modal-body p-4">
+                                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                                            <h5 class="fw-bold mb-0">REPORT TYPE- <span class="text-warning-dark">REQUEST FOR UNREGISTRATION</span></h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="row align-items-center">
+                                                            <div class="col-md-7">
+                                                                <p class="mb-2 fs-5"><?= esc($req['name'] ?? $req['item_name'] ?? 'Unknown Item') ?></p>
+                                                                <?php if (!empty($req['category'])): ?>
+                                                                    <p class="mb-3 text-muted"><?= esc($req['category']) ?></p>
+                                                                <?php endif; ?>
+                                                                <h6 class="fw-bold">Reason for Unregistration:</h6>
+                                                                <div class="bg-light rounded-3 p-3 text-muted fst-italic">
+                                                                    <?= !empty($req['reason']) ? esc($req['reason']) : 'No reason provided.' ?>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-5 text-center mt-4 mt-md-0">
+                                                                <?php if (!empty($req['photo'])): ?>
+                                                                    <img src="<?= base_url('uploads/items/' . esc($req['photo'])) ?>" class="img-fluid rounded-3" alt="Item image">
+                                                                <?php else: ?>
+                                                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height:180px;">
+                                                                        <i class="ti ti-photo fs-1 text-muted"></i>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-0 justify-content-center pb-4 gap-2">
+                                                        <a href="<?= base_url('admin/items/process/approve_unregister/' . $req['id']) ?>" class="btn px-4 py-2 rounded-pill fw-semibold text-white" style="background-color: #39cb7f; border: none;">APPROVE</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     <?php endforeach; ?>
                                     </tbody>
                                 </table>
@@ -139,139 +174,132 @@
                     </div>
                 <?php endif; ?>
 
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-
-                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                            <h5 class="fw-bold text-dark mb-0"><i class="ti ti-device-laptop me-2 text-primary"></i> Master Equipment List</h5>
-                            <div class="input-group shadow-sm" style="max-width: 350px;">
-                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="ti ti-search"></i></span>
-                                <input type="text" id="itemSearch" class="form-control border-start-0 ps-0" placeholder="Search by TUPT ID or Name...">
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table align-middle text-nowrap mb-0 border-light" id="itemsTable">
-                                <thead style="border-bottom: 2px solid #f0f0f0;">
-                                <tr>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">ID</th>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Student Name</th>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Student Number</th>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Photo</th>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Item Name</th>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Serial/Brand</th>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">RFID/NFC Tag</th>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Status</th>
-                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Actions</th>
-                                </tr>
-                                </thead>
-
-                                <tbody class="skeleton-wrapper">
-                                <?php for($i=0; $i<5; $i++): ?>
-                                    <tr>
-                                        <td><div class="skeleton skeleton-text w-50 mb-0"></div></td>
-                                        <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
-                                        <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
-                                        <td><div class="skeleton rounded-3" style="width: 45px; height: 45px;"></div></td>
-                                        <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
-                                        <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
-                                        <td><div class="skeleton skeleton-badge rounded-1" style="width: 80px; height: 26px;"></div></td>
-                                        <td><div class="skeleton skeleton-badge rounded-1" style="width: 70px; height: 26px;"></div></td>
-                                        <td><div class="skeleton skeleton-badge rounded-2" style="width: 85px; height: 30px;"></div></td>
-                                    </tr>
-                                <?php endfor; ?>
-                                </tbody>
-
-                                <tbody class="real-wrapper d-none">
-                                <?php if (empty($items)) : ?>
-                                    <tr class="no-data-row">
-                                        <td colspan="9" class="text-center py-5 text-muted">No items found in the system.</td>
-                                    </tr>
-                                <?php else : ?>
-                                    <?php foreach ($items as $item) : ?>
-                                        <tr style="border-bottom: 1px solid #f6f6f6;">
-                                            <td data-label="ID" class="py-3 text-muted"><?= $item['id'] ?></td>
-                                            <td data-label="Student Name" class="py-3 text-muted"><?= esc($item['first_name'] . ' ' . $item['last_name']) ?></td>
-                                            <td data-label="Student Number" class="py-3 text-muted"><?= esc($item['student_number'] ?? 'N/A') ?></td>
-                                            <td data-label="Photo" class="py-3">
-                                                <?php if (!empty($item['photo'])): ?>
-                                                    <a href="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" target="_blank" title="Click to view full image">
-                                                        <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="rounded-3 shadow-sm border border-light" width="45" height="45" style="object-fit: cover;">
-                                                    </a>
-                                                <?php else: ?>
-                                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px;">
-                                                        <i class="ti ti-device-laptop text-muted fs-5"></i>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td data-label="Item Name" class="py-3 text-muted"><?= esc($item['name'] ?? $item['item_name'] ?? 'Unknown Item') ?></td>
-                                            <td data-label="Serial/Brand" class="py-3 text-muted"><?= esc($item['serial_number'] ?? 'N/A') ?></td>
-                                            <td data-label="RFID/NFC Tag" class="py-3">
-                                                <?php if (!empty($item['rfid'])): ?>
-                                                    <span class="badge rounded-1 shadow-sm px-3 py-2 fw-bold text-white" style="background-color: #1fc2ff; font-size: 0.8rem;">
-                    <?= esc($item['rfid']) ?>
-                </span>
-                                                <?php else: ?>
-                                                    <span class="text-muted small">Not Assigned</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td data-label="Status" class="py-3">
-                                                <?php
-                                                $badgeStyle = 'background-color: #6c757d;'; // secondary
-                                                if ($item['status'] === 'approved') $badgeStyle = 'background-color: #39cb7f;'; // success green
-                                                if ($item['status'] === 'pending') $badgeStyle = 'background-color: #ffae1f; color: #fff;'; // warning orange
-                                                if ($item['status'] === 'rejected') $badgeStyle = 'background-color: #e46a76;'; // danger red
-                                                if ($item['status'] === 'inactive') $badgeStyle = 'background-color: #2a3547;'; // dark
-                                                if ($item['status'] === 'unregister requested') $badgeStyle = 'background-color: #ffae1f; color: #fff;';
-                                                ?>
-                                                <span class="badge rounded-1 shadow-sm px-3 py-2 fw-bold" style="<?= $badgeStyle ?> font-size: 0.8rem;">
-                <?= ucfirst(esc($item['status'])) ?>
-            </span>
-                                            </td>
-                                            <td data-label="Actions" class="py-3">
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-primary bg-white shadow-sm dropdown-toggle fw-semibold rounded-2 px-3 py-1" style="border-color: #5d87ff; color: #5d87ff;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        Actions
-                                                    </button>
-                                                    <ul class="dropdown-menu custom-dropdown shadow-lg border-0 rounded-4 p-2">
-                                                        <li>
-                                                            <button type="button" class="dropdown-item approve-item py-2" data-bs-toggle="modal" data-bs-target="#approveModal<?= $item['id'] ?>">
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="icon-box bg-light-success text-success me-3"><i class="ti ti-check"></i></div>
-                                                                    <span class="fw-semibold">Approve & Assign</span>
-                                                                </div>
-                                                            </button>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-item reject-item py-2" href="<?= base_url('admin/items/process/reject/' . $item['id']) ?>">
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="icon-box bg-light-warning text-warning me-3"><i class="ti ti-x"></i></div>
-                                                                    <span class="fw-semibold">Reject Request</span>
-                                                                </div>
-                                                            </a>
-                                                        </li>
-                                                        <li><hr class="dropdown-divider border-light my-2"></li>
-                                                        <li>
-                                                            <a class="dropdown-item delete-item py-2" href="javascript:void(0)"
-                                                               data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
-                                                               data-bs-url="<?= base_url('admin/items/process/delete/' . $item['id']) ?>"
-                                                               data-bs-message="Are you sure you want to completely delete this item record?">
-                                                                <div class="d-flex align-items-center">
-                                                                    <div class="icon-box bg-light-danger text-danger me-3"><i class="ti ti-trash"></i></div>
-                                                                    <span class="fw-semibold">Hard Delete</span>
-                                                                </div>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                                </tbody>
-                            </table>
+                <div class="table-container-fixed">
+                    <div class="equipment-list-toolbar d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                        <h5 class="fw-bold text-dark mb-0"><i class="ti ti-device-laptop me-2 text-primary"></i> Master Equipment List</h5>
+                        <div class="input-group shadow-sm" style="max-width: 350px;">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="ti ti-search"></i></span>
+                            <input type="text" id="itemSearch" class="form-control border-start-0 ps-0" placeholder="Search by TUPT ID or Name...">
                         </div>
                     </div>
+
+                    <table class="table align-middle mb-0 border-light" id="itemsTable" style="table-layout: fixed; width: 100%;">
+                        <thead style="border-bottom: 2px solid #f0f0f0;">
+                        <tr>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">ID</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Student Name</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Student Number</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Photo</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Item Name</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Serial/Brand</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">RFID</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Status</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody class="skeleton-wrapper">
+                        <?php for($i=0; $i<5; $i++): ?>
+                            <tr>
+                                <td><div class="skeleton skeleton-text w-50 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
+                                <td><div class="skeleton rounded-3" style="width: 45px; height: 45px;"></div></td>
+                                <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-badge rounded-1" style="width: 80px; height: 26px;"></div></td>
+                                <td><div class="skeleton skeleton-badge rounded-1" style="width: 70px; height: 26px;"></div></td>
+                                <td><div class="skeleton skeleton-badge rounded-2" style="width: 85px; height: 30px;"></div></td>
+                            </tr>
+                        <?php endfor; ?>
+                        </tbody>
+
+                        <tbody class="real-wrapper d-none">
+                        <?php if (empty($items)) : ?>
+                            <tr class="no-data-row">
+                                <td colspan="9" class="text-center py-5 text-muted">No items found in the system.</td>
+                            </tr>
+                        <?php else : ?>
+                            <?php foreach ($items as $item) : ?>
+                                <tr style="border-bottom: 1px solid #f6f6f6;">
+                                    <td data-label="ID" class="py-3 text-muted"><?= $item['id'] ?></td>
+                                    <td data-label="Student Name" class="py-3 text-muted"><?= esc($item['first_name'] . ' ' . $item['last_name']) ?></td>
+                                    <td data-label="Student Number" class="py-3 text-muted"><?= esc($item['student_number'] ?? 'N/A') ?></td>
+                                    <td data-label="Photo" class="py-3">
+                                        <?php if (!empty($item['photo'])): ?>
+                                            <a href="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" target="_blank" title="Click to view full image">
+                                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="rounded-3 shadow-sm border border-light" width="45" height="45" style="object-fit: cover;">
+                                            </a>
+                                        <?php else: ?>
+                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px;">
+                                                <i class="ti ti-device-laptop text-muted fs-5"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td data-label="Item Name" class="py-3 text-muted"><?= esc($item['brand_model'] ?? $item['name'] ?? $item['item_name'] ?? 'Unknown Item') ?></td>
+                                    <td data-label="Serial/Brand" class="py-3 text-muted"><?= esc($item['serial_number'] ?? 'N/A') ?></td>
+                                    <td data-label="RFID" class="py-3">
+                                        <?php if (!empty($item['rfid'])): ?>
+                                            <span class="badge rounded-1 shadow-sm px-3 py-2 fw-bold text-white" style="background-color: #1fc2ff; font-size: 0.8rem;" title="<?= esc($item['rfid']) ?>">Assigned</span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">Not Assigned</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td data-label="Status" class="py-3">
+                                        <?php
+                                        $badgeStyle = 'background-color: #6c757d;';
+                                        if ($item['status'] === 'approved') $badgeStyle = 'background-color: #39cb7f;';
+                                        if ($item['status'] === 'pending') $badgeStyle = 'background-color: #ffae1f; color: #fff;';
+                                        if ($item['status'] === 'rejected') $badgeStyle = 'background-color: #e46a76;';
+                                        if ($item['status'] === 'inactive') $badgeStyle = 'background-color: #2a3547;';
+                                        if ($item['status'] === 'unregister requested') $badgeStyle = 'background-color: #ffae1f; color: #fff;';
+                                        ?>
+                                        <span class="badge rounded-1 shadow-sm px-3 py-2 fw-bold" style="<?= $badgeStyle ?> font-size: 0.8rem;">
+                                            <?= ucfirst(esc($item['status'])) ?>
+                                        </span>
+                                    </td>
+                                    <td data-label="Actions" class="py-3">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-primary bg-white shadow-sm dropdown-toggle fw-semibold rounded-2 px-3 py-1" style="border-color: #5d87ff; color: #5d87ff;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu custom-dropdown shadow-lg border-0 rounded-4 p-2">
+                                                <li>
+                                                    <button type="button" class="dropdown-item approve-item py-2" data-bs-toggle="modal" data-bs-target="#approveModal<?= $item['id'] ?>">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="icon-box bg-light-success text-success me-3"><i class="ti ti-check"></i></div>
+                                                            <span class="fw-semibold">Approve & Assign</span>
+                                                        </div>
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item reject-item py-2" href="<?= base_url('admin/items/process/reject/' . $item['id']) ?>">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="icon-box bg-light-warning text-warning me-3"><i class="ti ti-x"></i></div>
+                                                            <span class="fw-semibold">Reject Request</span>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider border-light my-2"></li>
+                                                <li>
+                                                    <a class="dropdown-item delete-item py-2" href="javascript:void(0)"
+                                                       data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                                       data-bs-url="<?= base_url('admin/items/process/delete/' . $item['id']) ?>"
+                                                       data-bs-message="Are you sure you want to completely delete this item record?">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="icon-box bg-light-danger text-danger me-3"><i class="ti ti-trash"></i></div>
+                                                            <span class="fw-semibold">Hard Delete</span>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
