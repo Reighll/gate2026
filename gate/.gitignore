@@ -125,3 +125,12 @@ _modules/*
 
 /results/
 /phpunit*.xml
+
+# Ignore all uploaded profile images
+public/uploads/profiles/*
+
+# But keep the default image
+!public/uploads/profiles/default.png
+
+# Keep the folder tracked in git (optional, since git doesn't track empty folders)
+!public/uploads/profiles/.gitkeep
