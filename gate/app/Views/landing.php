@@ -1,15 +1,22 @@
+<?php
+
+// Determine which portals have an active session, so the utility bar can adapt.
+$studentActive = (bool) session()->get('student_logged_in');
+$guardActive = (bool) session()->get('guard_logged_in');
+$adminActive = (bool) session()->get('admin_logged_in');
+?>
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome | Gate System</title>
+    <title>GATE | Item Protection System</title>
 
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
-
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/icons/tabler-icons/tabler-icons.css') ?>" />
     <link rel="manifest" href="/manifest.json">
+
     <script>
         // Check if dark mode was enabled inside the system and apply it instantly
         // (Adjust 'theme' to whatever key your dashboard toggle uses in localStorage)
@@ -20,215 +27,415 @@
     </script>
 
     <style>
-        /* Modern Soft Background (Light Mode) */
-        .landing-bg {
-            background: radial-gradient(circle at 10% 20%, #ffffff 0%, #e6eff7 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* ============== UTILITY BAR (untouched) ============== */
+        .utility-bar {
+            background: #11142d;
+            color: #a1aab2;
+            font-size: 0.8rem;
+            padding: 6px 5%;
+            position: relative;
+            z-index: 6;
+        }
+        .utility-bar .utility-time { font-weight: 500; color: #f1f9ff; }
+        .utility-bar a { color: #a1aab2; text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
+        .utility-bar a:hover { color: #8bb4fa; }
+        .utility-bar .divider { color: #4f5467; }
+
+        html, body { margin: 0; padding: 0; overflow-x: hidden; }
+
+        /* ============== HERO SECTION ============== */
+        .hero-section {
+            background: radial-gradient(circle at 50% 0%, #eef3ff 0%, #f7f9fc 55%, #ffffff 100%);
+            min-height: calc(88vh - 33px);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden;
+            position: relative;
+            overflow: hidden;
             transition: background 0.3s ease;
         }
 
-        /* Dark Mode: Landing Background */
-        html[data-bs-theme="dark"] .landing-bg {
-            background: radial-gradient(circle at 10% 20%, #11142d 0%, #1b2e38 100%);
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(#c9d6ee 1px, transparent 1px);
+            background-size: 26px 26px;
+            -webkit-mask-image: radial-gradient(circle at 50% 25%, #000 0%, transparent 65%);
+            mask-image: radial-gradient(circle at 50% 25%, #000 0%, transparent 65%);
+            opacity: 0.55;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        /* Floating Interactive Cards */
-        .portal-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid #eef2f6;
-            border-radius: 24px;
-            padding: 3rem 2rem;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-            position: relative;
-            z-index: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+        html[data-bs-theme="dark"] .hero-section {
+            background: radial-gradient(circle at 50% 0%, #1b2e38 0%, #11142d 55%, #0d0f22 100%);
+        }
+        html[data-bs-theme="dark"] .hero-section::before {
+            background-image: radial-gradient(#2c3a55 1px, transparent 1px);
+            opacity: 0.4;
         }
 
-        /* Dark Mode: Portal Cards */
-        html[data-bs-theme="dark"] .portal-card {
-            background: rgba(34, 54, 64, 0.85); /* Dark Navy Glass */
-            border-color: #4f5467;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        /* ============== HERO CONTENT ============== */
+        .hero-content { padding: 110px 20px 160px; text-align: center; position: relative; z-index: 3; }
+
+        .hero-content h1 {
+            font-size: clamp(2.1rem, 5vw, 3.4rem);
+            font-weight: 800;
+            line-height: 1.14;
+            letter-spacing: -0.5px;
+            color: #2a3547;
+            margin-bottom: 18px;
+            transition: color 0.3s ease;
+            opacity: 0;
+            animation: fadeSlideUp 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .hero-content h1 .accent {
+            background: linear-gradient(90deg, #5d87ff, #8bb4fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
-        html[data-bs-theme="dark"] .portal-card h3,
-        html[data-bs-theme="dark"] h1 {
-            color: #f1f9ff !important;
+        html[data-bs-theme="dark"] .hero-content h1 { color: #f1f9ff; }
+        html[data-bs-theme="dark"] .hero-content h1 .accent {
+            background: linear-gradient(90deg, #8bb4fa, #5d87ff);
+            -webkit-background-clip: text;
+            background-clip: text;
         }
 
-        /* Hover Effects */
-        .portal-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 20px 40px rgba(93, 135, 255, 0.15);
-            border-color: #5d87ff;
+        .hero-subtext {
+            max-width: 480px;
+            margin: 0 auto 32px;
+            color: #5a6a85;
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0;
+            animation: fadeSlideUp 0.7s 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        html[data-bs-theme="dark"] .hero-subtext { color: #a1aab2; }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        html[data-bs-theme="dark"] .portal-card:hover {
-            box-shadow: 0 20px 40px rgba(139, 180, 250, 0.15);
-            border-color: #8bb4fa;
-        }
-
-        .portal-card:hover .btn-go {
-            background-color: #5d87ff;
-            color: #ffffff;
-            border-color: #5d87ff;
-        }
-
-        /* Dark Mode: Hover Button */
-        html[data-bs-theme="dark"] .portal-card:hover .btn-go {
-            background-color: #8bb4fa;
-            color: #11142d;
-            border-color: #8bb4fa;
-        }
-
-        /* Icon Wrapper Styles */
-        .icon-box {
-            width: 80px;
-            height: 80px;
+        /* ============== FLOATING ICON BADGES ============== */
+        .floating-icons { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+        .float-badge {
+            position: absolute;
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 20px;
-            margin: 0 auto 1.5rem;
-            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            color: #fff;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            animation: floatY 4.5s ease-in-out infinite;
         }
-
-        /* Distinct Colors for each Role */
-        .role-student .icon-box { background: rgba(93, 135, 255, 0.1); color: #5d87ff; }
-        .role-guard .icon-box { background: rgba(19, 222, 185, 0.1); color: #13deb9; }
-        .role-admin .icon-box { background: rgba(42, 53, 71, 0.1); color: #2a3547; }
-
-        html[data-bs-theme="dark"] .role-admin .icon-box { color: #f1f9ff; background: rgba(241, 249, 255, 0.1); }
-
-        .portal-card:hover .icon-box {
-            transform: scale(1.1) rotate(5deg);
+        .float-badge::after {
+            content: "";
+            position: absolute;
+            inset: -6px;
+            border-radius: 22px;
+            border: 1px solid currentColor;
+            opacity: 0.15;
         }
-
-        /* Go Button Base Style */
-        .btn-go {
-            margin-top: auto;
-            border: 2px solid #eef2f6;
-            color: #5a6a85;
-            font-weight: 700;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            width: 100%;
+        @keyframes floatY {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-16px); }
         }
+        .fb-1 { top: 10%; left: 10%; background: #5d87ff; animation-delay: 0s; }
+        .fb-3 { top: 16%; right: 10%; background: #2a3547; animation-delay: 1.1s; }
+        .fb-4 { top: 38%; left: 5%; background: #ffae1f; animation-delay: 1.6s; width:50px; height:50px; font-size:1.3rem; }
+        .fb-5 { top: 40%; right: 5%; background: #fc4b6c; animation-delay: 0.3s; width:50px; height:50px; font-size:1.3rem; }
+        .fb-6 { bottom: 40%; left: 12%; background: #8bb4fa; animation-delay: 2.1s; width:44px; height:44px; font-size:1.1rem; }
+        .fb-7 { bottom: 38%; right: 14%; background: #13deb9; animation-delay: 1.8s; }
 
-        html[data-bs-theme="dark"] .btn-go {
-            border-color: #4f5467;
-            color: #a1aab2;
-        }
+        html[data-bs-theme="dark"] .float-badge { box-shadow: 0 12px 24px rgba(0,0,0,0.35); }
 
-        /* Slide Up Animations */
-        .animate-up {
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        /* ============== 3D LAPTOP — PEEKING FROM BOTTOM ============== */
+        .laptop-peek-wrap {
+            position: absolute;
+            bottom: -160px;
+            left: 50%;
+            width: min(820px, 94vw);
+            z-index: 1;
+            pointer-events: none;
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateX(-50%) perspective(1800px) rotateX(10deg);
+            transform-origin: bottom center;
+            animation: laptopRiseUp 1s 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
+        @keyframes laptopRiseUp {
+            from { opacity: 0; transform: translateX(-50%) perspective(1800px) rotateX(10deg) translateY(40px); }
+            to { opacity: 1; transform: translateX(-50%) perspective(1800px) rotateX(10deg) translateY(0); }
+        }
 
-        @keyframes slideUpFade {
-            to { opacity: 1; transform: translateY(0); }
+        /* Ground shadow beneath the laptop for depth */
+        .laptop-peek-wrap::after {
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 78%;
+            height: 50px;
+            background: radial-gradient(ellipse at center, rgba(17,20,45,0.30) 0%, transparent 70%);
+            filter: blur(5px);
+            z-index: -1;
+        }
+
+        /* --- Screen / lid --- */
+        .laptop-screen {
+            width: 100%;
+            aspect-ratio: 16 / 10.4;
+            background: #0d0f22;
+            border-radius: 20px 20px 5px 5px;
+            padding: 16px 16px 10px;
+            position: relative;
+            box-shadow:
+                    0 60px 90px -20px rgba(17,20,45,0.45),
+                    0 20px 40px rgba(17,20,45,0.22),
+                    inset 0 0 0 1px rgba(255,255,255,0.06);
+        }
+        .laptop-screen::before {
+            content: none;
+        }
+
+        .laptop-notch {
+            position: absolute;
+            top: 16px; /* aligns with laptop-screen's top padding, so it sits right at the display's top edge */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 20px;
+            background: #0d0f22;
+            border-radius: 0 0 10px 10px;
+            z-index: 4;
+        }
+        .laptop-notch::after {
+            /* camera dot inside the notch */
+            content: "";
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #2a3547;
+            box-shadow: 0 0 0 1.5px rgba(255,255,255,0.05);
+        }
+        /* diagonal glass highlight */
+        .laptop-screen .glass-sheen {
+            position: absolute;
+            inset: 16px 16px 10px;
+            border-radius: 8px;
+            background: linear-gradient(115deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 80%, rgba(255,255,255,0.05) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .laptop-display {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(150deg, #5d87ff 0%, #2a3547 100%);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+            padding: 22px 30px;
+        }
+
+        /* fake browser/app top bar inside the screen */
+        .laptop-display .app-topbar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 22px;
+            opacity: 0.8;
+        }
+        .laptop-display .app-topbar .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .laptop-display .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: auto;
+        }
+        .laptop-display .brand-row img { height: 32px; width: auto; }
+        .laptop-display .brand-row span { font-weight: 800; font-size: 1.1rem; }
+
+        .laptop-display .display-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: auto 0;
+        }
+        .laptop-center-logo {
+            width: 76px;
+            height: 76px;
+            flex-shrink: 0;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.15);
+        }
+        .laptop-center-logo img { width: 42px; height: 42px; object-fit: contain; }
+
+        .laptop-display .display-copy { text-align: left; }
+        .laptop-display .display-copy .app-name { font-weight: 800; font-size: 1.35rem; margin-bottom: 4px; }
+        .laptop-display .display-copy .app-sub { font-size: 0.85rem; opacity: 0.75; }
+
+        /* --- Base / keyboard deck --- */
+        .laptop-base {
+            width: 116%;
+            margin-left: -8%;
+            height: 22px;
+            background: linear-gradient(180deg, #1b1e38 0%, #11142d 100%);
+            border-radius: 0 0 14px 14px;
+            position: relative;
+            box-shadow: 0 30px 40px -10px rgba(17,20,45,0.4);
+        }
+        .laptop-base::before {
+            /* trackpad notch cut on the hinge edge */
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 6px;
+            background: #0d0f22;
+            border-radius: 0 0 8px 8px;
+        }
+
+        html[data-bs-theme="dark"] .laptop-screen,
+        html[data-bs-theme="dark"] .laptop-base { box-shadow: 0 60px 90px -20px rgba(0,0,0,0.55); }
+
+        @media (max-width: 767.98px) {
+            .float-badge { transform: scale(0.7); }
+            .laptop-peek-wrap { bottom: -140px; }
+            .laptop-display { padding: 16px 18px; }
+            .laptop-display .display-center { gap: 12px; }
+            .laptop-center-logo { width: 56px; height: 56px; }
+            .laptop-center-logo img { width: 32px; height: 32px; }
+            .laptop-display .display-copy .app-name { font-size: 1.05rem; }
+            .laptop-display .display-copy .app-sub { font-size: 0.72rem; }
         }
     </style>
 </head>
-<body class="landing-bg">
+<body>
 
-<div class="container py-5">
+<div class="utility-bar">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span class="utility-time" id="utilityClock"></span>
+        <div class="d-flex align-items-center gap-2">
+            <?php if ($studentActive): ?>
+                <a href="<?= base_url('student/dashboard') ?>">Student Dashboard</a>
+            <?php else: ?>
+                <a href="<?= base_url('student/login') ?>">GATE Student</a>
+            <?php endif; ?>
 
-    <div class="row justify-content-center mb-5 animate-up delay-1">
-        <div class="col-12 text-center">
-            <div class="d-flex align-items-center justify-content-center gap-3 mb-3">
-                <!-- Swapped the icon for the image here -->
-                <img src="<?= base_url('assets/images/logos/favicon.png') ?>" alt="Gatepass Logo" style="height: 3.5rem; width: auto;">
-                <h1 class="fw-bolder mb-0 display-5" style="letter-spacing: -1px; color: #2a3547;">
-                    <span class="text-primary">GA</span>TE
-                </h1>
+            <span class="divider">|</span>
+
+            <?php if ($guardActive): ?>
+                <a href="<?= base_url('guard/dashboard') ?>">Guard Dashboard</a>
+            <?php else: ?>
+                <a href="<?= base_url('guard/login') ?>">GATE Guard</a>
+            <?php endif; ?>
+
+            <span class="divider">|</span>
+
+            <?php if ($adminActive): ?>
+                <a href="<?= base_url('admin/dashboard') ?>">Admin Dashboard</a>
+            <?php else: ?>
+                <a href="<?= base_url('admin/login') ?>">GATE Admin</a>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<div class="hero-section">
+
+    <div class="floating-icons">
+        <div class="float-badge fb-1"><i class="ti ti-shield-check"></i></div>
+        <div class="float-badge fb-3"><i class="ti ti-scan"></i></div>
+        <div class="float-badge fb-4"><i class="ti ti-device-laptop"></i></div>
+        <div class="float-badge fb-5"><i class="ti ti-qrcode"></i></div>
+        <div class="float-badge fb-6"><i class="ti ti-cpu"></i></div>
+        <div class="float-badge fb-7"><i class="ti ti-lock"></i></div>
+    </div>
+
+    <div class="hero-content">
+
+        <h1>
+            Get Your Items<br>
+            Be Protected By<br>
+            <span class="accent">GATE</span>
+        </h1>
+
+        <p class="hero-subtext">
+            Register, verify, and track your belongings across campus with a single system built for your item security.
+        </p>
+
+    </div>
+
+    <!-- Big 3D laptop peeking from the bottom edge, cropped by hero-section overflow -->
+    <div class="laptop-peek-wrap">
+        <div class="laptop-screen">
+            <div class="laptop-notch"></div>
+            <div class="glass-sheen"></div>
+            <div class="laptop-display">
+                <div class="app-topbar">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+
+                <div class="brand-row">
+                    <img src="<?= base_url('assets/images/logos/favicon.png') ?>" alt="GATE Logo">
+                    <span>GATE</span>
+                </div>
+
+                <div class="display-center">
+                    <div class="laptop-center-logo">
+                        <img src="<?= base_url('assets/images/logos/favicon.png') ?>" alt="GATE">
+                    </div>
+                    <div class="display-copy">
+                        <div class="app-name">GATE</div>
+                        <div class="app-sub">Your items, scanned &amp; secure</div>
+                    </div>
+                </div>
             </div>
-            <p class="text-muted fs-5 fw-medium">Welcome! Please select your designated portal to continue.</p>
         </div>
-    </div>
-
-    <div class="row justify-content-center g-4" style="max-width: 1100px; margin: 0 auto;">
-
-        <div class="col-md-6 col-lg-4 animate-up delay-2">
-            <a href="<?= base_url('student/login') ?>" class="text-decoration-none">
-                <div class="portal-card role-student">
-                    <div class="icon-box">
-                        <i class="ti ti-backpack" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <h3 class="fw-bold mb-2 text-dark">Student</h3>
-                    <p class="text-muted mb-4 small">Register items, view your gate history, and manage your account details.</p>
-                    <span class="btn-go">Access Portal <i class="ti ti-arrow-right ms-1"></i></span>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-md-6 col-lg-4 animate-up delay-3">
-            <a href="<?= base_url('guard/login') ?>" class="text-decoration-none">
-                <div class="portal-card role-guard">
-                    <div class="icon-box">
-                        <i class="ti ti-scan" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <h3 class="fw-bold mb-2 text-dark">Security Guard</h3>
-                    <p class="text-muted mb-4 small">Monitor entryways, scan RFID gateways, and manually log campus visitors.</p>
-                    <span class="btn-go">Access Portal <i class="ti ti-arrow-right ms-1"></i></span>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-md-6 col-lg-4 animate-up delay-4">
-            <a href="<?= base_url('admin/login') ?>" class="text-decoration-none">
-                <div class="portal-card role-admin">
-                    <div class="icon-box">
-                        <i class="ti ti-settings" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <h3 class="fw-bold mb-2 text-dark">Administrator</h3>
-                    <p class="text-muted mb-4 small">Manage system users, view system-wide logs, and handle item reports.</p>
-                    <span class="btn-go">Access Portal <i class="ti ti-arrow-right ms-1"></i></span>
-                </div>
-            </a>
-        </div>
-
-    </div>
-
-    <div class="row mt-5 animate-up delay-4">
-        <div class="col-12 text-center">
-            <p class="text-muted small fw-medium">
-                &copy; <?= date('Y') ?> GATE System. All rights reserved.
-            </p>
-        </div>
+        <div class="laptop-base"></div>
     </div>
 
 </div>
 
-<script src="<?= base_url('assets/libs/jquery/dist/jquery.min.js') ?>"></script>
-<script src="<?= base_url('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') ?>"></script>
 <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('<?= base_url('sw.js') ?>')
-                .then(reg => console.log('Service Worker Registered'))
-                .catch(err => console.log('Service Worker Registration failed: ', err));
-        });
+    function updateUtilityClock() {
+        const el = document.getElementById('utilityClock');
+        if (!el) return;
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        el.textContent = now.toLocaleDateString('en-US', options);
     }
+    updateUtilityClock();
+    setInterval(updateUtilityClock, 1000);
 </script>
+
 </body>
 </html>
