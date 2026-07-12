@@ -1,7 +1,7 @@
 <?= $this->extend('Admin/layout/main') ?>
 <?= $this->section('title') ?>Item Reports | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h4 class="fw-semibold  mb-0">Reported Items & Flags</h4>
         </div>

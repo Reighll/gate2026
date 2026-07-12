@@ -2,7 +2,7 @@
 <?= $this->section('title') ?>Registered Items | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
         <div class="row">
             <div class="col-12">
 
@@ -176,7 +176,7 @@
 
                 <div class="table-container-fixed">
                     <div class="equipment-list-toolbar d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                        <h5 class="fw-bold text-dark mb-0"><i class="ti ti-device-laptop me-2 text-primary"></i> Master Equipment List</h5>
+                        <h5 class="fw-bold text-dark mb-0"><span class="px-2"></span><i class="ti ti-device-laptop me-2 text-primary"></i> Master Equipment List</h5>
                         <div class="input-group shadow-sm" style="max-width: 350px;">
                             <span class="input-group-text bg-white border-end-0 text-muted"><i class="ti ti-search"></i></span>
                             <input type="text" id="itemSearch" class="form-control border-start-0 ps-0" placeholder="Search by TUPT ID or Name...">

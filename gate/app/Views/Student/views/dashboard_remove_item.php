@@ -5,7 +5,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 <?= $this->section('title') ?>Remove Item | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
         <h4 class="fw-semibold mb-3">Item Unregistration</h4>
 
         <div id="alertContainer"></div>

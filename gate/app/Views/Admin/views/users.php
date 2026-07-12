@@ -2,7 +2,7 @@
 <?= $this->section('title') ?>User Management | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
         <div class="col-lg-12">
             <div class="card w-100 border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">

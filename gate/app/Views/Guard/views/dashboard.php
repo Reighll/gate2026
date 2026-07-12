@@ -1,4 +1,7 @@
-<?= $this->extend('Guard/layout/main') ?>
+<?php
+$layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'Guard/layout/main';
+?>
+<?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Scanner | Guard Portal<?= $this->endSection() ?>
 <?= $this->section('styles') ?>
     <link rel="stylesheet" href="<?= base_url('assets/css/guard/guard-dashboard.css') ?>" />
@@ -6,8 +9,7 @@
 
 <?= $this->section('content') ?>
 
-    <div class="mt-5 pt-5 d-flex flex-column gap-3">
-
+    <div id="dashboard-container" class="page-transition-container mt-5 pt-5 d-flex flex-column gap-3 page-slide-in">
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
                 <i class="ti ti-check-circle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('success') ?></span>

@@ -5,6 +5,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $this->renderSection('title') ?? 'Student Portal | GATE System' ?></title>
+
+    <style>
+        #initial-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4f6fb;
+        }
+        html[data-bs-theme="dark"] #initial-loader {
+            background: #11142d;
+        }
+        #initial-loader .ring {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid rgba(93, 135, 255, 0.25);
+            border-top-color: #5d87ff;
+            animation: il-spin 0.9s linear infinite;
+        }
+        @keyframes il-spin { to { transform: rotate(360deg); } }
+        body.page-ready #initial-loader { display: none; }
+    </style>
+
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/student.css') ?>" />
@@ -30,8 +56,8 @@
         }
     </style>
 </head>
-
 <body>
+<div id="initial-loader"><div class="ring"></div></div>
 <div class="fixed-top-banner">
     <?= $this->include('Student/partials/navbar') ?>
 </div>
@@ -64,6 +90,7 @@
 <script src="<?= base_url('assets/libs/simplebar/dist/simplebar.js') ?>"></script>
 <script src="<?= base_url('assets/js/student/student.js') ?>"></script>
 <script src="<?= base_url('assets/js/theme.js') ?>"></script>
+<script src="<?= base_url('assets/js/initial-loader.js') ?>"></script>
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -77,6 +104,24 @@
         evt.detail.headers['Pragma'] = 'no-cache';
         evt.detail.headers['Expires'] = '0';
     });
+    function updateNavProfileVisibility() {
+        const navProfileItem = document.getElementById('navProfileItem');
+        if (!navProfileItem) return;
+        const onProfilePage = window.location.pathname.includes('/profile');
+        navProfileItem.classList.toggle('d-none', onProfilePage);
+        navProfileItem.classList.toggle('d-flex', !onProfilePage);
+    }
+
+    function hideMySkeletons() {
+        setTimeout(() => {
+            document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+            document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+        }, 600);
+    }
+
+    document.addEventListener('DOMContentLoaded', updateNavProfileVisibility);
+    document.addEventListener('DOMContentLoaded', hideMySkeletons);
+
     document.body.addEventListener('htmx:afterSettle', function(evt) {
 
         // --- 1. DYNAMIC NAVBAR VISIBILITY ---
@@ -85,6 +130,8 @@
         const mobileFab = document.querySelector('.mobile-fab');
 
         const shouldHideNav = currentPath.includes('item-registration') || currentPath.includes('profile');
+
+        updateNavProfileVisibility();
 
         if (bottomNav) {
             bottomNav.classList.toggle('d-none', shouldHideNav);
@@ -113,7 +160,7 @@
         const preloader = document.querySelector('.preloader');
         if (preloader) {
             preloader.style.display = 'none';
-        }
+        } hideMySkeletons();
 
         // --- 4. RE-INITIALIZE JAVASCRIPT ---
         window.dispatchEvent(new Event('load'));
@@ -122,8 +169,6 @@
         }
     });
 </script>
-
-
 <?= $this->renderSection('scripts') ?>
 </body>
 

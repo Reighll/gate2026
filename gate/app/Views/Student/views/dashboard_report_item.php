@@ -5,7 +5,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 <?= $this->section('title') ?>Report Item | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
         <h4 class="fw-semibold mb-3">Report Lost/Stolen Item</h4>
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-4">

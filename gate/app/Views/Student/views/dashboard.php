@@ -1,11 +1,14 @@
 <?php
 $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 'Student/layout/main';
+
+$referrer = service('request')->getHeaderLine('HX-Current-URL');
+$slideIn = (strpos($referrer, 'item-registration') !== false || strpos($referrer, 'profile') !== false);
 ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div id="dashboard-container" class="page-transition-container pt-5 mt-4 <?= $slideIn ? 'page-slide-in' : '' ?>">
         <div class="row mt-2">
             <div class="col-12">
 

@@ -10,12 +10,20 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
         .cropper-container { max-height: 400px; }
     </style>
 
-    <div class="pt-5 mt-4">
+    <div id="profile-container" class="page-transition-container pt-5 mt-4 page-slide-in">
         <div class="row">
             <div class="col-12 col-lg-8 mx-auto">
 
                 <div class="d-flex align-items-center mb-4">
-                    <a href="<?= base_url('student/dashboard') ?>" class="btn btn-sm btn-light border shadow-sm rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                    <a href="javascript:void(0);"
+                       hx-get="<?= base_url('student/dashboard') ?>"
+                       hx-target="#app-content"
+                       hx-select="#app-content"
+                       hx-push-url="true"
+                       hx-swap="outerHTML swap:0ms"
+                       hx-indicator="#page-transition-loader"
+                       onclick="document.getElementById('profile-container').classList.add('page-slide-out');"
+                       class="btn btn-sm btn-light border shadow-sm rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
                         <i class="ti ti-arrow-left fs-5 text-muted"></i>
                     </a>
                     <h4 class="fw-semibold mb-0">My Profile Settings</h4>
@@ -133,7 +141,16 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                             </div>
 
                             <div class="d-flex justify-content-end gap-2 gap-md-3 mt-4">
-                                <a href="<?= base_url('student/dashboard') ?>" class="btn btn-light fw-bold text-muted px-3 px-md-4 py-2 rounded-3 border">Cancel</a>
+                                <a href="javascript:void(0);"
+                                   hx-get="<?= base_url('student/dashboard') ?>"
+                                   hx-target="#app-content"
+                                   hx-select="#app-content"
+                                   hx-push-url="true"
+                                   hx-swap="outerHTML swap:0ms"
+                                   hx-indicator="#page-transition-loader"
+                                   onclick="document.getElementById('profile-container').classList.add('page-slide-out');"
+                                   class="btn btn-light fw-bold text-muted px-3 px-md-4 py-2 rounded-3 border">Cancel
+                                </a>
                                 <button type="submit" class="btn btn-primary fw-bold px-4 px-md-5 py-2 shadow-sm rounded-3">Save Changes</button>
                             </div>
                         </form>
@@ -185,20 +202,17 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             const cropModalEl = document.getElementById('cropModal');
             const btnCrop = document.getElementById('btnCrop');
 
-            // Prevent duplicate initializations on HTMX swaps
             if (!fileInput || fileInput.hasAttribute('data-cropper-init')) return;
             fileInput.setAttribute('data-cropper-init', 'true');
 
             let cropper = null;
             let bootstrapModal = new bootstrap.Modal(cropModalEl);
 
-            // Step 1: When user selects a file
             fileInput.addEventListener('change', function (e) {
                 const files = e.target.files;
                 if (files && files.length > 0) {
                     const reader = new FileReader();
                     reader.onload = function (event) {
-                        // Load image into modal and show it
                         cropperImage.src = event.target.result;
                         bootstrapModal.show();
                     };
@@ -206,57 +220,48 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 }
             });
 
-            // Step 2: Initialize Cropper.js ONLY after the modal is fully visible
             cropModalEl.addEventListener('shown.bs.modal', function () {
                 cropper = new Cropper(cropperImage, {
-                    aspectRatio: 1, // Forces a perfect square
+                    aspectRatio: 1,
                     viewMode: 2,
                     autoCropArea: 1,
                     responsive: true,
                 });
             });
 
-            // Step 3: Destroy Cropper when modal closes to prevent memory leaks/glitches
             cropModalEl.addEventListener('hidden.bs.modal', function () {
                 if (cropper) {
                     cropper.destroy();
                     cropper = null;
                 }
-                // If they cancelled, reset the input field so they can try again
                 if (previewImage.getAttribute('data-updated') !== 'true') {
                     fileInput.value = '';
                 }
                 previewImage.removeAttribute('data-updated');
             });
 
-            // Step 4: When they click "Crop & Apply"
             btnCrop.addEventListener('click', function () {
                 if (!cropper) return;
 
-                // Extract the cropped image canvas
                 const canvas = cropper.getCroppedCanvas({
-                    width: 500, // Standardize size to save bandwidth
+                    width: 500,
                     height: 500,
                 });
 
-                // Update the visual preview on the screen instantly
                 previewImage.src = canvas.toDataURL('image/jpeg');
-                previewImage.setAttribute('data-updated', 'true'); // Flag to prevent reset on close
+                previewImage.setAttribute('data-updated', 'true');
 
-                // The Magic Trick: Convert the cropped canvas to a file and stuff it BACK into the HTML file input!
-                // This means your CodeIgniter controller doesn't need to change at all. It just receives the perfect cropped image.
                 canvas.toBlob(function (blob) {
                     const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg", lastModified: new Date().getTime() });
-                    const container = new DataTransfer(); // Simulates a user drag-and-drop
+                    const container = new DataTransfer();
                     container.items.add(file);
-                    fileInput.files = container.files; // Replace the original file with the cropped one
+                    fileInput.files = container.files;
 
-                    bootstrapModal.hide(); // Close modal
-                }, 'image/jpeg', 0.9); // 90% quality compression
+                    bootstrapModal.hide();
+                }, 'image/jpeg', 0.9);
             });
         }
 
-        // Initialize on both F5 reloads and HTMX navigation
         document.addEventListener("DOMContentLoaded", initProfileCropper);
         document.body.addEventListener('htmx:afterSettle', initProfileCropper);
     </script>

@@ -86,7 +86,9 @@ $nav_visibility_class = ($is_registration || $is_profile) ? 'd-none' : 'd-flex';
         </a>
     </nav>
 
-    <a href="<?= base_url('student/item-registration') ?>" hx-get="<?= base_url('student/item-registration') ?>" hx-target="#app-content" hx-select="#app-content" hx-swap="outerHTML" hx-push-url="true" class="mobile-fab <?= $nav_visibility_class ?> d-lg-none border border-2 border-white shadow">
+    <a href="<?= base_url('student/item-registration') ?>" hx-get="<?= base_url('student/item-registration') ?>" hx-target="#app-content" hx-select="#app-content" hx-swap="outerHTML" hx-push-url="true"
+       onclick="var p=window.location.pathname; if(!p.includes('item-registration') && !p.includes('profile')){var c=document.querySelector('.page-transition-container'); if(c){c.classList.add('page-slide-out');}}"
+       class="mobile-fab <?= $nav_visibility_class ?> d-lg-none border border-2 border-white shadow">
         <i class="ti ti-plus"></i>
     </a>
 <?php endif; ?>

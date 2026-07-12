@@ -1,0 +1,26 @@
+#initial-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4f6fb;
+}
+html[data-bs-theme="dark"] #initial-loader {
+    background: #11142d;
+}
+#initial-loader .ring {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid rgba(93, 135, 255, 0.25);
+    border-top-color: #5d87ff;
+    animation: il-spin 0.9s linear infinite;
+}
+@keyframes il-spin {
+    to { transform: rotate(360deg); }
+}
+body.page-ready #initial-loader {
+    display: none;
+}

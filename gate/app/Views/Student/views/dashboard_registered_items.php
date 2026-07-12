@@ -5,7 +5,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 <?= $this->section('title') ?>Registered Items | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class=" page-transition-container pt-5 mt-4">
 
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h4 class="fw-semibold text-dark mb-0">My Registered Items</h4>

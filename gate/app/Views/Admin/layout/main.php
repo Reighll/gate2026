@@ -7,14 +7,38 @@
 
     <title><?= $this->renderSection('title') ?? 'Admin Portal | GATE System' ?></title>
 
+    <style>
+        #initial-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4f6fb;
+        }
+        html[data-bs-theme="dark"] #initial-loader {
+            background: #11142d;
+        }
+        #initial-loader .ring {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid rgba(93, 135, 255, 0.25);
+            border-top-color: #5d87ff;
+            animation: il-spin 0.9s linear infinite;
+        }
+        @keyframes il-spin { to { transform: rotate(360deg); } }
+        body.page-ready #initial-loader { display: none; }
+    </style>
+
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
 
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
 
-    <link rel="stylesheet" href="<?= base_url('assets/css/admin.css') ?>" />
-    <link rel="stylesheet" href="<?= base_url('assets/css/admin-layout.css') ?>" />
-    <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin-layout.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/fonts/tabler-icons.woff2" as="font" type="font/woff2" crossorigin>
 
@@ -38,7 +62,7 @@
 </head>
 
 <body>
-
+<div id="initial-loader"><div class="ring"></div></div>
 <div class="fixed-top-banner">
     <?= $this->include('Admin/partials/navbar') ?>
 </div>
@@ -49,6 +73,11 @@
     <?= $this->include('Admin/partials/sidebar') ?>
 
     <div class="body-wrapper">
+        <div id="page-transition-loader" class="htmx-indicator" style="position: fixed; inset: 0; z-index: 1300; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+            <div class="loader-backdrop"></div>
+            <div class="loader-ring"></div>
+        </div>
+
         <div class="container-fluid" id="app-content">
             <?= $this->renderSection('content') ?>
         </div>
@@ -67,6 +96,7 @@
 <script src="<?= base_url('assets/js/admin/admin.js') ?>"></script>
 <script src="<?= base_url('assets/js/mobile.js') ?>"></script>
 <script src="<?= base_url('assets/js/theme.js') ?>"></script>
+<script src="<?= base_url('assets/js/initial-loader.js') ?>"></script>
 
 <?= $this->renderSection('scripts') ?>
 
@@ -78,6 +108,25 @@
         evt.detail.headers['Pragma'] = 'no-cache';
         evt.detail.headers['Expires'] = '0';
     });
+
+    function updateNavProfileVisibility() {
+        const navProfileItem = document.getElementById('navProfileItem');
+        if (!navProfileItem) return;
+        const onProfilePage = window.location.pathname.includes('/profile');
+        navProfileItem.classList.toggle('d-none', onProfilePage);
+        navProfileItem.classList.toggle('d-flex', !onProfilePage);
+    }
+
+    function hideMySkeletons() {
+        setTimeout(() => {
+            document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+            document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+        }, 600);
+    }
+
+    document.addEventListener('DOMContentLoaded', updateNavProfileVisibility);
+    document.addEventListener('DOMContentLoaded', hideMySkeletons);
+
     document.body.addEventListener('htmx:afterSettle', function(evt) {
 
         // --- 1. DYNAMIC NAVBAR VISIBILITY ---
@@ -87,6 +136,8 @@
 
         // Admin only needs to hide the bar on Profile
         const shouldHideNav = currentPath.includes('profile');
+
+        updateNavProfileVisibility();
 
         if (bottomNav) {
             bottomNav.classList.toggle('d-none', shouldHideNav);
@@ -114,7 +165,7 @@
         const preloader = document.querySelector('.preloader');
         if (preloader) {
             preloader.style.display = 'none';
-        }
+        } hideMySkeletons();
 
         // --- 4. RE-INITIALIZE JAVASCRIPT ---
         window.dispatchEvent(new Event('load'));
