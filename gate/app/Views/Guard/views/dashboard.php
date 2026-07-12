@@ -120,9 +120,23 @@
                                     </div>
 
                                     <div class="d-flex flex-column gap-2 mt-auto">
-                                        <button type="button" id="startCameraBtn" class="btn btn-blue w-100 py-2"><i class="ti ti-camera me-1"></i> START CAMERA</button>
-                                        <button type="button" id="takePhotoBtn" class="btn btn-success w-100 py-2 shadow-sm" style="display:none;"><i class="ti ti-capture me-1"></i> SNAP PHOTO</button>
-                                        <button type="button" id="retakePhotoBtn" class="btn btn-warning w-100 py-2" style="display:none;"><i class="ti ti-reload me-1"></i> RETAKE</button>
+                                        <button type="button" id="startCameraBtn" class="btn btn-blue w-100 py-2">
+                                            <i class="ti ti-camera me-1"></i> START CAMERA
+                                        </button>
+
+                                        <!-- THE FIX: Grouped the Snap button and the new Switch Camera button -->
+                                        <div class="d-flex gap-2 w-100">
+                                            <button type="button" id="takePhotoBtn" class="btn btn-success flex-grow-1 py-2 shadow-sm" style="display:none;">
+                                                SNAP PHOTO
+                                            </button>
+                                            <button type="button" id="switchCameraBtn" class="btn btn-outline-secondary py-2 shadow-sm px-3" style="display:none;" title="Switch Camera">
+                                                <i class="ti ti-refresh"></i>
+                                            </button>
+                                        </div>
+
+                                        <button type="button" id="retakePhotoBtn" class="btn btn-warning w-100 py-2" style="display:none;">
+                                            <i class="ti ti-reload me-1"></i> RETAKE
+                                        </button>
                                     </div>
                                     <input type="hidden" name="webcam_photo" id="webcamPhotoInput">
                                 </div>
@@ -293,11 +307,12 @@
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
 
         // ==========================================
-        // 1. WEBCAM CAPTURE LOGIC
+        // 1. WEBCAM CAPTURE LOGIC (Front/Rear Toggle Added)
         // ==========================================
         const startCameraBtn = document.getElementById('startCameraBtn');
         const takePhotoBtn = document.getElementById('takePhotoBtn');
         const retakePhotoBtn = document.getElementById('retakePhotoBtn');
+        const switchCameraBtn = document.getElementById('switchCameraBtn'); // New switch button
         const webcamVideo = document.getElementById('webcamVideo');
         const photoPreview = document.getElementById('photoPreview');
         const photoCanvas = document.getElementById('photoCanvas');
@@ -306,21 +321,44 @@
         const manualPhotoInput = document.getElementById('manualPhotoInput');
 
         let videoStream = null;
+        let currentFacingMode = 'user'; // Defaults to front camera. Use 'environment' to default to rear.
 
-        startCameraBtn?.addEventListener('click', async () => {
+        async function initCamera(facingMode) {
+            // 1. If a camera is already running, turn it off before switching
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+
             try {
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                // 2. Request the specific camera (front or back)
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode }
+                });
+
                 webcamVideo.srcObject = videoStream;
                 webcamVideo.style.display = 'block';
                 cameraIcon.style.display = 'none';
                 photoPreview.style.display = 'none';
+
+                // 3. Update UI buttons
                 startCameraBtn.style.display = 'none';
                 takePhotoBtn.style.display = 'block';
+                switchCameraBtn.style.display = 'block'; // Show switch button
                 retakePhotoBtn.style.display = 'none';
             } catch (err) {
                 alert("Camera access denied or not available. Please check your browser permissions.");
                 console.error(err);
             }
+        }
+
+        startCameraBtn?.addEventListener('click', () => {
+            initCamera(currentFacingMode);
+        });
+
+        switchCameraBtn?.addEventListener('click', () => {
+            // Toggle the mode and re-initialize the camera
+            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+            initCamera(currentFacingMode);
         });
 
         takePhotoBtn?.addEventListener('click', () => {
@@ -328,12 +366,16 @@
             photoCanvas.width = webcamVideo.videoWidth;
             photoCanvas.height = webcamVideo.videoHeight;
             context.drawImage(webcamVideo, 0, 0, photoCanvas.width, photoCanvas.height);
+
             const imageData = photoCanvas.toDataURL('image/png');
             webcamPhotoInput.value = imageData;
             photoPreview.src = imageData;
+
             webcamVideo.style.display = 'none';
             photoPreview.style.display = 'block';
+
             takePhotoBtn.style.display = 'none';
+            switchCameraBtn.style.display = 'none'; // Hide switch button when viewing photo
             retakePhotoBtn.style.display = 'block';
         });
 
@@ -341,7 +383,9 @@
             webcamPhotoInput.value = '';
             webcamVideo.style.display = 'block';
             photoPreview.style.display = 'none';
+
             takePhotoBtn.style.display = 'block';
+            switchCameraBtn.style.display = 'block'; // Show switch button again
             retakePhotoBtn.style.display = 'none';
         });
 
@@ -356,8 +400,10 @@
                     photoPreview.style.display = 'block';
                     cameraIcon.style.display = 'none';
                     webcamVideo.style.display = 'none';
+
                     startCameraBtn.style.display = 'none';
                     takePhotoBtn.style.display = 'none';
+                    switchCameraBtn.style.display = 'none';
                     retakePhotoBtn.style.display = 'block';
                 }
                 reader.readAsDataURL(this.files[0]);
