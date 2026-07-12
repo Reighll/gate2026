@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const endRadius = Math.hypot(
             Math.max(x, window.innerWidth - x),
             Math.max(y, window.innerHeight - y)
-        );
+        ) * 1.15;
 
         htmlElement.style.setProperty('--theme-x', `${x}px`);
         htmlElement.style.setProperty('--theme-y', `${y}px`);

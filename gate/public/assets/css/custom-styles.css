@@ -89,3 +89,114 @@ ng-fix {
     /* Bouncy 0.3s spring entrance */
     transition: visibility 0.3s, opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+/* ==========================================
+   THEME TOGGLE - EXPANDING CIRCLE ANIMATION (with feathered edge)
+   ========================================== */
+@property --wave-r {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+}
+::view-transition-group(root),
+::view-transition-image-pair(root) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 2;
+    animation: theme-reveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+    mask-image: radial-gradient(
+            circle at var(--theme-x, 50%) var(--theme-y, 50%),
+            black calc(var(--wave-r) - 70px),
+            transparent var(--wave-r)
+    );
+    -webkit-mask-image: radial-gradient(
+            circle at var(--theme-x, 50%) var(--theme-y, 50%),
+            black calc(var(--wave-r) - 70px),
+            transparent var(--wave-r)
+    );
+}
+
+@keyframes theme-reveal {
+    from { --wave-r: 0px; }
+    to   { --wave-r: var(--theme-r, 150%); }
+}
+/* ==========================================
+   PREVENT HEADER FLICKER DURING PAGE SLIDE TRANSITIONS
+   ========================================== */
+html, body {
+    overflow-x: hidden;
+}
+/* Only allow the loader to intercept clicks while a request is actually in flight */
+.htmx-request #page-transition-loader,
+.htmx-request.htmx-indicator {
+    pointer-events: auto;
+}
+/* ==========================================
+   MODERN PAGE TRANSITION LOADER
+   ========================================== */
+#page-transition-loader .loader-backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--bs-body-bg);
+    opacity: 0;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: opacity 0.2s ease;
+}
+
+#page-transition-loader .loader-ring {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+#page-transition-loader .loader-ring::before,
+#page-transition-loader .loader-ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+}
+
+#page-transition-loader .loader-ring::before {
+    border-top-color: var(--bs-primary);
+    border-right-color: var(--bs-primary);
+    animation: loader-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+#page-transition-loader .loader-ring::after {
+    border-bottom-color: rgba(var(--bs-primary-rgb), 0.25);
+    border-left-color: rgba(var(--bs-primary-rgb), 0.25);
+    animation: loader-spin 1.4s linear infinite reverse;
+}
+
+@keyframes loader-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Fade + scale in only while a request is actually running */
+.htmx-request #page-transition-loader,
+.htmx-request.htmx-indicator {
+    pointer-events: auto;
+}
+.htmx-request #page-transition-loader .loader-backdrop,
+.htmx-request #page-transition-loader .loader-ring {
+    opacity: 1;
+    transform: scale(1);
+}

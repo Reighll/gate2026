@@ -42,6 +42,11 @@
     <?= $this->include('Student/partials/sidebar') ?>
 
     <div class="body-wrapper">
+        <div id="page-transition-loader" class="htmx-indicator" style="position: fixed; inset: 0; z-index: 1300; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+            <div class="loader-backdrop"></div>
+            <div class="loader-ring"></div>
+        </div>
+
         <div class="container-fluid" id="app-content">
             <?= $this->renderSection('content') ?>
         </div>
