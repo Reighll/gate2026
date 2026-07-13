@@ -5,7 +5,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 <?= $this->section('title') ?>Registered Items | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class=" page-transition-container pt-5 mt-4">
 
         <div class="d-flex align-items-center justify-content-between mb-4">
             <h4 class="fw-semibold text-dark mb-0">My Registered Items</h4>
@@ -99,7 +99,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                         $locIcon  = (isset($item['in_campus']) && $item['in_campus'] == 1) ? 'ti-building' : 'ti-building-off';
 
                                         if ($item['status'] !== 'approved') {
-                                            $locationText = 'Disabled';
+                                            $locationText = 'Outside';
                                             $locClass = 'btn-light text-muted border';
                                             $locIcon  = 'ti-ban';
                                         }

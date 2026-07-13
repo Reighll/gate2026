@@ -5,7 +5,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 <?= $this->section('title') ?>Scan History | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
         <div class="card border-0 shadow-sm w-100">
             <div class="card-body p-4">
                 <h4 class="card-title fw-semibold mb-4">Gatepass Scan History</h4>

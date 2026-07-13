@@ -1,11 +1,14 @@
 <?php
 $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 'Student/layout/main';
+
+$referrer = service('request')->getHeaderLine('HX-Current-URL');
+$slideIn = (strpos($referrer, 'item-registration') !== false || strpos($referrer, 'profile') !== false);
 ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div id="dashboard-container" class="page-transition-container pt-5 mt-4 <?= $slideIn ? 'page-slide-in' : '' ?>">
         <div class="row mt-2">
             <div class="col-12">
 
@@ -65,7 +68,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                         <div class="digital-id-body pt-5 pb-4 bg-white rounded-bottom shadow-sm text-center" style="border-radius: 0 0 15px 15px;">
                             <div class="pt-3">
                                 <h3 class="fw-bold text-dark mb-1 text-uppercase"><?= esc($student['first_name'] . ' ' . $student['last_name']) ?></h3>
-                                <p class="text-primary fw-semibold fs-5 mb-3 font-monospace"><?= esc($student['student_number']) ?></p>
+                                <p class="text-primary fw-semibold fs-5 mb-3"><?= esc($student['student_number']) ?></p>
                                 <div class="row text-start bg-light rounded-3 p-3 mx-2 mx-md-4">
                                     <div class="col-6 mb-2">
                                         <small class="text-muted d-block">Department</small>

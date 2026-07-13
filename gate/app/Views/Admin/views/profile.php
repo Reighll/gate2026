@@ -1,12 +1,22 @@
-<?= $this->extend('Admin/layout/main') ?>
+<?php
+$layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'Admin/layout/main';
+?>
+<?= $this->extend($layout) ?>
 <?= $this->section('title') ?>My Profile | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
-    <div class="pt-5 mt-4">
-        <div class="row">
+    <div id="profile-container" class="page-transition-container pt-5 mt-4 page-slide-in">        <div class="row">
             <div class="col-12 col-lg-8 mx-auto">
 
                 <div class="d-flex align-items-center mb-4">
-                    <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-sm btn-light border shadow-sm rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                    <a href="javascript:void(0);"
+                       hx-get="<?= base_url('admin/dashboard') ?>"
+                       hx-target="#app-content"
+                       hx-select="#app-content"
+                       hx-push-url="true"
+                       hx-swap="outerHTML swap:0ms"
+                       hx-indicator="#page-transition-loader"
+                       onclick="document.getElementById('profile-container').classList.add('page-slide-out');"
+                       class="btn btn-sm btn-light border shadow-sm rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
                         <i class="ti ti-arrow-left fs-5 text-muted"></i>
                     </a>
                     <h4 class="fw-semibold mb-0">My Profile Settings</h4>
@@ -68,7 +78,6 @@
                             <div class="row mb-4">
                                 <div class="col-md-4 text-center mb-4 mb-md-0" style="position: relative; z-index: 20;">
                                     <?php
-                                    // Checks DB first, falls back to default user-1
                                     $pic = !empty($admin['profile_pic']) ? $admin['profile_pic'] : 'user-1.jpg';
                                     ?>
                                     <img src="<?= base_url('assets/images/profile/' . $pic) ?>" alt="Profile Picture" id="profilePicPreview" class="rounded-circle img-fluid border border-3 border-primary shadow-sm mb-3" style="width: 150px; height: 150px; object-fit: cover;">
@@ -135,7 +144,16 @@
                             </div>
 
                             <div class="d-flex justify-content-end gap-2 gap-md-3 mt-4">
-                                <a href="<?= base_url('admin/dashboard') ?>" class="btn btn-light fw-bold text-muted px-3 px-md-4 py-2 rounded-3 border">Cancel</a>
+                                <a href="javascript:void(0);"
+                                   hx-get="<?= base_url('admin/dashboard') ?>"
+                                   hx-target="#app-content"
+                                   hx-select="#app-content"
+                                   hx-push-url="true"
+                                   hx-swap="outerHTML swap:0ms"
+                                   hx-indicator="#page-transition-loader"
+                                   onclick="document.getElementById('profile-container').classList.add('page-slide-out');"
+                                   class="btn btn-light fw-bold text-muted px-3 px-md-4 py-2 rounded-3 border">Cancel
+                                </a>
                                 <button type="submit" class="btn btn-primary fw-bold px-4 px-md-5 py-2 shadow-sm rounded-3">Save Changes</button>
                             </div>
                         </form>
@@ -176,10 +194,7 @@
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
         }
-
-        // Run on normal refresh
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        // Run on HTMX navigation
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
     <script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>

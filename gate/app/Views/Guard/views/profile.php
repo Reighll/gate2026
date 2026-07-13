@@ -1,4 +1,7 @@
-<?= $this->extend('Guard/layout/main') ?>
+<?php
+$layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'Guard/layout/main';
+?>
+<?= $this->extend($layout) ?>
 <?= $this->section('title') ?>My Profile | Guard Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
@@ -7,11 +10,18 @@
         .cropper-container { max-height: 400px; }
     </style>
 
-    <div class="row mt-5 pt-4">
-        <div class="col-12 col-lg-8 mx-auto">
+    <div id="profile-container" class="page-transition-container pt-5 mt-4 page-slide-in">        <div class="col-12 col-lg-8 mx-auto">
 
             <div class="d-flex align-items-center mb-4">
-                <a href="<?= base_url('guard/dashboard') ?>" class="btn btn-sm btn-light border shadow-sm rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                <a href="javascript:void(0);"
+                   hx-get="<?= base_url('guard/dashboard') ?>"
+                   hx-target="#app-content"
+                   hx-select="#app-content"
+                   hx-push-url="true"
+                   hx-swap="outerHTML swap:0ms"
+                   hx-indicator="#page-transition-loader"
+                   onclick="document.getElementById('profile-container').classList.add('page-slide-out');"
+                   class="btn btn-sm btn-light border shadow-sm rounded-circle me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
                     <i class="ti ti-arrow-left fs-5 text-muted"></i>
                 </a>
                 <h4 class="fw-semibold mb-0">Guard Profile Settings</h4>
@@ -110,7 +120,15 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4">
-                            <a href="<?= base_url('guard/dashboard') ?>" class="btn btn-light btn-lg fw-bold text-muted px-3 px-md-4 rounded-3 border d-flex align-items-center justify-content-center text-nowrap">
+                            <a href="javascript:void(0);"
+                               hx-get="<?= base_url('guard/dashboard') ?>"
+                               hx-target="#app-content"
+                               hx-select="#app-content"
+                               hx-push-url="true"
+                               hx-swap="outerHTML swap:0ms"
+                               hx-indicator="#page-transition-loader"
+                               onclick="document.getElementById('profile-container').classList.add('page-slide-out');"
+                               class="btn btn-light btn-lg fw-bold text-muted px-3 px-md-4 rounded-3 border d-flex align-items-center justify-content-center text-nowrap">
                                 Cancel
                             </a>
                             <button type="submit" class="btn btn-primary btn-lg fw-bold px-3 px-md-5 shadow-sm rounded-3 d-flex align-items-center justify-content-center text-nowrap">
@@ -148,7 +166,6 @@
 
 <?= $this->section('scripts') ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => {

@@ -44,7 +44,16 @@
                          aria-labelledby="drop2"
                          style="min-width: 200px; margin-top: 10px;">
                         <div class="message-body">
-                            <a href="<?= base_url('admin/profile') ?>" class="d-flex align-items-center gap-2 dropdown-item px-4 py-2">
+                            <a href="javascript:void(0);"
+                               id="navProfileItem"
+                               hx-get="<?= base_url('admin/profile') ?>"
+                               hx-target="#app-content"
+                               hx-select="#app-content"
+                               hx-push-url="true"
+                               hx-swap="outerHTML swap:0ms"
+                               hx-indicator="#page-transition-loader"
+                               onclick="var c=document.querySelector('.page-transition-container'); if(c){c.classList.remove('page-slide-in'); c.classList.add('page-slide-out');}"
+                               class="d-flex align-items-center gap-2 dropdown-item px-4 py-2">
                                 <i class="ti ti-user-circle fs-5"></i>
                                 <p class="mb-0 fw-semibold">My Profile</p>
                             </a>

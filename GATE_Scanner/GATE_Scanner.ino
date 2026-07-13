@@ -11,7 +11,7 @@ String server1 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
 // --- SECONDARY Wi-Fi & Server ---
 const char* ssid2 = "Converge_2.4GHz_5DE7";
 const char* pass2 = "HEHEHEHEHE";
-String server2 = "http://192.168.1.60:8080/api/scan"; // <-- CHANGED TO HTTPS
+String server2 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
 
 // --- TERTIARY Wi-Fi & Server ---
 const char* ssid3 = "Nothing Phone (1)";

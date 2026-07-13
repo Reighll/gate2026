@@ -51,6 +51,7 @@ class Dashboard extends BaseController
         $lastItem        = null;
         $lastStudent     = null;
         $lastAction      = '';
+        $scannedItemsList = [];
 
         // NEW: Track visitor states for the UI messages
         $lastVisitorName  = null;
@@ -143,7 +144,6 @@ class Dashboard extends BaseController
                     $itemName = $item['brand_model'] ?? $item['name'] ?? 'Item';
                     $studentName = $student ? ($student['first_name'] . ' ' . $student['last_name']) : 'Unknown Student';
 
-                    $lastItem = $item;
                     $lastStudent = $student;
 
                     if ($item['status'] === 'missing') {
@@ -166,6 +166,7 @@ class Dashboard extends BaseController
                         }
                         $successCount++;
                         $lastAction = 'TIME-OUT';
+                        $item['action_taken'] = 'TIME-OUT';
                     } else {
                         $itemModel->update($item['id'], ['in_campus' => 1]);
                         if ($db->tableExists('item_logs')) {
@@ -173,7 +174,10 @@ class Dashboard extends BaseController
                         }
                         $successCount++;
                         $lastAction = 'TIME-IN';
+                        $item['action_taken'] = 'TIME-IN';
                     }
+                    $scannedItemsList[] = $item;
+                    $lastItem = $item;
                 } else {
                     $errorMessages[] = "Unrecognized Card ({$rfid})";
                 }
@@ -215,8 +219,8 @@ class Dashboard extends BaseController
                 session()->setFlashdata('error', "Some scans failed:<br>" . implode('<br>', $errorMessages));
             }
 
-            if ($lastItem && $lastStudent) {
-                session()->setFlashdata('scanned_item', $lastItem);
+            if (!empty($scannedItemsList) && $lastStudent) {
+                session()->setFlashdata('scanned_items', $scannedItemsList); // <-- CHANGED TO ARRAY
                 session()->setFlashdata('scanned_student', $lastStudent);
             }
             return redirect()->to('guard/dashboard');

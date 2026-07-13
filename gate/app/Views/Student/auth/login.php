@@ -129,7 +129,7 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">Student Number</label>
-                <input type="tel" class="form-control form-control-lg font-monospace bg-light rounded-3"
+                <input type="tel" class="form-control form-control-lg bg-light rounded-3"
                        id="student_number" name="student_number"
                        value="<?= old('student_number') ?>"
                        placeholder="TUPT-XX-XXXX" required <?= !$isRegister ? 'autofocus' : '' ?>>
@@ -184,7 +184,7 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
 
             <div class="mb-3">
                 <label for="reg_student_number" class="form-label fw-semibold">Student Number</label>
-                <input type="text" class="form-control form-control-lg bg-light rounded-3 font-monospace" id="reg_student_number" name="student_number" value="<?= old('student_number') ?>" placeholder="TUPT-XX-XXXX" required>
+                <input type="text" class="form-control form-control-lg bg-light rounded-3" id="reg_student_number" name="student_number" value="<?= old('student_number') ?>" placeholder="TUPT-XX-XXXX" required>
             </div>
 
             <div class="mb-3">

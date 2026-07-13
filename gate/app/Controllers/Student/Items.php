@@ -81,12 +81,18 @@ class Items extends BaseController
     {
         if (!session()->get('student_logged_in')) return redirect()->to('student/login');
 
+        $reason = $this->request->getPost('reason');
+
         $model = new StudentItemModel();
 
         $item = $model->where('id', $id)->where('student_id', session()->get('student_id'))->first();
 
         if ($item) {
-            $model->update($id, ['status' => 'unregister_requested']);
+            $model->update($id, [
+                'status' => 'unregister requested',
+                // We are recycling your 'notes' column here! No new SQL needed.
+                'notes'  => 'Unregistration Reason: ' . $reason
+            ]);
             return redirect()->to('student/dashboard')->with('success', 'Unregistration request submitted. Awaiting Admin approval.');
         }
 
@@ -98,6 +104,7 @@ class Items extends BaseController
         if (!session()->get('student_logged_in')) return redirect()->to('student/login');
 
         $itemId = $this->request->getPost('item_id');
+        $notes  = $this->request->getPost('notes');
 
         if (empty($itemId)) {
             return redirect()->back()->with('error', 'Please select an item to report.');
@@ -108,7 +115,11 @@ class Items extends BaseController
         $item = $model->where('id', $itemId)->where('student_id', session()->get('student_id'))->first();
 
         if ($item) {
-            $model->update($itemId, ['status' => 'missing']);
+            // THE FIX: Save the notes alongside the flagged status
+            $model->update($itemId, [
+                'status' => 'flagged',
+                'notes'  => $notes
+            ]);
             return redirect()->to('student/dashboard')->with('success', 'Item reported missing! Guards have been alerted.');
         }
 

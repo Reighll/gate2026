@@ -171,7 +171,15 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
                 <label class="form-label fw-bold text-primary">Admin Invite Key</label>
                 <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
                     <span class="input-group-text bg-primary-subtle border-0"><i class="ti ti-key text-primary"></i></span>
-                    <input type="text" class="form-control bg-light border-0 font-monospace text-uppercase" id="invite_key" name="invite_key" value="<?= old('invite_key') ?>" placeholder="GATE-ADM-XXXXXX" required <?= $isRegister ? 'autofocus' : '' ?>>
+                    <input type="text"
+                           class="form-control bg-light border-0 font-monospace text-uppercase format-gate-key"
+                           id="invite_key"
+                           name="invite_key"
+                           value="<?= old('invite_key') ?>"
+                           placeholder="GATE-ADM-XXXXXX"
+                           maxlength="15"
+                           autocomplete="off"
+                           required>
                 </div>
             </div>
 
@@ -230,6 +238,35 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
                     } else {
                         passwordInput.type = 'password';
                         icon.classList.replace('ti-eye-off', 'ti-eye');
+                    }
+                });
+            });
+            const keyInputs = document.querySelectorAll('.format-gate-key');
+
+            keyInputs.forEach(input => {
+                // 1. Instantly add GATE-ADM- when they click in
+                input.addEventListener('focus', function() {
+                    if (this.value === '') this.value = 'GATE-ADM-';
+                });
+
+                // 2. Strict real-time typing restriction
+                input.addEventListener('input', function() {
+                    // Strip out everything except Letters (A-Z) and Numbers (0-9)
+                    let rawText = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+                    // Remove the "GATEADM" base so we are only looking at the random characters they type
+                    if (rawText.startsWith('GATEADM')) {
+                        rawText = rawText.substring(7);
+                    }
+
+                    // Cap the custom key part at exactly 6 characters
+                    let suffix = rawText.substring(0, 6);
+
+                    // Rebuild the string with the strict format
+                    if (suffix.length === 0) {
+                        this.value = 'GATE-ADM-';
+                    } else {
+                        this.value = 'GATE-ADM-' + suffix;
                     }
                 });
             });

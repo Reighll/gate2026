@@ -15,7 +15,13 @@
                 <div class="modal-body px-4 py-3">
                     <div class="mb-3">
                         <label class="form-label fw-bold text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">Student Number</label>
-                        <input type="text" class="form-control form-control-lg rounded-3 input-adaptive shadow-none" name="student_number" placeholder="TUPT-23-0001" required>
+                        <input type="text"
+                               class="form-control form-control-lg rounded-3 input-adaptive shadow-none format-tupt-id"
+                               name="student_number"
+                               value="<?= old('student_number') ?>"
+                               placeholder="TUPT-XX-XXXX"
+                               maxlength="12"
+                               required>
                     </div>
                     <div class="row">
                         <div class="col-sm-6 mb-3">

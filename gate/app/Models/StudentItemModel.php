@@ -19,6 +19,7 @@ class StudentItemModel extends Model
         'serial_number',
         'photo',
         'status',
+        'notes',
         'created_at',
         'updated_at',
         'rfid',

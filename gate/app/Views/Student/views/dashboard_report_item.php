@@ -5,7 +5,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 <?= $this->section('title') ?>Report Item | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
         <h4 class="fw-semibold mb-3">Report Lost/Stolen Item</h4>
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-4">
@@ -60,8 +60,13 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-semibold" for="details">Incident Details</label>
-                        <textarea class="form-control bg-light" id="details" name="details" rows="3" placeholder="Provide more information..." required></textarea>
+                        <label class="form-label fw-semibold" for="notes">Notes</label>
+                        <textarea class="form-control bg-light"
+                                  id="notes"
+                                  name="notes"
+                                  rows="3"
+                                  placeholder="Briefly explain incident details, item colors, specific signs, or other info that might help..."
+                                  required></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-warning w-100 py-2 text-dark fw-bold shadow-sm rounded-3">Submit Report to Guards</button>

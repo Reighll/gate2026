@@ -2,7 +2,7 @@
 <?= $this->section('title') ?>User Management | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
         <div class="col-lg-12">
             <div class="card w-100 border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
@@ -236,5 +236,33 @@
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
         // Run on HTMX navigation (from your sidebar)
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+        // This finds EVERY input with the class on the page (Add and Edit!)
+        const tuptInputs = document.querySelectorAll('.format-tupt-id');
+
+        tuptInputs.forEach(input => {
+            // 1. If they click into an empty box, put TUPT-
+            input.addEventListener('focus', function() {
+                if (this.value === '') this.value = 'TUPT-';
+            });
+
+            // 2. Strict real-time typing restriction
+            input.addEventListener('input', function() {
+                // Strip out everything except numbers
+                let numbers = this.value.replace(/[^0-9]/g, '');
+
+                // Cap at exactly 6 digits
+                numbers = numbers.substring(0, 6);
+
+                // Force format and lock down prefix
+                if (numbers.length === 0) {
+                    this.value = 'TUPT-';
+                } else if (numbers.length <= 2) {
+                    this.value = 'TUPT-' + numbers;
+                } else {
+                    this.value = 'TUPT-' + numbers.substring(0, 2) + '-' + numbers.substring(2, 6);
+                }
+            });
+        });
     </script>
 <?= $this->endSection() ?>

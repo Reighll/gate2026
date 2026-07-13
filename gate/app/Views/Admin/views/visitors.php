@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin-visitors.css') ?>">
 
 
-    <div class="pt-5 mt-4">
+    <div class="page-transition-container pt-5 mt-4">
 
         <div class="row skeleton-wrapper">
             <?php for($i=0; $i<2; $i++): ?>
