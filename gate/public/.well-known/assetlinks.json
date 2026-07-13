@@ -1,26 +1,18 @@
 [
   {
-    "relation": [
-      "delegate_permission/common.handle_all_urls"
-    ],
+    "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
       "package_name": "tech.tuptgate.student",
-      "sha256_cert_fingerprints": [
-        "18:63:92:C1:AE:2D:B5:A8:B2:D1:C5:44:9F:00:9A:87:51:10:EA:9D:F5:4D:27:FE:E6:B4:9C:52:5F:45:74:47"
-      ]
+      "sha256_cert_fingerprints": ["56:CB:7A:10:B2:5D:3E:20:3E:5F:9B:07:81:32:45:BD:C1:A0:FA:4C:D0:8A:E5:88:F7:A8:E6:66:69:33:D4:50"]
     }
   },
   {
-    "relation": [
-      "delegate_permission/common.handle_all_urls"
-    ],
+    "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
       "package_name": "tech.tuptgate.guard",
-      "sha256_cert_fingerprints": [
-        "6E:0D:ED:83:A4:DE:C4:B8:01:2A:66:D6:C1:49:CD:A9:7B:22:46:48:65:DA:B6:13:D4:E8:B7:CD:5D:0F:62:63"
-      ]
+      "sha256_cert_fingerprints": ["EB:A3:BF:35:18:78:43:35:0B:39:C8:DF:23:97:E8:B3:06:6D:92:5A:E8:47:3D:12:41:07:EA:9C:16:BA:FD:E5"]
     }
   }
 ]
