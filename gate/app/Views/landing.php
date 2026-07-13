@@ -27,26 +27,43 @@ $adminActive = (bool) session()->get('admin_logged_in');
     </script>
 
     <style>
-        /* ============== UTILITY BAR (untouched) ============== */
+        /* ============== UTILITY BAR (updated for hidden links) ============== */
         .utility-bar {
             background: #11142d;
-            color: #a1aab2;
+            color: #ffffff;
             font-size: 0.8rem;
             padding: 6px 5%;
             position: relative;
             z-index: 6;
         }
-        .utility-bar .utility-time { font-weight: 500; color: #f1f9ff; }
-        .utility-bar a { color: #a1aab2; text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
-        .utility-bar a:hover { color: #8bb4fa; }
-        .utility-bar .divider { color: #4f5467; }
 
-        html, body { margin: 0; padding: 0; overflow-x: hidden; }
+        .utility-bar .utility-time {
+            font-weight: 500;
+            color: #f1f9ff;
+        }
+
+        /* 1. Subtle, muted color so they don't draw attention */
+        .utility-bar a {
+            color: #2c3554; /* A dark, muted blue-grey */
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.4s ease;
+        }
+
+        /* 2. Bright reveal when hovered */
+        .utility-bar a:hover {
+            color: #8bb4fa;
+        }
+
+        /* 3. Match the dividers to the subtle link color */
+        .utility-bar .divider {
+            color: #2c3554;
+        }
 
         /* ============== HERO SECTION ============== */
         .hero-section {
             background: radial-gradient(circle at 50% 0%, #eef3ff 0%, #f7f9fc 55%, #ffffff 100%);
-            min-height: calc(88vh - 33px);
+            min-height: max(720px, calc(88vh - 33px)); /* was: calc(88vh - 33px) */
             font-family: 'Plus Jakarta Sans', sans-serif;
             position: relative;
             overflow: hidden;
@@ -105,13 +122,13 @@ $adminActive = (bool) session()->get('admin_logged_in');
         .hero-subtext {
             max-width: 480px;
             margin: 0 auto 32px;
-            color: #5a6a85;
-            font-size: 1rem;
+            color: #334155;
+            font-size: 1.3rem;
             line-height: 1.6;
             opacity: 0;
             animation: fadeSlideUp 0.7s 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        html[data-bs-theme="dark"] .hero-subtext { color: #a1aab2; }
+        html[data-bs-theme="dark"] .hero-subtext { color: #d1dbe8; }
 
         @keyframes fadeSlideUp {
             from { opacity: 0; transform: translateY(18px); }
@@ -157,7 +174,7 @@ $adminActive = (bool) session()->get('admin_logged_in');
         /* ============== 3D LAPTOP — PEEKING FROM BOTTOM ============== */
         .laptop-peek-wrap {
             position: absolute;
-            bottom: -160px;
+            bottom: calc(min(820px, 94vw) * -0.34);
             left: 50%;
             width: min(820px, 94vw);
             z-index: 1;
@@ -269,7 +286,7 @@ $adminActive = (bool) session()->get('admin_logged_in');
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: auto;
+            margin-bottom: 75px;
         }
         .laptop-display .brand-row img { height: 32px; width: auto; }
         .laptop-display .brand-row span { font-weight: 800; font-size: 1.1rem; }
@@ -278,7 +295,7 @@ $adminActive = (bool) session()->get('admin_logged_in');
             display: flex;
             align-items: center;
             gap: 20px;
-            margin: auto 0;
+            margin: 0 0 auto;
         }
         .laptop-center-logo {
             width: 76px;
@@ -326,7 +343,19 @@ $adminActive = (bool) session()->get('admin_logged_in');
 
         @media (max-width: 767.98px) {
             .float-badge { transform: scale(0.7); }
-            .laptop-peek-wrap { bottom: -140px; }
+
+            .utility-bar .d-flex.justify-content-between {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .utility-links {
+                justify-content: center;
+            }
+
+            .hero-section { display: flex; flex-direction: column; }
+            .hero-content { padding: 20px 20px 80px; margin: auto 0; }
+
             .laptop-display { padding: 16px 18px; }
             .laptop-display .display-center { gap: 12px; }
             .laptop-center-logo { width: 56px; height: 56px; }
@@ -341,11 +370,11 @@ $adminActive = (bool) session()->get('admin_logged_in');
 <div class="utility-bar">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <span class="utility-time" id="utilityClock"></span>
-        <div class="d-flex align-items-center gap-2">
-            <?php if ($studentActive): ?>
-                <a href="<?= base_url('student/dashboard') ?>">Student Dashboard</a>
+        <div class="d-flex align-items-center gap-2 utility-links">
+            <?php if ($adminActive): ?>
+                <a href="<?= base_url('admin/dashboard') ?>">Admin Dashboard</a>
             <?php else: ?>
-                <a href="<?= base_url('student/login') ?>">GATE Student</a>
+                <a href="<?= base_url('admin/login') ?>">GATE Admin</a>
             <?php endif; ?>
 
             <span class="divider">|</span>
@@ -358,10 +387,10 @@ $adminActive = (bool) session()->get('admin_logged_in');
 
             <span class="divider">|</span>
 
-            <?php if ($adminActive): ?>
-                <a href="<?= base_url('admin/dashboard') ?>">Admin Dashboard</a>
+            <?php if ($studentActive): ?>
+                <a href="<?= base_url('student/dashboard') ?>">Student Dashboard</a>
             <?php else: ?>
-                <a href="<?= base_url('admin/login') ?>">GATE Admin</a>
+                <a href="<?= base_url('student/login') ?>">GATE Student</a>
             <?php endif; ?>
         </div>
     </div>
@@ -381,13 +410,12 @@ $adminActive = (bool) session()->get('admin_logged_in');
     <div class="hero-content">
 
         <h1>
-            Get Your Items<br>
-            Be Protected By<br>
-            <span class="accent">GATE</span>
+            Secure Your Items<br>
+            Through <span class="accent">GATE</span>
         </h1>
 
         <p class="hero-subtext">
-            Register, verify, and track your belongings across campus with a single system built for your item security.
+            Register, verify, and track your belongings across campus.
         </p>
 
     </div>
