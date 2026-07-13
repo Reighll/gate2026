@@ -100,6 +100,14 @@
                 .then(reg => console.log('Student SW registered', reg))
                 .catch(err => console.error('Student SW failed', err));
         });
+    }
+
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+        evt.detail.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+        evt.detail.headers['Pragma'] = 'no-cache';
+        evt.detail.headers['Expires'] = '0';
+    });
+
     function updateNavProfileVisibility() {
         const navProfileItem = document.getElementById('navProfileItem');
         if (!navProfileItem) return;
