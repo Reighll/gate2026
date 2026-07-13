@@ -27,24 +27,21 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
         <?php endif; ?>
 
         <div class="row g-4 pb-5 skeleton-wrapper">
-            <div class="col-lg-5">
+            <div class="col-6 col-lg-5">
                 <div class="card shadow-sm border-0 rounded-4 mb-4 h-auto">
                     <div class="card-body p-3 p-md-4">
                         <div class="skeleton skeleton-title w-50 mb-4" style="height: 18px;"></div>
                         <div class="row">
-                            <div class="col-12 col-xl-7">
+                            <div class="col-12 col-xl-5 text-center d-flex flex-column mt-2 mt-xl-0">
+                                <div class="skeleton skeleton-text w-50 mb-2 text-start d-none d-xl-block"></div>
+                                <div class="skeleton rounded-3 w-100 mb-3" style="height: 140px;"></div>
+                                <div class="skeleton rounded-2 w-100" style="height: 40px;"></div>
+                            </div>
+                            <div class="col-12 col-xl-7 mt-3 mt-xl-0">
                                 <div class="mb-3"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
                                 <div class="mb-3"><div class="skeleton skeleton-text w-25 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
                                 <div class="mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
-                                <div class="skeleton rounded-2 w-100 mb-3 mb-xl-0" style="height: 40px;"></div>
-                            </div>
-                            <div class="col-12 col-xl-5 text-center d-flex flex-column mt-2 mt-xl-0">
-                                <div class="skeleton skeleton-text w-50 mb-2 text-start d-none d-xl-block"></div>
-                                <div class="skeleton rounded-3 w-100 mb-3 flex-grow-1" style="min-height: 150px;"></div>
-                                <div class="d-flex flex-column gap-2 mt-auto">
-                                    <div class="skeleton rounded-2 w-100" style="height: 38px;"></div>
-                                    <div class="skeleton rounded-2 w-100" style="height: 38px;"></div>
-                                </div>
+                                <div class="skeleton rounded-2 w-100" style="height: 40px;"></div>
                             </div>
                         </div>
                     </div>
@@ -57,27 +54,20 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                 </div>
             </div>
 
-            <div class="col-lg-7">
+            <div class="col-6 col-lg-7">
                 <div class="card shadow-sm border-0 rounded-4 h-100">
-                    <div class="card-body p-3 p-md-4">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                    <<div class="card-body p-3 p-md-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                             <div class="skeleton skeleton-title w-25 mb-0" style="height: 20px;"></div>
-                            <div class="skeleton skeleton-badge rounded-pill" style="width: 100px; height: 32px;"></div>
                         </div>
-                        <div class="skeleton rounded-3 w-100 mb-4" style="height: 60px;"></div>
-                        <div class="skeleton rounded-3 w-100 mb-2" style="height: 60px;"></div>
-                        <div class="skeleton rounded-3 w-100 mb-4" style="height: 45px;"></div>
-                        <div class="row align-items-center mb-4">
-                            <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
-                                <div class="skeleton skeleton-badge rounded-3 mb-4" style="width: 120px; height: 38px;"></div>
-                                <div class="skeleton skeleton-title w-100 mb-4" style="height: 28px;"></div>
-                                <div class="skeleton skeleton-text w-75 mb-2"></div>
-                                <div class="skeleton skeleton-text w-75 mb-2"></div>
-                                <div class="skeleton skeleton-text w-50 mb-0"></div>
-                            </div>
-                            <div class="col-md-6 order-1 order-md-2">
-                                <div class="skeleton rounded-4 w-100" style="height: 200px;"></div>
-                            </div>
+                        <div class="skeleton rounded-3 w-100 mb-4 d-flex align-items-center justify-content-between p-3" style="height: 60px; background: #1c2333;">
+                            <div class="skeleton skeleton-badge rounded-pill" style="width: 90px; height: 24px;"></div>
+                            <div class="skeleton rounded-2" style="width: 40px; height: 16px;"></div>
+                        </div>
+                        <div class="d-flex flex-column align-items-center justify-content-center py-4">
+                            <div class="skeleton rounded-circle mb-3" style="width: 48px; height: 48px;"></div>
+                            <div class="skeleton skeleton-text w-50 mb-2" style="height: 20px;"></div>
+                            <div class="skeleton skeleton-text w-75 mb-0" style="height: 14px;"></div>
                         </div>
                     </div>
                 </div>
@@ -85,7 +75,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
         </div>
 
         <div class="row g-4 pb-5 real-wrapper d-none">
-            <div class="col-lg-5">
+            <div class="col-6 col-lg-5">
                 <div class="card shadow-sm border-0 rounded-4 mb-4 h-auto">
                     <div class="card-body p-3 p-md-4">
                         <h5 class="guard-card-title">LOG A VISITOR</h5>
@@ -95,22 +85,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                             <input type="hidden" name="rfid" value="<?= esc(session()->getFlashdata('visitor_rfid') ?? '') ?>">
 
                             <div class="row">
-                                <div class="col-12 col-xl-7">
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold text-muted mb-1">Visitor Name:</label>
-                                        <input type="text" class="form-control input-grey" name="visitor_name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold text-muted mb-1">Purpose:</label>
-                                        <input type="text" class="form-control input-grey" name="purpose" required>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="form-label small fw-bold text-muted mb-1">Items: <span class="fw-normal fst-italic">(Optional)</span></label>
-                                        <input type="text" class="form-control input-grey" name="items" placeholder="">
-                                    </div>
-                                    <button type="submit" class="btn btn-blue w-100 py-2 mb-3 mb-xl-0">LOG VISITOR</button>
-                                </div>
-
                                 <div class="col-12 col-xl-5 text-center d-flex flex-column mt-2 mt-xl-0">
                                     <label class="form-label small fw-bold text-muted mb-1 text-start d-none d-xl-block">ID Photo:</label>
 
@@ -142,6 +116,22 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                                     </div>
                                     <input type="hidden" name="webcam_photo" id="webcamPhotoInput">
                                 </div>
+
+                                <div class="col-12 col-xl-7">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted mb-1">Visitor Name:</label>
+                                        <input type="text" class="form-control input-grey" name="visitor_name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold text-muted mb-1">Purpose:</label>
+                                        <input type="text" class="form-control input-grey" name="purpose" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label small fw-bold text-muted mb-1">Items: <span class="fw-normal fst-italic">(Optional)</span></label>
+                                        <input type="text" class="form-control input-grey" name="items" placeholder="">
+                                    </div>
+                                    <button type="submit" class="btn btn-blue w-100 py-2 mb-3 mb-xl-0">LOG VISITOR</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -157,15 +147,12 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                 </div>
             </div>
 
-            <div class="col-lg-7">
+            <div class="col-6 col-lg-7">
                 <div class="card shadow-sm border-0 rounded-4 h-100">
                     <div class="card-body p-3 p-md-4">
 
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                             <h5 class="guard-card-title mb-0">SCANNER</h5>
-                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-3 fw-normal text-capitalize d-flex align-items-center">
-                                <span class="spinner-grow spinner-grow-sm me-2 bg-success" style="width: 8px; height: 8px;"></span> Listening
-                            </span>
                         </div>
 
                         <form id="hiddenScanForm" action="<?= base_url('guard/check-in') ?>" method="POST" data-check-url="<?= base_url('guard/check-latest-scan') ?>">
@@ -174,8 +161,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
 
                             <div class="debug-box p-3 mb-4 d-flex justify-content-between align-items-center" id="debugBox">
                                 <div class="d-flex align-items-center w-100 me-2">
-                                    <span class="text-success fw-bold me-2">&gt;_</span>
-                                    <span id="debugOutput">Waiting for scanner...</span>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fs-3 fw-normal text-capitalize d-flex align-items-center">
+                                        <span class="spinner-grow spinner-grow-sm me-2 bg-success" style="width: 8px; height: 8px;"></span> Listening
+                                    </span>
                                 </div>
                                 <span id="debugStatus" class="text-warning fw-bold small">IDLE</span>
                             </div>
@@ -283,8 +271,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
 
                         <?php else: ?>
                             <div class="d-flex flex-column align-items-center justify-content-center h-75 text-muted opacity-50 py-5">
+                                <i class="ti ti-scan fs-1 mb-3" style="font-size: 2.5rem !important; color: #c7cad4;"></i>
                                 <h3 class="fw-bold text-center text-dark">Ready for next scan</h3>
-                                <p class="text-center">Scan an RFID card to display details.</p>
+                                <p class="text-center">Scan an RFID sticker to display details.</p>
                             </div>
                         <?php endif; ?>
 

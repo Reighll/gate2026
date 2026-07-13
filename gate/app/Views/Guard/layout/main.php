@@ -69,8 +69,6 @@
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
      data-sidebar-position="fixed" data-header-position="fixed">
 
-    <?= $this->include('Guard/partials/sidebar') ?>
-
     <div class="body-wrapper">
         <div id="page-transition-loader" class="htmx-indicator" style="position: fixed; inset: 0; z-index: 1300; display: flex; align-items: center; justify-content: center; pointer-events: none;">
             <div class="loader-backdrop"></div>

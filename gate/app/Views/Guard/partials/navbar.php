@@ -1,14 +1,6 @@
 <header class="app-header">
     <nav class="navbar navbar-expand-lg navbar-light px-3">
 
-        <ul class="navbar-nav">
-            <li class="nav-item d-block d-xl-none">
-                <a class="nav-link sidebartoggler nav-icon-hover ps-0" id="headerCollapse" href="javascript:void(0)">
-                    <i class="ti ti-menu-2 fs-6"></i>
-                </a>
-            </li>
-        </ul>
-
         <a href="<?= base_url('guard/dashboard') ?>" class="d-flex align-items-center text-decoration-none ms-2">
             <img src="<?= base_url('assets/images/logos/favicon.png') ?>" alt="Gatepass Logo" width="35" height="35" class="me-2 drop-shadow-sm">
             <h4 class="mb-0 fw-bolder text-primary d-none d-sm-block" style="letter-spacing: 0.5px;">GATE <span class="text-dark">Guard</span></h4>
