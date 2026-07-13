@@ -37,7 +37,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/student-layout.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
-    <link rel="manifest" href="<?= base_url('manifest.json') ?>">
+    <link rel="manifest" href="<?= base_url('student/manifest.json') ?>">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/fonts/tabler-icons.woff2" as="font" type="font/woff2" crossorigin>
     <script src="<?= base_url('assets/js/mobile.js') ?>"></script>
     <script src="https://unpkg.com/htmx.org@1.9.11"></script>
@@ -94,16 +94,12 @@
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('<?= base_url('sw.js') ?>')
-                .then(reg => console.log('Service Worker Registered'))
-                .catch(err => console.log('Service Worker Registration failed: ', err));
+            navigator.serviceWorker.register('/student/sw.js', {
+                scope: '/student/'
+            })
+                .then(reg => console.log('Student SW registered', reg))
+                .catch(err => console.error('Student SW failed', err));
         });
-    }
-    document.body.addEventListener('htmx:configRequest', function(evt) {
-        evt.detail.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-        evt.detail.headers['Pragma'] = 'no-cache';
-        evt.detail.headers['Expires'] = '0';
-    });
     function updateNavProfileVisibility() {
         const navProfileItem = document.getElementById('navProfileItem');
         if (!navProfileItem) return;

@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/guard/guard.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
-    <link rel="manifest" href="<?= base_url('manifest.json') ?>">
+    <link rel="manifest" href="<?= base_url('student/manifest.json') ?>">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/fonts/tabler-icons.woff2" as="font" type="font/woff2" crossorigin>
     <script src="<?= base_url('assets/js/mobile.js') ?>"></script>
     <script src="https://unpkg.com/htmx.org@1.9.11"></script>
@@ -161,6 +161,15 @@
             $(window).trigger('load');
         }
     });
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/guard/sw.js', {
+                scope: '/guard/'
+            })
+                .then(reg => console.log('Guard SW registered', reg))
+                .catch(err => console.error('Guard SW failed', err));
+        });
+    }
 </script>
 </body>
 
