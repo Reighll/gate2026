@@ -36,7 +36,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/icons/tabler-icons/tabler-icons.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/auth.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/auth-background.css?v=12') ?>" />
-    <link rel="manifest" href="<?= base_url('manifest.json') ?>">
+    <link rel="manifest" href="<?= base_url('guard/manifest.json') ?>">
 
     <script>
         const savedTheme = localStorage.getItem('theme') || localStorage.getItem('bs-theme') || 'light';

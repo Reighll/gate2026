@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/auth.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/auth-background.css?v=13') ?>" />
-    <link rel="manifest" href="<?= base_url('manifest.json') ?>">
+    <link rel="manifest" href="<?= base_url('student/manifest.json') ?>">
 
 
     <script>
