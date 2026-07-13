@@ -102,6 +102,14 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    <?php if (empty($students)): ?>
+                                        <tr>
+                                            <td colspan="4" class="text-center py-5 text-muted">
+                                                <i class="ti ti-users fs-1 d-block mb-2 opacity-50"></i>
+                                                No students registered yet.
+                                            </td>
+                                        </tr>
+                                    <?php else: ?>
                                     <?php foreach ($students as $student): ?>
                                         <tr style="border-bottom: 1px solid #f6f6f6;">
                                             <td data-label="Student No." class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($student['student_number']) ?></h6></td>
@@ -120,7 +128,8 @@
                                             </td>
                                         </tr>
                                         <?= view('Admin/modals/admin/edit_student', ['student' => $student]) ?>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -144,6 +153,14 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    <?php if (empty($guards)): ?>
+                                        <tr>
+                                            <td colspan="3" class="text-center py-5 text-muted">
+                                                <i class="ti ti-shield fs-1 d-block mb-2 opacity-50"></i>
+                                                No guard accounts yet.
+                                            </td>
+                                        </tr>
+                                    <?php else: ?>
                                     <?php foreach ($guards as $guard): ?>
                                         <tr style="border-bottom: 1px solid #f6f6f6;">
                                             <td data-label="Username" class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($guard['username']) ?></h6></td>
@@ -161,7 +178,8 @@
                                             </td>
                                         </tr>
                                         <?= view('Admin/modals/admin/edit_guard', ['guard' => $guard]) ?>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -185,6 +203,14 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    <?php if (empty($admins)): ?>
+                                        <tr>
+                                            <td colspan="3" class="text-center py-5 text-muted">
+                                                <i class="ti ti-user-shield fs-1 d-block mb-2 opacity-50"></i>
+                                                No admin accounts yet.
+                                            </td>
+                                        </tr>
+                                    <?php else: ?>
                                     <?php foreach ($admins as $admin): ?>
                                         <tr style="border-bottom: 1px solid #f6f6f6;">
                                             <td data-label="Username" class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($admin['username']) ?></h6></td>
@@ -204,7 +230,8 @@
                                             </td>
                                         </tr>
                                         <?= view('Admin/modals/admin/edit_admin', ['admin' => $admin]) ?>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>

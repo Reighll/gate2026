@@ -11,25 +11,27 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             <h4 class="fw-semibold text-dark mb-0">My Registered Items</h4>
         </div>
 
-        <div class="row px-2 px-md-0 skeleton-wrapper">
-            <?php for($i=0; $i<3; $i++): ?>
-                <div class="col-6 col-md-6 col-xl-4 mb-3 mb-md-4 px-2">
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                        <div class="skeleton w-100" style="height: 150px; border-radius: 0;"></div>
-                        <div class="card-body d-flex flex-column p-3 p-md-4">
-                            <div class="skeleton skeleton-badge rounded-2 mb-2" style="width: 60px; height: 18px;"></div>
-                            <div class="skeleton skeleton-title w-100 mb-1" style="height: 20px;"></div>
-                            <div class="skeleton skeleton-text w-75 mb-3" style="height: 14px;"></div>
-                            <div class="skeleton skeleton-text w-50 mb-1" style="height: 12px;"></div>
-                            <div class="skeleton skeleton-text w-50 mb-3" style="height: 12px;"></div>
-                            <div class="skeleton rounded-3 w-100 mt-2" style="height: 38px;"></div>
+        <?php if (!empty($items)): ?>
+            <div class="row px-2 px-md-0 skeleton-wrapper">
+                <?php for($i=0; $i<min(count($items), 3); $i++): ?>
+                    <div class="col-6 col-md-6 col-xl-4 mb-3 mb-md-4 px-2">
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="skeleton w-100" style="height: 150px; border-radius: 0;"></div>
+                            <div class="card-body d-flex flex-column p-3 p-md-4">
+                                <div class="skeleton skeleton-badge rounded-2 mb-2" style="width: 60px; height: 18px;"></div>
+                                <div class="skeleton skeleton-title w-100 mb-1" style="height: 20px;"></div>
+                                <div class="skeleton skeleton-text w-75 mb-3" style="height: 14px;"></div>
+                                <div class="skeleton skeleton-text w-50 mb-1" style="height: 12px;"></div>
+                                <div class="skeleton skeleton-text w-50 mb-3" style="height: 12px;"></div>
+                                <div class="skeleton rounded-3 w-100 mt-2" style="height: 38px;"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endfor; ?>
-        </div>
+                <?php endfor; ?>
+            </div>
+        <?php endif; ?>
 
-        <div class="real-wrapper d-none">
+        <div class="real-wrapper <?= empty($items) ? '' : 'd-none' ?>">
             <?php if (empty($items)): ?>
                 <div class="card border-0 shadow-sm w-100 rounded-4">
                     <div class="card-body p-5 text-center">

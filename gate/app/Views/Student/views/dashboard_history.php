@@ -10,47 +10,49 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             <div class="card-body p-4">
                 <h4 class="card-title fw-semibold mb-4">Gatepass Scan History</h4>
 
-                <div class="skeleton-wrapper">
-                    <div class="d-block d-md-none">
-                        <?php for($i=0; $i<4; $i++): ?>
-                            <div class="px-0 py-3 border-bottom">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="w-50">
-                                        <div class="skeleton skeleton-title w-75 mb-1" style="height: 18px;"></div>
-                                        <div class="skeleton skeleton-text w-50 mb-0"></div>
+                <?php if (!empty($logs)): ?>
+                    <div class="skeleton-wrapper">
+                        <div class="d-block d-md-none">
+                            <?php for($i=0; $i<min(count($logs), 4); $i++): ?>
+                                <div class="px-0 py-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="w-50">
+                                            <div class="skeleton skeleton-title w-75 mb-1" style="height: 18px;"></div>
+                                            <div class="skeleton skeleton-text w-50 mb-0"></div>
+                                        </div>
+                                        <div class="skeleton skeleton-badge rounded-pill" style="width: 80px; height: 26px;"></div>
                                     </div>
-                                    <div class="skeleton skeleton-badge rounded-pill" style="width: 80px; height: 26px;"></div>
+                                    <div class="skeleton rounded-3 w-100 mt-2" style="height: 60px;"></div>
                                 </div>
-                                <div class="skeleton rounded-3 w-100 mt-2" style="height: 60px;"></div>
-                            </div>
-                        <?php endfor; ?>
-                    </div>
-                    <!-- Desktop Skeleton -->
-                    <div class="table-responsive d-none d-md-block">
-                        <table class="table align-middle text-nowrap mb-0">
-                            <thead class="border-bottom border-2">
-                            <tr>
-                                <th><div class="skeleton skeleton-text w-50 mb-0"></div></th>
-                                <th><div class="skeleton skeleton-text w-50 mb-0"></div></th>
-                                <th><div class="skeleton skeleton-text w-50 mb-0"></div></th>
-                                <th><div class="skeleton skeleton-text w-50 mb-0 ms-auto"></div></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?php for($i=0; $i<5; $i++): ?>
-                                <tr>
-                                    <td class="py-3"><div class="skeleton skeleton-text w-75 mb-1"></div><div class="skeleton skeleton-text w-50 mb-0"></div></td>
-                                    <td class="py-3"><div class="skeleton skeleton-title w-100 mb-0" style="height: 20px;"></div></td>
-                                    <td class="py-3"><div class="skeleton skeleton-text w-75 mb-0"></div></td>
-                                    <td class="py-3 text-end"><div class="skeleton skeleton-badge rounded-pill ms-auto" style="width: 100px; height: 32px;"></div></td>
-                                </tr>
                             <?php endfor; ?>
-                            </tbody>
-                        </table>
+                        </div>
+                        <!-- Desktop Skeleton -->
+                        <div class="table-responsive d-none d-md-block">
+                            <table class="table align-middle text-nowrap mb-0">
+                                <thead class="border-bottom border-2">
+                                <tr>
+                                    <th><div class="skeleton skeleton-text w-50 mb-0"></div></th>
+                                    <th><div class="skeleton skeleton-text w-50 mb-0"></div></th>
+                                    <th><div class="skeleton skeleton-text w-50 mb-0"></div></th>
+                                    <th><div class="skeleton skeleton-text w-50 mb-0 ms-auto"></div></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php for($i=0; $i<min(count($logs), 5); $i++): ?>
+                                    <tr>
+                                        <td class="py-3"><div class="skeleton skeleton-text w-75 mb-1"></div><div class="skeleton skeleton-text w-50 mb-0"></div></td>
+                                        <td class="py-3"><div class="skeleton skeleton-title w-100 mb-0" style="height: 20px;"></div></td>
+                                        <td class="py-3"><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                        <td class="py-3 text-end"><div class="skeleton skeleton-badge rounded-pill ms-auto" style="width: 100px; height: 32px;"></div></td>
+                                    </tr>
+                                <?php endfor; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
 
-                <div class="real-wrapper d-none">
+                <div class="real-wrapper <?= empty($logs) ? '' : 'd-none' ?>">
                     <?php if (empty($logs)): ?>
                         <div class="text-center text-muted py-5">
                             <i class="ti ti-history d-block mb-2 opacity-50" style="font-size: 3rem;"></i>

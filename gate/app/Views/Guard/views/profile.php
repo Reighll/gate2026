@@ -162,17 +162,89 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
         </div>
     </div>
 
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
+<?= $this->endSection() ?> <?= $this->section('scripts') ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        // 1. Skeleton Loaders
+        function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
             }, 600);
-        });
+        }
+        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+        // 2. The Cropper.js Logic
+        function initProfileCropper() {
+            const fileInput = document.getElementById('profile_pic');
+            const cropperImage = document.getElementById('cropperImage');
+            const previewImage = document.getElementById('profilePicPreview');
+            const cropModalEl = document.getElementById('cropModal');
+            const btnCrop = document.getElementById('btnCrop');
+
+            if (!fileInput || fileInput.hasAttribute('data-cropper-init')) return;
+            fileInput.setAttribute('data-cropper-init', 'true');
+
+            let cropper = null;
+            let bootstrapModal = new bootstrap.Modal(cropModalEl);
+
+            fileInput.addEventListener('change', function (e) {
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        cropperImage.src = event.target.result;
+                        bootstrapModal.show();
+                    };
+                    reader.readAsDataURL(files[0]);
+                }
+            });
+
+            cropModalEl.addEventListener('shown.bs.modal', function () {
+                cropper = new Cropper(cropperImage, {
+                    aspectRatio: 1,
+                    viewMode: 2,
+                    autoCropArea: 1,
+                    responsive: true,
+                });
+            });
+
+            cropModalEl.addEventListener('hidden.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                if (previewImage.getAttribute('data-updated') !== 'true') {
+                    fileInput.value = '';
+                }
+                previewImage.removeAttribute('data-updated');
+            });
+
+            btnCrop.addEventListener('click', function () {
+                if (!cropper) return;
+
+                const canvas = cropper.getCroppedCanvas({
+                    width: 500,
+                    height: 500,
+                });
+
+                previewImage.src = canvas.toDataURL('image/jpeg');
+                previewImage.setAttribute('data-updated', 'true');
+
+                canvas.toBlob(function (blob) {
+                    const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg", lastModified: new Date().getTime() });
+                    const container = new DataTransfer();
+                    container.items.add(file);
+                    fileInput.files = container.files;
+
+                    bootstrapModal.hide();
+                }, 'image/jpeg', 0.9);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", initProfileCropper);
+        document.body.addEventListener('htmx:afterSettle', initProfileCropper);
     </script>
     <script src="<?= base_url('assets/js/guard/guard-profile.js') ?>"></script>
 <?= $this->endSection() ?>
