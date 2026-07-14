@@ -170,6 +170,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         <?php
                         $scannedData = session()->getFlashdata('scanned_items') ?? session()->getFlashdata('scanned_item');
                         $scannedStudent = session()->getFlashdata('scanned_student');
+                        $departedVisitor = session()->getFlashdata('departed_visitor');
 
                         $scannedItems = [];
                         if (!empty($scannedData)) {
@@ -266,6 +267,28 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                     <?php endforeach; ?>
                                 </div>
                             <?php endif; ?>
+
+                        <?php elseif ($departedVisitor): ?>
+
+                            <div class="row align-items-center mb-4">
+                                <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
+                                    <div class="mb-3">
+                                        <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
+                                            <i class="ti ti-logout me-2 fs-5"></i> VISITOR DEPARTED
+                                        </span>
+                                    </div>
+                                    <h4 class="fw-bold text-dark mb-4 fs-4 text-uppercase"><?= esc($departedVisitor['name'] ?? 'Visitor') ?></h4>
+                                </div>
+                                <div class="col-md-6 order-1 order-md-2">
+                                    <div class="image-placeholder-box p-3 h-100 bg-white border" style="min-height: 200px; border-radius: 12px;">
+                                        <?php if (!empty($departedVisitor['photo'])): ?>
+                                            <img src="<?= base_url('uploads/visitor_ids/' . esc($departedVisitor['photo'])) ?>" alt="Visitor ID" class="img-fluid rounded shadow-sm" style="max-height: 100%; object-fit: contain;">
+                                        <?php else: ?>
+                                            <i class="ti ti-id text-muted opacity-25 d-flex justify-content-center align-items-center h-100" style="font-size: 5rem;"></i>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
 
                         <?php else: ?>
                             <div class="d-flex flex-column align-items-center justify-content-center h-75 text-muted opacity-50 py-5">

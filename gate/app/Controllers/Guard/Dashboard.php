@@ -55,6 +55,7 @@ class Dashboard extends BaseController
 
         // NEW: Track visitor states for the UI messages
         $lastVisitorName  = null;
+        $lastVisitorPhoto = null;
         $isVisitorHandled = false;
 
         // 2. LOOP THROUGH EVERY TAG IN THE BATCH
@@ -114,8 +115,9 @@ class Dashboard extends BaseController
                                         $successCount++;
                                         $isVisitorHandled = true;
 
-                                        // Capture the name for the success banner
-                                        $lastVisitorName = $activeVisit['name'] ?? 'Visitor';
+                                        // Capture the name AND id photo for the success banner
+                                        $lastVisitorName  = $activeVisit['name'] ?? 'Visitor';
+                                        $lastVisitorPhoto = $activeVisit['id_photo'] ?? null;
                                     }
                                 }
                             }
@@ -194,6 +196,11 @@ class Dashboard extends BaseController
 
             } elseif ($isVisitorHandled && $successCount > 0) {
                 // NEW: Trigger the success banner specifically for Visitors!
+                // Flash the visitor's name + ID photo so the dashboard can display it, just like item scans.
+                session()->setFlashdata('departed_visitor', [
+                    'name'  => $lastVisitorName,
+                    'photo' => $lastVisitorPhoto,
+                ]);
                 return redirect()->to('guard/dashboard')->with('success', "VISITOR DEPARTED: " . esc($lastVisitorName));
 
             } elseif ($lastItem && $lastStudent && $successCount > 0) {
