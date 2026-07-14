@@ -180,6 +180,128 @@ class Auth extends BaseController
         return redirect()->to('student/login')->with('error', 'This account is already verified or does not exist.');
     }
 
+    // ==========================================
+    // FORGOT / RESET PASSWORD
+    // ==========================================
+
+    public function forgotPassword()
+    {
+        if (session()->get('student_logged_in')) return redirect()->to('student/dashboard');
+        return view('Student/auth/forgot_password');
+    }
+
+    public function sendResetLink()
+    {
+        $model = new StudentModel();
+        $email = trim((string) $this->request->getPost('email'));
+
+        if (empty($email)) {
+            return redirect()->back()->withInput()->with('error', 'Please enter your email address.');
+        }
+
+        $student = $model->where('email', $email)->first();
+
+        // Always show the same generic message whether or not the account exists,
+        // so we don't reveal which emails are registered.
+        $genericMessage = 'If that email is registered, a password reset link has been sent. Please check your inbox (or spam folder).';
+
+        if ($student) {
+            $resetToken = bin2hex(random_bytes(32));
+            $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+            $model->update($student['id'], [
+                'reset_token'         => $resetToken,
+                'reset_token_expires' => $expiresAt,
+            ]);
+
+            $this->_sendResetEmail($email, $student['first_name'], $resetToken);
+        }
+
+        return redirect()->to('student/login')->with('success', $genericMessage);
+    }
+
+    public function resetPassword($token = null)
+    {
+        if (empty($token)) {
+            return redirect()->to('student/forgot-password')->with('error', 'Invalid or missing reset link.');
+        }
+
+        $model = new StudentModel();
+        $student = $model->where('reset_token', $token)->first();
+
+        if (!$student || empty($student['reset_token_expires']) || strtotime($student['reset_token_expires']) < time()) {
+            return redirect()->to('student/forgot-password')->with('error', 'This reset link is invalid or has expired. Please request a new one.');
+        }
+
+        return view('Student/auth/reset_password', ['token' => $token]);
+    }
+
+    public function updatePassword()
+    {
+        $model = new StudentModel();
+
+        $token = $this->request->getPost('token');
+        $newPassword = $this->request->getPost('new_password');
+        $confirmPassword = $this->request->getPost('confirm_password');
+
+        if (empty($token)) {
+            return redirect()->to('student/forgot-password')->with('error', 'Invalid or missing reset link.');
+        }
+
+        $student = $model->where('reset_token', $token)->first();
+
+        if (!$student || empty($student['reset_token_expires']) || strtotime($student['reset_token_expires']) < time()) {
+            return redirect()->to('student/forgot-password')->with('error', 'This reset link is invalid or has expired. Please request a new one.');
+        }
+
+        if (empty($newPassword) || strlen($newPassword) < 8) {
+            return redirect()->back()->withInput()->with('error', 'Password must be at least 8 characters long.');
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            return redirect()->back()->withInput()->with('error', 'Passwords do not match.');
+        }
+
+        $model->update($student['id'], [
+            'password'            => password_hash($newPassword, PASSWORD_DEFAULT),
+            'reset_token'         => null,
+            'reset_token_expires' => null,
+        ]);
+
+        return redirect()->to('student/login')->with('success', 'Your password has been reset successfully. Please log in.');
+    }
+
+    private function _sendResetEmail($email, $name, $token)
+    {
+        $emailService = \Config\Services::email();
+        $emailService->setTo($email);
+        $emailService->setSubject('Reset your GATE Account Password');
+
+        $resetUrl = base_url('student/reset-password/' . $token);
+
+        $message = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;'>
+                <h2 style='color: #1e88e5;'>Password Reset Request</h2>
+                <p style='font-size: 16px;'>Hi {$name},</p>
+                <p style='font-size: 16px; color: #555;'>We received a request to reset your GATE account password. Click the button below to choose a new password. This link will expire in 1 hour.</p>
+                <br>
+                <a href='{$resetUrl}' style='background-color: #1e88e5; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;'>Reset Password</a>
+                <br><br>
+                <p style='font-size: 14px; color: #999;'>If you didn't request this, you can safely ignore this email — your password will remain unchanged.</p>
+                <p style='font-size: 14px; color: #999;'>If the button doesn't work, copy and paste this link into your browser:<br> <a href='{$resetUrl}'>{$resetUrl}</a></p>
+            </div>
+        ";
+
+        $emailService->setMessage($message);
+
+        if ($emailService->send()) {
+            return true;
+        } else {
+            log_message('error', 'Password reset email failed to send to: ' . $email . '. Error: ' . $emailService->printDebugger(['headers']));
+            return false;
+        }
+    }
+
     public function logout()
     {
         session()->destroy();

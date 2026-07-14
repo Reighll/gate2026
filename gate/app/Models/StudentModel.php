@@ -22,6 +22,8 @@ class StudentModel extends Model
         'year_level',
         'is_verified',
         'verify_token',
-        'profile_pic'
+        'profile_pic',
+        'reset_token',
+        'reset_token_expires'
     ];
 }

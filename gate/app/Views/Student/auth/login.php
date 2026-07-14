@@ -143,6 +143,9 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
                         <i class="ti ti-eye fs-5 text-muted"></i>
                     </button>
                 </div>
+                <div class="text-end mt-2">
+                    <a href="<?= base_url('student/forgot-password') ?>" class="text-muted fw-semibold text-decoration-none small">Forgot Password?</a>
+                </div>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 py-3 fs-5 mb-4 rounded-3 fw-bold shadow-sm">Sign In</button>

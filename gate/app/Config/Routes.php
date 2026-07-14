@@ -110,6 +110,10 @@ $routes->group('student', function($routes) {
     $routes->get('logout', 'Student\Auth::logout');
     $routes->get('verifyEmail/(:any)', 'Student\Auth::verifyEmail/$1');
     $routes->get('resendVerification/(:any)', 'Student\Auth::resendVerification/$1');
+    $routes->get('forgot-password', 'Student\Auth::forgotPassword');
+    $routes->post('forgot-password/send', 'Student\Auth::sendResetLink');
+    $routes->get('reset-password/(:any)', 'Student\Auth::resetPassword/$1');
+    $routes->post('reset-password/update', 'Student\Auth::updatePassword');
 
     // Dashboard & Sidebar Pages (MPA Structure)
     $routes->get('dashboard', 'Student\Dashboard::index', ['filter' => 'studentAuth']);
