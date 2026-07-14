@@ -227,6 +227,24 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
 
+        // 1b. Inline Alert Helper (mirrors the server-side flash alert markup/style)
+        function showFormAlert(type, message) {
+            const container = document.getElementById('profile-container');
+            const existing = container.querySelector('.js-inline-alert');
+            if (existing) existing.remove();
+
+            const icon = type === 'success' ? 'ti-check-circle' : 'ti-alert-triangle';
+
+            const alertEl = document.createElement('div');
+            alertEl.className = `alert alert-${type} shadow-sm border-0 mb-4 d-flex align-items-center rounded-3 js-inline-alert`;
+            alertEl.innerHTML = `<i class="ti ${icon} fs-4 me-2"></i>${message}`;
+
+            const heading = container.querySelector('.d-flex.align-items-center.mb-4');
+            heading.insertAdjacentElement('afterend', alertEl);
+
+            alertEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
         // 2. The Cropper.js Logic
         function initProfileCropper() {
             const fileInput = document.getElementById('profile_pic');
@@ -250,7 +268,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                         const hasFace = await imageHasFace(dataUrl);
                         if (!hasFace) {
-                            alert('No face detected in this photo. Please upload a clear, front-facing picture of yourself.');
+                            showFormAlert('danger', 'No face detected in this photo. Please upload a clear, front-facing picture of yourself.');
                             fileInput.value = '';
                             return;
                         }
@@ -294,7 +312,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                 const hasFace = await imageHasFace(croppedDataUrl);
                 if (!hasFace) {
-                    alert('No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
+                    showFormAlert('danger', 'No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
                     return;
                 }
 
