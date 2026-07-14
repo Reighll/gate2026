@@ -1,5 +1,8 @@
 <?php
 $layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'Admin/layout/main';
+
+$referrer = service('request')->getHeaderLine('HX-Current-URL');
+$slideIn = (strpos($referrer, 'profile') !== false);
 ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Dashboard | Admin Portal<?= $this->endSection() ?>
@@ -7,7 +10,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'A
 
     <link rel="stylesheet" href="<?= base_url('assets/css/admin/print.css') ?>" media="print" />
 
-    <div id="dashboard-container" class="page-transition-container pt-5 mt-4 page-slide-in">
+    <div id="dashboard-container" class="page-transition-container pt-5 mt-4 <?= $slideIn ? 'page-slide-in' : '' ?>">
 
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
             <h4 class="fw-semibold mb-0">Dashboard Overview</h4>

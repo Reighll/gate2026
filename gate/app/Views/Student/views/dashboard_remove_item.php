@@ -138,7 +138,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             }, 600);
         }
 
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+        window.addEventListener("load", hideMySkeletons);
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
 
         // --- NEW: Inline Alert System ---
@@ -194,7 +194,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     modalInstance.hide();
                 }
 
-                // Clean up grey backdrops
+                // Clean up grey backdropsdocument.addEventListener("DOMContentLoaded", hideMySkeletons);
                 setTimeout(() => {
                     document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                     document.body.classList.remove('modal-open');

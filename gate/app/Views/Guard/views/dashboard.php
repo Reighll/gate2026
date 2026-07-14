@@ -1,5 +1,8 @@
 <?php
 $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'Guard/layout/main';
+
+$referrer = service('request')->getHeaderLine('HX-Current-URL');
+$slideIn = (strpos($referrer, 'profile') !== false);
 ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Scanner | Guard Portal<?= $this->endSection() ?>
@@ -9,7 +12,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
 
 <?= $this->section('content') ?>
 
-    <div id="dashboard-container" class="page-transition-container mt-5 pt-5 d-flex flex-column gap-3 page-slide-in">
+    <div id="dashboard-container" class="page-transition-container mt-5 pt-5 d-flex flex-column gap-3 <?= $slideIn ? 'page-slide-in' : '' ?>">
         <?php if (session()->getFlashdata('success')): ?>
             <div class="alert alert-success p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
                 <i class="ti ti-check-circle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('success') ?></span>
@@ -47,23 +50,20 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                     </div>
                 </div>
                 <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-body p-3 p-md-4 text-center text-xl-start">
-                        <div class="skeleton skeleton-title w-75 mb-3" style="height: 18px;"></div>
-                        <div class="skeleton w-25 mt-2 mb-0" style="height: 60px;"></div>
+                    <div class="card-body p-3 p-md-4 text-center">
+                        <div class="skeleton skeleton-title w-75 mb-3 mx-auto" style="height: 18px;"></div>
+                        <div class="skeleton w-25 mt-2 mb-0 mx-auto" style="height: 60px;"></div>
                     </div>
                 </div>
             </div>
 
             <div class="col-6 col-lg-7">
                 <div class="card shadow-sm border-0 rounded-4 h-100">
-                    <<div class="card-body p-3 p-md-4">
+                    <div class="card-body p-3 p-md-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                             <div class="skeleton skeleton-title w-25 mb-0" style="height: 20px;"></div>
                         </div>
-                        <div class="skeleton rounded-3 w-100 mb-4 d-flex align-items-center justify-content-between p-3" style="height: 60px; background: #1c2333;">
-                            <div class="skeleton skeleton-badge rounded-pill" style="width: 90px; height: 24px;"></div>
-                            <div class="skeleton rounded-2" style="width: 40px; height: 16px;"></div>
-                        </div>
+                        <div class="skeleton rounded-3 w-100 mb-4" style="height: 60px;"></div>
                         <div class="d-flex flex-column align-items-center justify-content-center py-4">
                             <div class="skeleton rounded-circle mb-3" style="width: 48px; height: 48px;"></div>
                             <div class="skeleton skeleton-text w-50 mb-2" style="height: 20px;"></div>
@@ -93,6 +93,10 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                                         <video id="webcamVideo" autoplay playsinline style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"></video>
                                         <img id="photoPreview" style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2;" />
                                         <canvas id="photoCanvas" style="display:none;"></canvas>
+
+                                        <button type="button" id="switchCameraBtn" class="camera-switch-overlay" style="display:none;" title="Switch Camera">
+                                            <i class="ti ti-refresh"></i>
+                                        </button>
                                     </div>
 
                                     <div class="d-flex flex-column gap-2 mt-auto">
@@ -100,15 +104,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                                             <i class="ti ti-camera me-1"></i> START CAMERA
                                         </button>
 
-                                        <!-- THE FIX: Grouped the Snap button and the new Switch Camera button -->
-                                        <div class="d-flex gap-2 w-100">
-                                            <button type="button" id="takePhotoBtn" class="btn btn-success flex-grow-1 py-2 shadow-sm" style="display:none;">
-                                                SNAP PHOTO
-                                            </button>
-                                            <button type="button" id="switchCameraBtn" class="btn btn-outline-secondary py-2 shadow-sm px-3" style="display:none;" title="Switch Camera">
-                                                <i class="ti ti-refresh"></i>
-                                            </button>
-                                        </div>
+                                        <button type="button" id="takePhotoBtn" class="btn btn-success w-100 py-2 shadow-sm" style="display:none;">
+                                            SNAP PHOTO
+                                        </button>
 
                                         <button type="button" id="retakePhotoBtn" class="btn btn-warning w-100 py-2" style="display:none;">
                                             <i class="ti ti-reload me-1"></i> RETAKE
@@ -138,7 +136,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                 </div>
 
                 <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-body p-3 p-md-4 text-center text-xl-start">
+                    <div class="card-body p-3 p-md-4 text-center">
                         <h5 class="guard-card-title mb-0 border-0">VISITOR SLOTS REMAINING:</h5>
                         <h1 class="display-3 fw-light text-muted mt-2 mb-0" style="font-family: 'Courier New', Courier, monospace; letter-spacing: -2px;">
                             <?= esc($slotsAvailable ?? 0) ?>
@@ -286,170 +284,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
 
 <?= $this->section('scripts') ?>
     <script>
-        // SKELETON LOADER (with HTMX support)
-        function hideMySkeletons() {
-            setTimeout(() => {
-                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-            }, 600);
-        }
-
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-
-        // ==========================================
-        // 1. WEBCAM CAPTURE LOGIC (Front/Rear Toggle Added)
-        // ==========================================
-        const startCameraBtn = document.getElementById('startCameraBtn');
-        const takePhotoBtn = document.getElementById('takePhotoBtn');
-        const retakePhotoBtn = document.getElementById('retakePhotoBtn');
-        const switchCameraBtn = document.getElementById('switchCameraBtn'); // New switch button
-        const webcamVideo = document.getElementById('webcamVideo');
-        const photoPreview = document.getElementById('photoPreview');
-        const photoCanvas = document.getElementById('photoCanvas');
-        const cameraIcon = document.getElementById('cameraIcon');
-        const webcamPhotoInput = document.getElementById('webcamPhotoInput');
-        const manualPhotoInput = document.getElementById('manualPhotoInput');
-
-        let videoStream = null;
-        let currentFacingMode = 'user'; // Defaults to front camera. Use 'environment' to default to rear.
-
-        async function initCamera(facingMode) {
-            // 1. If a camera is already running, turn it off before switching
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-            }
-
-            try {
-                // 2. Request the specific camera (front or back)
-                videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: facingMode }
-                });
-
-                webcamVideo.srcObject = videoStream;
-                webcamVideo.style.display = 'block';
-                cameraIcon.style.display = 'none';
-                photoPreview.style.display = 'none';
-
-                // 3. Update UI buttons
-                startCameraBtn.style.display = 'none';
-                takePhotoBtn.style.display = 'block';
-                switchCameraBtn.style.display = 'block'; // Show switch button
-                retakePhotoBtn.style.display = 'none';
-            } catch (err) {
-                alert("Camera access denied or not available. Please check your browser permissions.");
-                console.error(err);
-            }
-        }
-
-        startCameraBtn?.addEventListener('click', () => {
-            initCamera(currentFacingMode);
-        });
-
-        switchCameraBtn?.addEventListener('click', () => {
-            // Toggle the mode and re-initialize the camera
-            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-            initCamera(currentFacingMode);
-        });
-
-        takePhotoBtn?.addEventListener('click', () => {
-            const context = photoCanvas.getContext('2d');
-            photoCanvas.width = webcamVideo.videoWidth;
-            photoCanvas.height = webcamVideo.videoHeight;
-            context.drawImage(webcamVideo, 0, 0, photoCanvas.width, photoCanvas.height);
-
-            const imageData = photoCanvas.toDataURL('image/png');
-            webcamPhotoInput.value = imageData;
-            photoPreview.src = imageData;
-
-            webcamVideo.style.display = 'none';
-            photoPreview.style.display = 'block';
-
-            takePhotoBtn.style.display = 'none';
-            switchCameraBtn.style.display = 'none'; // Hide switch button when viewing photo
-            retakePhotoBtn.style.display = 'block';
-        });
-
-        retakePhotoBtn?.addEventListener('click', () => {
-            webcamPhotoInput.value = '';
-            webcamVideo.style.display = 'block';
-            photoPreview.style.display = 'none';
-
-            takePhotoBtn.style.display = 'block';
-            switchCameraBtn.style.display = 'block'; // Show switch button again
-            retakePhotoBtn.style.display = 'none';
-        });
-
-        manualPhotoInput?.addEventListener('change', function(e) {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    photoPreview.src = event.target.result;
-                    if (videoStream) {
-                        videoStream.getTracks().forEach(track => track.stop());
-                    }
-                    photoPreview.style.display = 'block';
-                    cameraIcon.style.display = 'none';
-                    webcamVideo.style.display = 'none';
-
-                    startCameraBtn.style.display = 'none';
-                    takePhotoBtn.style.display = 'none';
-                    switchCameraBtn.style.display = 'none';
-                    retakePhotoBtn.style.display = 'block';
-                }
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-
-        // ==========================================
-        // 2. IoT BRIDGE (ESP32 Polling)
-        // ==========================================
-        const rfidInput = document.getElementById('hiddenRfidInput');
-        const hiddenForm = document.getElementById('hiddenScanForm');
-        const debugOutput = document.getElementById('debugOutput');
-        const debugStatus = document.getElementById('debugStatus');
-
-        if (rfidInput && hiddenForm) {
-            const checkUrl = hiddenForm.getAttribute('data-check-url');
-            setInterval(() => {
-                fetch(checkUrl, {
-                    headers: { "X-Requested-With": "XMLHttpRequest" }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            if (debugOutput && debugStatus) {
-                                debugOutput.textContent = `Scanned EPC: ${data.epc}`;
-                                debugStatus.textContent = "PROCESSING...";
-                                debugStatus.className = "text-info fw-bold small";
-                            }
-                            rfidInput.value = data.epc;
-                            hiddenForm.submit();
-                        }
-                    })
-                    .catch(err => {});
-            }, 1000);
-        }
-
-        // ==========================================
-        // 3. PASSWORD TOGGLE
-        // ==========================================
-        document.getElementById('togglePassword')?.addEventListener('click', function (e) {
-            const passwordInput = document.getElementById('password');
-            const icon = this.querySelector('i');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('ti-eye');
-                icon.classList.add('ti-eye-off');
-            } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('ti-eye-off');
-                icon.classList.add('ti-eye');
-            }
-        });
-        // ==========================================
-        // 4. MANDATORY PHOTO VALIDATION
-        // ==========================================
         document.getElementById('visitorLogForm')?.addEventListener('submit', function(e) {
             const webcamInput = document.getElementById('webcamPhotoInput').value;
             const manualInput = document.getElementById('manualPhotoInput').files.length;
