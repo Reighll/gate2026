@@ -171,9 +171,12 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                     <?php foreach($recentLogs as $log): ?>
                                         <tr style="border-bottom: 1px solid #f6f6f6;">
                                             <td class="py-3">
+                                                <?php
+                                                $logTime = new DateTime($log['created_at']);
+                                                ?>
                                                 <div class="d-flex flex-column">
-                                                    <span class="fw-bold text-dark"><?= date('M d, Y', strtotime($log['created_at'])) ?></span>
-                                                    <span class="text-muted small"><i class="ti ti-clock me-1"></i><?= date('h:i:s A', strtotime($log['created_at'])) ?></span>
+                                                    <span class="fw-bold text-dark"><?= $logTime->format('M d, Y') ?></span>
+                                                    <span class="text-muted small"><i class="ti ti-clock me-1"></i><?= $logTime->format('h:i:s A') ?></span>
                                                 </div>
                                             </td>
                                             <td class="py-3">
