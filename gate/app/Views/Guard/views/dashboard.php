@@ -185,16 +185,16 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         <?php if (!empty($scannedItems) && $scannedStudent): ?>
 
                         <?php if (count($scannedItems) === 1): ?>
-                        <?php $item = $scannedItems[0]; ?>
-                        <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4">
-                            <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
-                                <?php $studentPic = $scannedStudent['profile_pic'] ?? 'default.png'; ?>
-                                <img src="<?= base_url('uploads/profiles/' . esc($studentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
-                                <div class="d-flex flex-column">
-                                    <span class="text-uppercase fw-bold text-primary"><?= esc($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name']) ?></span>
-                                    <span class="text-uppercase text-muted small mt-1"><?= esc($scannedStudent['student_number'] ?? 'NO ID') ?></span>
+                            <?php $item = $scannedItems[0]; ?>
+                            <?php $itemStudentPic = $item['student_profile_pic'] ?? $scannedStudent['profile_pic'] ?? 'default.png'; ?>
+                            <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4">
+                                <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
+                                    <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
+                                    <div class="d-flex flex-column">
+                                        <span class="text-uppercase fw-bold text-primary"><?= esc(trim(($item['student_first_name'] ?? '') . ' ' . ($item['student_last_name'] ?? '')) ?: ($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name'])) ?></span>
+                                        <span class="text-uppercase text-muted small mt-1"><?= esc($item['student_number'] ?? $scannedStudent['student_number'] ?? 'NO ID') ?></span>
+                                    </div>
                                 </div>
-                            </div>
                             <div class="row align-items-center">
                                 <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
                                     <?php
