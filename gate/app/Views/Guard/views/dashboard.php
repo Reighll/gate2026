@@ -229,15 +229,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         </div>
 
                             <?php else: ?>
-                                <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
-                                    <?php $studentPic = $scannedStudent['profile_pic'] ?? 'default.png'; ?>
-                                    <img src="<?= base_url('uploads/profiles/' . esc($studentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
-                                    <div class="d-flex flex-column">
-                                        <span class="text-uppercase fw-bold text-primary"><?= esc($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name']) ?></span>
-                                        <span class="text-uppercase text-muted small mt-1"><?= esc($scannedStudent['student_number'] ?? 'NO ID') ?></span>
-                                    </div>
-                                </div>
-
                                 <h6 class="fw-bold text-muted mb-3 d-flex align-items-center">
                                     <i class="ti ti-devices me-2"></i> SCANNED ITEMS (<?= count($scannedItems) ?>)
                                 </h6>
@@ -249,7 +240,15 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                                 <?php
                                                 // MULTIPLE ITEM LOGIC
                                                 $isTimeIn = (isset($item['action_taken']) && $item['action_taken'] === 'TIME-IN');
+                                                $itemStudentPic = $item['student_profile_pic'] ?? 'default.png';
                                                 ?>
+                                                <div class="d-flex align-items-center pb-2 mb-2 border-bottom">
+                                                    <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-2 border border-2 border-light shadow-sm" style="width: 32px; height: 32px; object-fit: cover; flex-shrink: 0;">
+                                                    <div class="d-flex flex-column">
+                                                        <span class="text-uppercase fw-bold text-primary" style="font-size: 0.8rem;"><?= esc(trim(($item['student_first_name'] ?? '') . ' ' . ($item['student_last_name'] ?? '')) ?: 'Unknown Student') ?></span>
+                                                        <span class="text-uppercase text-muted" style="font-size: 0.7rem;"><?= esc($item['student_number'] ?? 'NO ID') ?></span>
+                                                    </div>
+                                                </div>
                                                 <div class="mb-2">
                                                     <?php if ($isTimeIn): ?>
                                                         <span class="badge bg-success text-white fw-bold px-2 py-1 fs-2 rounded-2 shadow-sm">
