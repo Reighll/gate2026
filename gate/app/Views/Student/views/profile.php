@@ -182,6 +182,39 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script id="faceApiLib" hx-preserve="true" src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+    <script id="faceModelLoader" hx-preserve="true">
+        // 0. Face Detection Setup
+        // This script tag is marked hx-preserve so it loads the face-detection model
+        // only ONCE per browser session, instead of every time this page is opened via htmx.
+        // Model files must be placed at public/assets/models/ (see notes below the code).
+        window.faceModelsReady = window.faceModelsReady || (async function loadFaceModels() {
+            const MODEL_URL = '<?= base_url('assets/models') ?>';
+            try {
+                await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+                return true;
+            } catch (err) {
+                console.error('Face detection models failed to load:', err);
+                return false;
+            }
+        })();
+
+        window.imageHasFace = window.imageHasFace || async function imageHasFace(dataUrl) {
+            const modelsLoaded = await window.faceModelsReady;
+            if (!modelsLoaded) {
+                // Fail-open: if the models can't load (e.g. offline), don't block the user.
+                return true;
+            }
+
+            const img = new Image();
+            img.src = dataUrl;
+            await img.decode();
+
+            const detection = await faceapi.detectSingleFace(img, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.4 }));
+            return !!detection;
+        };
+    </script>
 
     <script>
         // 1. Skeleton Loaders
@@ -212,8 +245,17 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 const files = e.target.files;
                 if (files && files.length > 0) {
                     const reader = new FileReader();
-                    reader.onload = function (event) {
-                        cropperImage.src = event.target.result;
+                    reader.onload = async function (event) {
+                        const dataUrl = event.target.result;
+
+                        const hasFace = await imageHasFace(dataUrl);
+                        if (!hasFace) {
+                            alert('No face detected in this photo. Please upload a clear, front-facing picture of yourself.');
+                            fileInput.value = '';
+                            return;
+                        }
+
+                        cropperImage.src = dataUrl;
                         bootstrapModal.show();
                     };
                     reader.readAsDataURL(files[0]);
@@ -240,7 +282,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 previewImage.removeAttribute('data-updated');
             });
 
-            btnCrop.addEventListener('click', function () {
+            btnCrop.addEventListener('click', async function () {
                 if (!cropper) return;
 
                 const canvas = cropper.getCroppedCanvas({
@@ -248,7 +290,15 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     height: 500,
                 });
 
-                previewImage.src = canvas.toDataURL('image/jpeg');
+                const croppedDataUrl = canvas.toDataURL('image/jpeg');
+
+                const hasFace = await imageHasFace(croppedDataUrl);
+                if (!hasFace) {
+                    alert('No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
+                    return;
+                }
+
+                previewImage.src = croppedDataUrl;
                 previewImage.setAttribute('data-updated', 'true');
 
                 canvas.toBlob(function (blob) {

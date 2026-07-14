@@ -185,7 +185,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         <?php if (!empty($scannedItems) && $scannedStudent): ?>
 
                             <div class="info-block py-3 px-4 mb-2 shadow-sm text-uppercase fw-bold bg-primary-subtle text-primary border border-primary-subtle rounded-3 d-flex align-items-center">
-                                <i class="ti ti-user me-2 fs-4"></i> <?= esc($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name']) ?>
+                                <?php $studentPic = $scannedStudent['profile_pic'] ?? 'default.png'; ?>
+                                <img src="<?= base_url('uploads/profiles/' . esc($studentPic)) ?>" alt="Student" class="rounded-circle me-2 border border-2 border-white shadow-sm" style="width: 36px; height: 36px; object-fit: cover; flex-shrink: 0;">
+                                <?= esc($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name']) ?>
                             </div>
                             <div class="info-block py-2 px-4 mb-4 shadow-sm text-uppercase font-monospace bg-light rounded-3 text-muted">
                                 <?= esc($scannedStudent['student_number'] ?? 'NO ID') ?>
