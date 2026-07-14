@@ -124,8 +124,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', updateNavProfileVisibility);
-    document.addEventListener('DOMContentLoaded', hideMySkeletons);
-
+    window.addEventListener('load', hideMySkeletons);
     document.body.addEventListener('htmx:afterSettle', function(evt) {
 
         // --- 1. DYNAMIC NAVBAR VISIBILITY ---
