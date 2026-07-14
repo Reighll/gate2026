@@ -148,6 +148,11 @@ class Dashboard extends BaseController
 
                     $lastStudent = $student;
 
+                    $item['student_first_name']    = $student['first_name'] ?? null;
+                    $item['student_last_name']      = $student['last_name'] ?? null;
+                    $item['student_number']         = $student['student_number'] ?? null;
+                    $item['student_profile_pic']    = $student['profile_pic'] ?? null;
+
                     if ($item['status'] === 'missing') {
                         $warningMessages[] = "🚨 MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
                         continue;
