@@ -184,49 +184,49 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
                         <?php if (!empty($scannedItems) && $scannedStudent): ?>
 
-                            <div class="info-block py-3 px-4 mb-4 shadow-sm bg-primary-subtle border border-primary-subtle rounded-3 d-flex align-items-center">
+                        <?php if (count($scannedItems) === 1): ?>
+                        <?php $item = $scannedItems[0]; ?>
+                        <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4">
+                            <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
                                 <?php $studentPic = $scannedStudent['profile_pic'] ?? 'default.png'; ?>
-                                <img src="<?= base_url('uploads/profiles/' . esc($studentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-white shadow-sm" style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
+                                <img src="<?= base_url('uploads/profiles/' . esc($studentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
                                 <div class="d-flex flex-column">
                                     <span class="text-uppercase fw-bold text-primary"><?= esc($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name']) ?></span>
                                     <span class="text-uppercase font-monospace text-muted small mt-1"><?= esc($scannedStudent['student_number'] ?? 'NO ID') ?></span>
                                 </div>
                             </div>
-
-                            <?php if (count($scannedItems) === 1): ?>
-                                <?php $item = $scannedItems[0]; ?>
-                                <div class="row align-items-center mb-4">
-                                    <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
-                                        <?php
-                                        // SINGLE ITEM LOGIC
-                                        $isTimeIn = (isset($item['action_taken']) && $item['action_taken'] === 'TIME-IN');
-                                        ?>
-                                        <div class="mb-3">
-                                            <?php if ($isTimeIn): ?>
-                                                <span class="badge bg-success text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
-                                                    <i class="ti ti-login me-2 fs-5"></i> TIME IN
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
-                                                    <i class="ti ti-logout me-2 fs-5"></i> TIME OUT
-                                                </span>
-                                            <?php endif; ?>
-                                        </div>
-                                        <h4 class="fw-bold text-dark mb-4 fs-4 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h4>
-                                        <p class="text-muted fw-semibold mb-2">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
-                                        <p class="text-muted fw-semibold mb-2">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
-                                        <p class="text-muted fw-semibold mb-0">STATUS: <span class="fw-normal text-dark"><?= esc($item['status'] ?? 'UNKNOWN') ?></span></p>
+                            <div class="row align-items-center">
+                                <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
+                                    <?php
+                                    $isTimeIn = (isset($item['action_taken']) && $item['action_taken'] === 'TIME-IN');
+                                    ?>
+                                    <div class="mb-3">
+                                        <?php if ($isTimeIn): ?>
+                                            <span class="badge bg-success text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
+                                                <i class="ti ti-login me-2 fs-5"></i> TIME IN
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
+                                                <i class="ti ti-logout me-2 fs-5"></i> TIME OUT
+                                            </span>
+                                        <?php endif; ?>
                                     </div>
-                                    <div class="col-md-6 order-1 order-md-2">
-                                        <div class="image-placeholder-box p-3 h-100 bg-white border" style="min-height: 200px; border-radius: 12px;">
-                                            <?php if (!empty($item['photo'])): ?>
-                                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" alt="Item" class="img-fluid rounded shadow-sm" style="max-height: 100%; object-fit: contain;">
-                                            <?php else: ?>
-                                                <i class="ti ti-device-laptop text-muted opacity-25 d-flex justify-content-center align-items-center h-100" style="font-size: 5rem;"></i>
-                                            <?php endif; ?>
-                                        </div>
+                                    <h4 class="fw-bold text-dark mb-4 fs-4 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h4>
+                                    <p class="text-muted fw-semibold mb-2">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
+                                    <p class="text-muted fw-semibold mb-2">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
+                                    <p class="text-muted fw-semibold mb-0">STATUS: <span class="fw-normal text-dark"><?= esc($item['status'] ?? 'UNKNOWN') ?></span></p>
+                                </div>
+                                <div class="col-md-6 order-1 order-md-2">
+                                    <div class="image-placeholder-box p-3 h-100 bg-white border" style="min-height: 200px; border-radius: 12px;">
+                                        <?php if (!empty($item['photo'])): ?>
+                                            <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" alt="Item" class="img-fluid rounded shadow-sm" style="max-height: 100%; object-fit: contain;">
+                                        <?php else: ?>
+                                            <i class="ti ti-device-laptop text-muted opacity-25 d-flex justify-content-center align-items-center h-100" style="font-size: 5rem;"></i>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
 
                             <?php else: ?>
                                 <h6 class="fw-bold text-muted mb-3 d-flex align-items-center">
