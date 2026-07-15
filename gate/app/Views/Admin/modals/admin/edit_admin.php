@@ -32,7 +32,12 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">Reset Password</label>
-                        <input type="password" class="form-control form-control-lg rounded-3 input-adaptive shadow-none" name="password" placeholder="Leave blank to keep current password">
+                        <div class="position-relative">
+                            <input type="password" class="form-control form-control-lg rounded-3 input-adaptive shadow-none pe-5" name="password" placeholder="Leave blank to keep current password">
+                            <button type="button" class="btn toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-2 p-0 text-muted" tabindex="-1" style="z-index: 5; background: none; border: none;">
+                                <i class="ti ti-eye"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
