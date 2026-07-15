@@ -201,10 +201,18 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
         })();
 
         window.imageHasFace = window.imageHasFace || async function imageHasFace(dataUrl) {
-            const modelsLoaded = await window.faceModelsReady;
-            if (!modelsLoaded) {
-                // Fail-open: if the models can't load (e.g. offline), don't block the user.
-                return true;
+            // Don't trust a stale cached failure — check the real model state,
+            // and retry loading once if it's not actually ready yet.
+            if (!faceapi.nets.ssdMobilenetv1.isLoaded) {
+                try {
+                    const MODEL_URL = '<?= base_url('assets/models') ?>';
+                    await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+                    window.faceModelsReady = Promise.resolve(true);
+                } catch (err) {
+                    console.error('Face detection models failed to load (retry):', err);
+                    // Genuinely unavailable this time — fail open.
+                    return true;
+                }
             }
 
             const img = new Image();
