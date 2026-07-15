@@ -128,18 +128,33 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'A
 
                             <div class="mb-4">
                                 <label class="form-label fw-bold text-dark">Current Password</label>
-                                <input type="password" class="form-control form-control-lg bg-light" name="current_password" placeholder="••••••••">
+                                <div class="position-relative">
+                                    <input type="password" class="form-control form-control-lg bg-light pe-5" name="current_password" placeholder="••••••••">
+                                    <button type="button" class="btn toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-2 p-0 text-muted" tabindex="-1" style="z-index: 5; background: none; border: none;">
+                                        <i class="ti ti-eye"></i>
+                                    </button>
+                                </div>
                                 <div class="form-text mt-2"><i class="ti ti-info-circle"></i> Required only if you want to change your password. Leave blank to keep it unchanged.</div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label fw-bold text-dark">New Password</label>
-                                    <input type="password" class="form-control form-control-lg bg-light" name="new_password" placeholder="••••••••">
+                                    <div class="position-relative">
+                                        <input type="password" class="form-control form-control-lg bg-light pe-5" name="new_password" placeholder="••••••••">
+                                        <button type="button" class="btn toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-2 p-0 text-muted" tabindex="-1" style="z-index: 5; background: none; border: none;">
+                                            <i class="ti ti-eye"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label fw-bold text-dark">Repeat New Password</label>
-                                    <input type="password" class="form-control form-control-lg bg-light" name="confirm_password" placeholder="••••••••">
+                                    <div class="position-relative">
+                                        <input type="password" class="form-control form-control-lg bg-light pe-5" name="confirm_password" placeholder="••••••••">
+                                        <button type="button" class="btn toggle-password-btn position-absolute top-50 end-0 translate-middle-y me-2 p-0 text-muted" tabindex="-1" style="z-index: 5; background: none; border: none;">
+                                            <i class="ti ti-eye"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -196,6 +211,25 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'A
         }
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+        // Show/hide password toggle (delegated - works for any .toggle-password-btn on this page)
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.toggle-password-btn');
+            if (!btn) return;
+
+            const input = btn.previousElementSibling;
+            const icon = btn.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('ti-eye');
+                icon.classList.add('ti-eye-off');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('ti-eye-off');
+                icon.classList.add('ti-eye');
+            }
+        });
     </script>
     <script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>
 <?= $this->endSection() ?>
