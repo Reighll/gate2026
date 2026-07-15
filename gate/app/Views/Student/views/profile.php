@@ -78,6 +78,10 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                     <div>
                                         <label for="profile_pic" class="form-label fw-bold small text-muted">Change Picture</label>
                                         <input class="form-control form-control-sm" type="file" id="profile_pic" name="profile_pic" accept="image/png, image/jpeg, image/jpg">
+                                        <div id="faceCheckLoading" class="form-text mt-1 d-none align-items-center">
+                                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            Checking photo for a face...
+                                        </div>
                                     </div>
                                 </div>
 
@@ -267,6 +271,8 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             let cropper = null;
             let bootstrapModal = new bootstrap.Modal(cropModalEl);
 
+            const faceCheckLoading = document.getElementById('faceCheckLoading');
+
             fileInput.addEventListener('change', function (e) {
                 const files = e.target.files;
                 if (files && files.length > 0) {
@@ -274,7 +280,18 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     reader.onload = async function (event) {
                         const dataUrl = event.target.result;
 
+                        if (faceCheckLoading) {
+                            faceCheckLoading.classList.remove('d-none');
+                            faceCheckLoading.classList.add('d-flex');
+                        }
+
                         const hasFace = await imageHasFace(dataUrl);
+
+                        if (faceCheckLoading) {
+                            faceCheckLoading.classList.add('d-none');
+                            faceCheckLoading.classList.remove('d-flex');
+                        }
+
                         if (!hasFace) {
                             showFormAlert('danger', 'No face detected in this photo. Please upload a clear, front-facing picture of yourself.');
                             fileInput.value = '';
