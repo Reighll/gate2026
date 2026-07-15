@@ -33,8 +33,8 @@
 
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
-    <link rel="stylesheet" href="<?= base_url('assets/css/student.css') ?>" />
-    <link rel="stylesheet" href="<?= base_url('assets/css/student-layout.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('assets/css/student/student.css') ?>" />
+    <link rel="stylesheet" href="<?= base_url('assets/css/student/student-layout.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
     <link rel="manifest" href="<?= base_url('student/manifest.json') ?>">
