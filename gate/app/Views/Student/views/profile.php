@@ -274,7 +274,15 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     reader.onload = async function (event) {
                         const dataUrl = event.target.result;
 
+                        const originalLabel = document.querySelector('label[for="profile_pic"]').textContent;
+                        document.querySelector('label[for="profile_pic"]').textContent = 'Checking photo...';
+                        fileInput.disabled = true;
+
                         const hasFace = await imageHasFace(dataUrl);
+
+                        document.querySelector('label[for="profile_pic"]').textContent = originalLabel;
+                        fileInput.disabled = false;
+
                         if (!hasFace) {
                             showFormAlert('danger', 'No face detected in this photo. Please upload a clear, front-facing picture of yourself.');
                             fileInput.value = '';
@@ -309,20 +317,29 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             });
 
             btnCrop.addEventListener('click', async function () {
-                if (!cropper) return;
+                btnCrop.addEventListener('click', async function () {
+                    if (!cropper) return;
 
-                const canvas = cropper.getCroppedCanvas({
-                    width: 500,
-                    height: 500,
-                });
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 500,
+                        height: 500,
+                    });
 
-                const croppedDataUrl = canvas.toDataURL('image/jpeg');
+                    const croppedDataUrl = canvas.toDataURL('image/jpeg');
 
-                const hasFace = await imageHasFace(croppedDataUrl);
-                if (!hasFace) {
-                    showFormAlert('danger', 'No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
-                    return;
-                }
+                    const originalBtnText = btnCrop.innerHTML;
+                    btnCrop.disabled = true;
+                    btnCrop.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Checking photo...';
+
+                    const hasFace = await imageHasFace(croppedDataUrl);
+
+                    btnCrop.disabled = false;
+                    btnCrop.innerHTML = originalBtnText;
+
+                    if (!hasFace) {
+                        showFormAlert('danger', 'No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
+                        return;
+                    }
 
                 previewImage.src = croppedDataUrl;
                 previewImage.setAttribute('data-updated', 'true');
