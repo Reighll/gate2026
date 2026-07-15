@@ -264,6 +264,24 @@
         // Run on HTMX navigation (from your sidebar)
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
 
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.toggle-password-btn');
+            if (!btn) return;
+
+            const input = btn.previousElementSibling;
+            const icon = btn.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('ti-eye');
+                icon.classList.add('ti-eye-off');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('ti-eye-off');
+                icon.classList.add('ti-eye');
+            }
+        });
+
         // This finds EVERY input with the class on the page (Add and Edit!)
         const tuptInputs = document.querySelectorAll('.format-tupt-id');
 
