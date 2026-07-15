@@ -77,11 +77,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                                     <div>
                                         <label for="profile_pic" class="form-label fw-bold small text-muted">Change Picture</label>
-                                        <input class="form-control form-control-sm" type="file" id="profile_pic" name="profile_pic" accept="image/png, image/jpeg, image/jpg" disabled>
-                                        <div id="faceApiLoadingNote" class="form-text mt-1 d-flex align-items-center">
-                                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                            Preparing photo checker...
-                                        </div>
+                                        <input class="form-control form-control-sm" type="file" id="profile_pic" name="profile_pic" accept="image/png, image/jpeg, image/jpg">
                                     </div>
                                 </div>
 
@@ -264,22 +260,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             const previewImage = document.getElementById('profilePicPreview');
             const cropModalEl = document.getElementById('cropModal');
             const btnCrop = document.getElementById('btnCrop');
-            const faceApiLoadingNote = document.getElementById('faceApiLoadingNote');
 
             if (!fileInput || fileInput.hasAttribute('data-cropper-init')) return;
             fileInput.setAttribute('data-cropper-init', 'true');
-
-            (async function waitForFaceModels() {
-                if (!faceapi.nets.ssdMobilenetv1.isLoaded) {
-                    try {
-                        await window.faceModelsReady;
-                    } catch (err) {
-                        console.error('Face detection models failed to load:', err);
-                    }
-                }
-                fileInput.disabled = false;
-                if (faceApiLoadingNote) faceApiLoadingNote.style.display = 'none';
-            })();
 
             let cropper = null;
             let bootstrapModal = new bootstrap.Modal(cropModalEl);
@@ -291,15 +274,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     reader.onload = async function (event) {
                         const dataUrl = event.target.result;
 
-                        const originalLabel = document.querySelector('label[for="profile_pic"]').textContent;
-                        document.querySelector('label[for="profile_pic"]').textContent = 'Checking photo...';
-                        fileInput.disabled = true;
-
                         const hasFace = await imageHasFace(dataUrl);
-
-                        document.querySelector('label[for="profile_pic"]').textContent = originalLabel;
-                        fileInput.disabled = false;
-
                         if (!hasFace) {
                             showFormAlert('danger', 'No face detected in this photo. Please upload a clear, front-facing picture of yourself.');
                             fileInput.value = '';
@@ -334,29 +309,20 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             });
 
             btnCrop.addEventListener('click', async function () {
-                btnCrop.addEventListener('click', async function () {
-                    if (!cropper) return;
+                if (!cropper) return;
 
-                    const canvas = cropper.getCroppedCanvas({
-                        width: 500,
-                        height: 500,
-                    });
+                const canvas = cropper.getCroppedCanvas({
+                    width: 500,
+                    height: 500,
+                });
 
-                    const croppedDataUrl = canvas.toDataURL('image/jpeg');
+                const croppedDataUrl = canvas.toDataURL('image/jpeg');
 
-                    const originalBtnText = btnCrop.innerHTML;
-                    btnCrop.disabled = true;
-                    btnCrop.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Checking photo...';
-
-                    const hasFace = await imageHasFace(croppedDataUrl);
-
-                    btnCrop.disabled = false;
-                    btnCrop.innerHTML = originalBtnText;
-
-                    if (!hasFace) {
-                        showFormAlert('danger', 'No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
-                        return;
-                    }
+                const hasFace = await imageHasFace(croppedDataUrl);
+                if (!hasFace) {
+                    showFormAlert('danger', 'No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
+                    return;
+                }
 
                 previewImage.src = croppedDataUrl;
                 previewImage.setAttribute('data-updated', 'true');
