@@ -77,7 +77,11 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                                     <div>
                                         <label for="profile_pic" class="form-label fw-bold small text-muted">Change Picture</label>
-                                        <input class="form-control form-control-sm" type="file" id="profile_pic" name="profile_pic" accept="image/png, image/jpeg, image/jpg">
+                                        <input class="form-control form-control-sm" type="file" id="profile_pic" name="profile_pic" accept="image/png, image/jpeg, image/jpg" disabled>
+                                        <div id="faceApiLoadingNote" class="form-text mt-1 d-flex align-items-center">
+                                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            Preparing photo checker...
+                                        </div>
                                     </div>
                                 </div>
 
@@ -260,9 +264,22 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             const previewImage = document.getElementById('profilePicPreview');
             const cropModalEl = document.getElementById('cropModal');
             const btnCrop = document.getElementById('btnCrop');
+            const faceApiLoadingNote = document.getElementById('faceApiLoadingNote');
 
             if (!fileInput || fileInput.hasAttribute('data-cropper-init')) return;
             fileInput.setAttribute('data-cropper-init', 'true');
+
+            (async function waitForFaceModels() {
+                if (!faceapi.nets.ssdMobilenetv1.isLoaded) {
+                    try {
+                        await window.faceModelsReady;
+                    } catch (err) {
+                        console.error('Face detection models failed to load:', err);
+                    }
+                }
+                fileInput.disabled = false;
+                if (faceApiLoadingNote) faceApiLoadingNote.style.display = 'none';
+            })();
 
             let cropper = null;
             let bootstrapModal = new bootstrap.Modal(cropModalEl);
