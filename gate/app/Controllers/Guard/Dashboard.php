@@ -163,7 +163,12 @@ class Dashboard extends BaseController
                     if ($item['status'] !== 'approved') {
                         $lastItem = $item;
                         $scannedItemsList[] = $item;
-                        $errorMessages[] = "DENIED: {$itemName} status is '{$item['status']}'.";
+
+                        if (in_array($item['status'], ['pending', 'staged'])) {
+                            $warningMessages[] = "⏳ NOT YET CLEARED: {$itemName} ({$studentName}) status is '{$item['status']}'.";
+                        } else {
+                            $errorMessages[] = "DENIED: {$itemName} status is '{$item['status']}'.";
+                        }
                         continue;
                     }
 

@@ -23,9 +23,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 <i class="ti ti-alert-triangle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('error') ?></span>
             </div>
         <?php endif; ?>
-        <?php if (session()->getFlashdata('info')): ?>
-            <div class="alert alert-info p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
-                <i class="ti ti-info-circle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('info') ?></span>
+        <?php if (session()->getFlashdata('warning')): ?>
+            <div class="alert alert-warning p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
+                <i class="ti ti-alert-triangle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('warning') ?></span>
             </div>
         <?php endif; ?>
 
