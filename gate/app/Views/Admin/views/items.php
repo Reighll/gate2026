@@ -213,18 +213,19 @@
                         </tr>
                         </thead>
 
+                        <?php $itemsSkeletonRows = !empty($items) ? min(count($items), 8) : 1; ?>
                         <tbody class="skeleton-wrapper">
-                        <?php for($i=0; $i<5; $i++): ?>
+                        <?php for($i=0; $i<$itemsSkeletonRows; $i++): ?>
                             <tr>
                                 <td><div class="skeleton skeleton-text w-50 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
-                                <td><div class="skeleton rounded-3" style="width: 45px; height: 45px;"></div></td>
+                                <td><div class="skeleton rounded-3" style="..."></div></td>
                                 <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
-                                <td><div class="skeleton skeleton-badge rounded-1" style="width: 80px; height: 26px;"></div></td>
-                                <td><div class="skeleton skeleton-badge rounded-1" style="width: 70px; height: 26px;"></div></td>
-                                <td><div class="skeleton skeleton-badge rounded-2" style="width: 85px; height: 30px;"></div></td>
+                                <td><div class="skeleton skeleton-badge rounded-1" style="..."></div></td>
+                                <td><div class="skeleton skeleton-badge rounded-1" style="..."></div></td>
+                                <td><div class="skeleton skeleton-badge rounded-2" style="..."></div></td>
                             </tr>
                         <?php endfor; ?>
                         </tbody>
@@ -302,7 +303,7 @@
                                                     <li>
                                                         <button type="button" class="dropdown-item approve-item py-2" data-bs-toggle="modal" data-bs-target="#approveModal<?= $item['id'] ?>">
                                                             <div class="d-flex align-items-center">
-                                                                <div class="icon-box bg-light-success text-success me-3"><i class="ti ti-nfc"></i></div>
+                                                                <div class="icon-box bg-light-success text-success me-3"><i class="ti-id-badge-2"></i></div>
                                                                 <span class="fw-semibold">Assign</span>
                                                             </div>
                                                         </button>
@@ -338,7 +339,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow-lg">
                     <div class="modal-header border-bottom-0">
-                        <h5 class="modal-title fw-bold text-success" id="approveModalLabel<?= $item['id'] ?>"><i class="ti ti-nfc me-2"></i> Approve & Link RFID</h5>
+                        <h5 class="modal-title fw-bold text-success" id="approveModalLabel<?= $item['id'] ?>"><i class="ti ti-id-badge-2 me-2"></i> Approve & Link RFID</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -347,10 +348,10 @@
 
                         <?= csrf_field() ?>
                         <div class="modal-body text-start bg-light rounded-3 mx-3 p-4">
-                            <p class="mb-3">Assigning an RFID/NFC card to a student</p>
+                            <p class="mb-3">Assigning an RFID card to a student</p>
 
                             <div class="mb-2">
-                                <label for="rfid_<?= $item['id'] ?>" class="form-label fw-bold text-dark">Scan RFID/NFC Card</label>
+                                <label for="rfid_<?= $item['id'] ?>" class="form-label fw-bold text-dark">Scan RFID Card</label>
 
                                 <!-- The scanner acts as a keyboard. We let it naturally press "Enter" which triggers the form submit instantly! -->
                                 <input type="text" class="form-control form-control-lg border-success text-success fw-bold shadow-sm"

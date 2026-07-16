@@ -76,8 +76,9 @@
                         </tr>
                         </thead>
 
+                        <?php $missingSkeletonRows = !empty($missingReports) ? count($missingReports) : 1; ?>
                         <tbody class="skeleton-wrapper">
-                        <?php for($i=0; $i<4; $i++): ?>
+                        <?php for($i=0; $i<$missingSkeletonRows; $i++): ?>
                             <tr>
                                 <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>

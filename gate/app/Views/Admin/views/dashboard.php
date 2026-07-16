@@ -137,8 +137,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                 </tr>
                                 </thead>
 
+                                <?php $logsSkeletonRows = !empty($recentLogs) ? count($recentLogs) : 1; ?>
                                 <tbody class="skeleton-wrapper">
-                                <?php for($i=0; $i<5; $i++): ?>
+                                <?php for($i=0; $i<$logsSkeletonRows; $i++): ?>
                                     <tr style="border-bottom: 1px solid #f6f6f6;">
                                         <td class="py-3">
                                             <div class="skeleton skeleton-text w-75"></div>

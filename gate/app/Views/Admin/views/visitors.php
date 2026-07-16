@@ -97,8 +97,9 @@
                                 </tr>
                                 </thead>
 
+                                <?php $logsSkeletonRows = !empty($logs) ? count($logs) : 1; ?>
                                 <tbody class="skeleton-wrapper">
-                                <?php for($i=0; $i<5; $i++): ?>
+                                <?php for($i=0; $i<$logsSkeletonRows; $i++): ?>
                                     <tr>
                                         <td>
                                             <div class="skeleton skeleton-title w-75 mb-1" style="height: 18px;"></div>
@@ -208,8 +209,9 @@
                                 </tr>
                                 </thead>
 
+                                <?php $tagsSkeletonRows = !empty($tags) ? count($tags) : 1; ?>
                                 <tbody class="skeleton-wrapper">
-                                <?php for($i=0; $i<4; $i++): ?>
+                                <?php for($i=0; $i<$tagsSkeletonRows; $i++): ?>
                                     <tr>
                                         <td><div class="skeleton skeleton-title w-50 mb-0" style="height: 20px;"></div></td>
                                         <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>

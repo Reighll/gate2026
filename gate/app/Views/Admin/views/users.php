@@ -59,8 +59,9 @@
                                     <th><div class="skeleton skeleton-text w-50 mb-0"></div></th>
                                 </tr>
                                 </thead>
+                                <?php $usersSkeletonRows = !empty($students) ? count($students) : 1; ?>
                                 <tbody>
-                                <?php for($i=0; $i<6; $i++): ?>
+                                <?php for($i=0; $i<$usersSkeletonRows; $i++): ?>
                                     <tr style="border-bottom: 1px solid #f6f6f6;">
                                         <td class="py-3"><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                         <td class="py-3"><div class="skeleton skeleton-text w-100 mb-0"></div></td>
