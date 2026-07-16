@@ -65,19 +65,17 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                     <div class="mb-3">
                         <label class="form-label">Item Category</label>
-                        <select class="form-select" name="category" required>
+                        <select class="form-select" name="category" id="categorySelect" required onchange="window.toggleOtherCategory(this)">
                             <option value="" disabled <?= empty(old('category')) ? 'selected' : '' ?>>Select a category...</option>
-                            <option value="Personal Computing & Mobile" <?= old('category') == 'Personal Computing Device' ? 'selected' : '' ?>>Personal Computing & Mobile</option>
-                            <option value="Photography & Videography" <?= old('category') == 'Photography & Videography' ? 'selected' : '' ?>>Photography & Videography</option>
-                            <option value="Audio & Music Equipment" <?= old('category') == 'Audio & Music Equipment' ? 'selected' : '' ?>>Audio & Music Equipment</option>
-                            <option value="Technical & Engineering Gear" <?= old('category') == 'Technical & Engineering Gear' ? 'selected' : '' ?>>Technical & Engineering Gear</option>
-                            <option value="Art & Design Supplies" <?= old('category') == 'Art & Design Supplies' ? 'selected' : '' ?>>Art & Design Supplies</option>
-                            <option value="Sporting & Fitness Equipment" <?= old('category') == 'Sporting & Fitness Equipment' ? 'selected' : '' ?>>Sporting & Fitness Equipment</option>
-                            <option value="Large Portable Storage" <?= old('category') == 'Large Portable Storage' ? 'selected' : '' ?>>Large Portable Storage</option>
-                            <option value="Bulky/Household Items" <?= old('category') == 'Bulky/Household Items' ? 'selected' : '' ?>>Bulky/Household Items</option>
-                            <option value="Personal Mobility Devices" <?= old('category') == 'Personal Mobility Devices' ? 'selected' : '' ?>>Personal Mobility Devices</option>
-                            <option value="Administrative/Office Use" <?= old('category') == 'Administrative/Office Use' ? 'selected' : '' ?>>Administrative/Office Use</option>
+                            <option value="Personal Computing Device" <?= old('category') == 'Personal Computing Device' ? 'selected' : '' ?>>Personal Computing Device</option>
+                            <option value="Others" <?= old('category') == 'Others' ? 'selected' : '' ?>>Others</option>
                         </select>
+
+                        <div id="otherCategoryWrapper" class="mt-2 <?= old('category') == 'Others' ? '' : 'd-none' ?>">
+                            <input type="text" class="form-control" name="category_other" id="categoryOtherInput"
+                                   value="<?= old('category_other') ?>" placeholder="Please specify the category"
+                                    <?= old('category') == 'Others' ? 'required' : '' ?>>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -130,7 +128,15 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         };
+        window.toggleOtherCategory = function(select) {
+            const wrapper = document.getElementById('otherCategoryWrapper');
+            const input = document.getElementById('categoryOtherInput');
+            const isOthers = select.value === 'Others';
 
+            wrapper.classList.toggle('d-none', !isOthers);
+            input.required = isOthers;
+            if (!isOthers) input.value = '';
+        };
         // Form Processor
         // Form Processor
         window.submitRegistration = async function(e, form) {
