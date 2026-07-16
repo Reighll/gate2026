@@ -280,23 +280,35 @@
                                                 Actions
                                             </button>
                                             <ul class="dropdown-menu custom-dropdown shadow-lg border-0 rounded-4 p-2">
-                                                <li>
-                                                    <button type="button" class="dropdown-item approve-item py-2" data-bs-toggle="modal" data-bs-target="#approveModal<?= $item['id'] ?>">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="icon-box bg-light-success text-success me-3"><i class="ti ti-check"></i></div>
-                                                            <span class="fw-semibold">Approve & Assign</span>
-                                                        </div>
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item reject-item py-2" href="<?= base_url('admin/items/process/reject/' . $item['id']) ?>">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="icon-box bg-light-warning text-warning me-3"><i class="ti ti-x"></i></div>
-                                                            <span class="fw-semibold">Reject Request</span>
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                                <li><hr class="dropdown-divider border-light my-2"></li>
+                                                <?php if ($item['status'] === 'pending'): ?>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item approve-item py-2" data-bs-toggle="modal" data-bs-target="#approveModal<?= $item['id'] ?>">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="icon-box bg-light-success text-success me-3"><i class="ti ti-check"></i></div>
+                                                                <span class="fw-semibold">Approve & Assign</span>
+                                                            </div>
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item reject-item py-2" href="<?= base_url('admin/items/process/reject/' . $item['id']) ?>">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="icon-box bg-light-warning text-warning me-3"><i class="ti ti-x"></i></div>
+                                                                <span class="fw-semibold">Reject Request</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider border-light my-2"></li>
+                                                <?php elseif ($item['status'] === 'approved'): ?>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item approve-item py-2" data-bs-toggle="modal" data-bs-target="#approveModal<?= $item['id'] ?>">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="icon-box bg-light-success text-success me-3"><i class="ti ti-nfc"></i></div>
+                                                                <span class="fw-semibold">Assign</span>
+                                                            </div>
+                                                        </button>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider border-light my-2"></li>
+                                                <?php endif; ?>
                                                 <li>
                                                     <a class="dropdown-item delete-item py-2" href="javascript:void(0)"
                                                        data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"

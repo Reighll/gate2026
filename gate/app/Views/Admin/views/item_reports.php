@@ -105,7 +105,7 @@
                                     <td data-label="Item Name"><?= esc($report['brand_model'] ?? $report['name'] ?? $report['item_name']) ?></td>
                                     <td data-label="Date Reported"><?= date('m-d-y', strtotime($report['updated_at'])) ?></td>
                                     <td data-label="Action"><button class="btn btn-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#viewModalMissing<?= $report['id'] ?>">VIEW</button></td>
-                                    <td data-label="Status"><span class="badge bg-danger rounded-pill">NEW</span></td>
+                                    <td data-label="Status"><span class="badge bg-danger rounded-pill">ONGOING</span></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
