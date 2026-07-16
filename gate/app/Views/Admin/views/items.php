@@ -107,6 +107,37 @@
                 ?>
 
                 <?php if (!empty($unregisterRequests)): ?>
+                    <?php $unregSkeletonRows = min(count($unregisterRequests), 8); ?>
+                    <div class="card border-0 shadow-sm mb-4 rounded-4 border-top border-4 border-warning skeleton-wrapper">
+                        <div class="card-body p-4">
+                            <div class="skeleton skeleton-title w-50 mb-3" style="height: 22px;"></div>
+                            <div class="skeleton skeleton-text w-75 mb-4"></div>
+                            <div class="table-responsive">
+                                <table class="table align-middle text-nowrap mb-0 border-light">
+                                    <thead style="border-bottom: 2px solid #f0f0f0;">
+                                    <tr>
+                                        <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Student</th>
+                                        <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Photo</th>
+                                        <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Item Name</th>
+                                        <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Serial Number</th>
+                                        <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php for($i=0; $i<$unregSkeletonRows; $i++): ?>
+                                        <tr>
+                                            <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                            <td><div class="skeleton rounded" style="width: 40px; height: 40px;"></div></td>
+                                            <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
+                                            <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                            <td><div class="skeleton skeleton-badge rounded-pill" style="width: 60px; height: 28px;"></div></td>
+                                        </tr>
+                                    <?php endfor; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card border-0 shadow-sm mb-4 rounded-4 border-top border-4 border-warning real-wrapper d-none">
                         <div class="card-body p-4">
                             <h5 class="fw-bold text-warning-dark mb-2"><i class="ti ti-alert-triangle me-2"></i> Pending Unregistration Requests</h5>
