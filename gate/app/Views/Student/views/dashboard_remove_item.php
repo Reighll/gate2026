@@ -22,7 +22,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                 <?php if (!empty($approvedItems)): ?>
                     <div class="skeleton-wrapper">
-                        <?php for($i=0; $i<min(count($approvedItems), 3); $i++): ?>
+                        <?php for($i=0; $i<count($approvedItems); $i++): ?>
                             <div class="border rounded p-3 d-flex justify-content-between align-items-center mb-3 bg-light">
                                 <div class="w-75">
                                     <div class="skeleton skeleton-title w-50 mb-1" style="height: 18px;"></div>
