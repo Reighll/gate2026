@@ -211,10 +211,27 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                             </span>
                                         <?php endif; ?>
                                     </div>
-                                    <h4 class="fw-bold text-dark mb-4 fs-4 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h4>
+                                    <h4 class="fw-bold text-dark mb-3 fs-4 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h4>
+
+                                    <?php
+                                    $itemStatus = $item['status'] ?? 'unknown';
+                                    $statusAlerts = [
+                                            'approved' => ['class' => 'success',   'icon' => 'ti-check',          'text' => 'Item is Approved'],
+                                            'pending'  => ['class' => 'warning',   'icon' => 'ti-clock',          'text' => 'Registration Still Pending Approval'],
+                                            'rejected' => ['class' => 'danger',    'icon' => 'ti-x',              'text' => 'Registration was Rejected'],
+                                            'missing'  => ['class' => 'danger',    'icon' => 'ti-alert-triangle', 'text' => 'Reported Missing — Verify with Admin'],
+                                            'staged'   => ['class' => 'warning',   'icon' => 'ti-alert-triangle', 'text' => 'Unregistration Pending — Verify with Admin'],
+                                            'archived' => ['class' => 'secondary', 'icon' => 'ti-archive',        'text' => 'Item is Archived / Unregistered'],
+                                    ];
+                                    $alertInfo = $statusAlerts[$itemStatus] ?? ['class' => 'secondary', 'icon' => 'ti-help-circle', 'text' => 'Unknown Status'];
+                                    ?>
+                                    <div class="alert alert-<?= $alertInfo['class'] ?> py-2 px-3 mb-3 d-flex align-items-center shadow-sm">
+                                        <i class="ti <?= $alertInfo['icon'] ?> me-2"></i>
+                                        <span class="fw-bold text-uppercase small"><?= esc($alertInfo['text']) ?></span>
+                                    </div>
+
                                     <p class="text-muted fw-semibold mb-2">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
-                                    <p class="text-muted fw-semibold mb-2">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
-                                    <p class="text-muted fw-semibold mb-0">STATUS: <span class="fw-normal text-dark"><?= esc($item['status'] ?? 'UNKNOWN') ?></span></p>
+                                    <p class="text-muted fw-semibold mb-0">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
                                 </div>
                                 <div class="col-md-6 order-1 order-md-2">
                                     <div class="image-placeholder-box p-3 h-100 bg-white border" style="min-height: 200px; border-radius: 12px;">
@@ -261,6 +278,24 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                                     <?php endif; ?>
                                                 </div>
                                                 <h6 class="fw-bold text-dark mb-2 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h6>
+
+                                                <?php
+                                                $itemStatus = $item['status'] ?? 'unknown';
+                                                $statusAlerts = [
+                                                        'approved' => ['class' => 'success',   'icon' => 'ti-check',          'text' => 'Approved'],
+                                                        'pending'  => ['class' => 'warning',   'icon' => 'ti-clock',          'text' => 'Pending Approval'],
+                                                        'rejected' => ['class' => 'danger',    'icon' => 'ti-x',              'text' => 'Rejected'],
+                                                        'missing'  => ['class' => 'danger',    'icon' => 'ti-alert-triangle', 'text' => 'Reported Missing'],
+                                                        'staged'   => ['class' => 'warning',   'icon' => 'ti-alert-triangle', 'text' => 'Unregistration Pending'],
+                                                        'archived' => ['class' => 'secondary', 'icon' => 'ti-archive',        'text' => 'Archived'],
+                                                ];
+                                                $alertInfo = $statusAlerts[$itemStatus] ?? ['class' => 'secondary', 'icon' => 'ti-help-circle', 'text' => 'Unknown'];
+                                                ?>
+                                                <div class="alert alert-<?= $alertInfo['class'] ?> py-1 px-2 mb-2 d-flex align-items-center shadow-sm" style="font-size: 0.75rem;">
+                                                    <i class="ti <?= $alertInfo['icon'] ?> me-1"></i>
+                                                    <span class="fw-bold text-uppercase"><?= esc($alertInfo['text']) ?></span>
+                                                </div>
+
                                                 <p class="text-muted fw-semibold mb-1" style="font-size: 0.8rem;">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
                                                 <p class="text-muted fw-semibold mb-0" style="font-size: 0.8rem;">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
                                             </div>

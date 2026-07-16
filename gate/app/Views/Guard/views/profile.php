@@ -51,11 +51,11 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
                             <div class="skeleton rounded-3 w-75" style="height: 30px;"></div>
                         </div>
                         <div class="col-md-8">
-                            <div class="skeleton skeleton-title w-50 mb-4" style="height: 24px;"></div>
+                            <div class="skeleton skeleton-title w-50 mb-3" style="height: 24px;"></div>
                             <div class="row">
-                                <div class="col-md-6 mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
-                                <div class="col-md-6 mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
-                                <div class="col-md-12 mb-4"><div class="skeleton skeleton-text w-25 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                <div class="col-md-6 mb-3"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                <div class="col-md-6 mb-3"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
+                                <div class="col-md-12 mb-3"><div class="skeleton skeleton-text w-25 mb-2"></div><div class="skeleton rounded-3 w-100" style="height: 40px;"></div></div>
                             </div>
                         </div>
                     </div>

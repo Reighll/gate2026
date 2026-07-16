@@ -42,29 +42,29 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'A
                         <div class="row mb-4">
                             <div class="col-md-4 text-center mb-4 mb-md-0 d-flex flex-column align-items-center">
                                 <div class="skeleton rounded-circle mb-3 border border-3 border-light" style="width: 150px; height: 150px; flex-shrink: 0;"></div>
-                                <div class="skeleton skeleton-text w-75 mb-3"></div>
+                                <div class="skeleton skeleton-text w-75 mb-2"></div>
                                 <div class="d-flex justify-content-center gap-2">
                                     <?php for($i=0; $i<5; $i++): ?><div class="skeleton rounded-circle" style="width: 45px; height: 45px; flex-shrink: 0;"></div><?php endfor; ?>
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <div class="skeleton skeleton-title w-50 mb-4" style="height: 24px;"></div>
+                                <div class="skeleton skeleton-title w-50 mb-3" style="height: 24px;"></div>
                                 <div class="row">
-                                    <div class="col-md-6 mb-4">
+                                    <div class="col-md-6 mb-3">
                                         <div class="skeleton skeleton-text w-50 mb-2"></div>
-                                        <div class="skeleton rounded-3 w-100" style="height: 48px;"></div>
+                                        <div class="skeleton rounded-3 w-100" style="height: 40px;"></div>
                                     </div>
-                                    <div class="col-md-6 mb-4">
+                                    <div class="col-md-6 mb-3">
                                         <div class="skeleton skeleton-text w-50 mb-2"></div>
-                                        <div class="skeleton rounded-3 w-100" style="height: 48px;"></div>
+                                        <div class="skeleton rounded-3 w-100" style="height: 40px;"></div>
                                     </div>
-                                    <div class="col-md-12 mb-4">
+                                    <div class="col-md-12 mb-3">
                                         <div class="skeleton skeleton-text w-25 mb-2"></div>
-                                        <div class="skeleton rounded-3 w-100" style="height: 48px;"></div>
+                                        <div class="skeleton rounded-3 w-100" style="height: 40px;"></div>
                                     </div>
-                                    <div class="col-md-12 mb-4">
+                                    <div class="col-md-12 mb-3">
                                         <div class="skeleton skeleton-text w-25 mb-2"></div>
-                                        <div class="skeleton rounded-3 w-100" style="height: 48px;"></div>
+                                        <div class="skeleton rounded-3 w-100" style="height: 40px;"></div>
                                     </div>
                                 </div>
                             </div>
