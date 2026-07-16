@@ -89,8 +89,7 @@ class Items extends BaseController
 
         if ($item) {
             $model->update($id, [
-                'status' => 'unregister requested',
-                // We are recycling your 'notes' column here! No new SQL needed.
+                'status' => 'staged',
                 'notes'  => 'Unregistration Reason: ' . $reason
             ]);
             return redirect()->to('student/dashboard')->with('success', 'Unregistration request submitted. Awaiting Admin approval.');
@@ -115,9 +114,8 @@ class Items extends BaseController
         $item = $model->where('id', $itemId)->where('student_id', session()->get('student_id'))->first();
 
         if ($item) {
-            // THE FIX: Save the notes alongside the flagged status
             $model->update($itemId, [
-                'status' => 'flagged',
+                'status' => 'missing',
                 'notes'  => $notes
             ]);
             return redirect()->to('student/dashboard')->with('success', 'Item reported missing! Guards have been alerted.');

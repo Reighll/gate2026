@@ -87,7 +87,7 @@
 
                 <?php
                 $unregisterRequests = array_filter($items, function($item) {
-                    return $item['status'] === 'unregister requested';
+                    return $item['status'] === 'staged';
                 });
                 ?>
 
@@ -251,8 +251,9 @@
                                         if ($item['status'] === 'approved') $badgeStyle = 'background-color: #39cb7f;';
                                         if ($item['status'] === 'pending') $badgeStyle = 'background-color: #ffae1f; color: #fff;';
                                         if ($item['status'] === 'rejected') $badgeStyle = 'background-color: #e46a76;';
-                                        if ($item['status'] === 'inactive') $badgeStyle = 'background-color: #2a3547;';
-                                        if ($item['status'] === 'unregister requested') $badgeStyle = 'background-color: #ffae1f; color: #fff;';
+                                        if ($item['status'] === 'missing') $badgeStyle = 'background-color: #fc4b6c;';
+                                        if ($item['status'] === 'staged') $badgeStyle = 'background-color: #ffae1f; color: #fff;';
+                                        if ($item['status'] === 'archived') $badgeStyle = 'background-color: #2a3547;';
                                         ?>
                                         <span class="badge rounded-1 shadow-sm px-3 py-2 fw-bold" style="<?= $badgeStyle ?> font-size: 0.8rem;">
                                             <?= ucfirst(esc($item['status'])) ?>

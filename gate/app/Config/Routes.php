@@ -22,7 +22,7 @@ $routes->group('admin', static function ($routes) {
     $routes->get('login', 'Admin\Auth::index');
     $routes->post('login/auth', 'Admin\Auth::attemptLogin');
 
-    // NEW: Registration Routes
+    // Registration Routes
     $routes->get('register', 'Admin\Auth::register');
     $routes->post('register/auth', 'Admin\Auth::attemptRegister');
 
@@ -69,7 +69,6 @@ $routes->group('admin', static function ($routes) {
 
     // Item Reports Routes
     $routes->get('item-reports', 'Admin\ItemReports::index');
-    $routes->post('item-reports/approve/(:num)', 'Admin\ItemReports::approve/$1');
     $routes->post('item-reports/resolve/(:num)', 'Admin\ItemReports::resolve/$1');
     // Admin Profile Route
     $routes->get('profile', 'Admin\Profile::index', ['filter' => 'authGuard']);

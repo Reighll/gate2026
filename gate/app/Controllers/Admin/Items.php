@@ -121,17 +121,17 @@ class Items extends BaseController
 
         // 1. Unregistration Requests Flow
         if ($action === 'approve_unregister') {
-            $model->update($id, ['status' => 'inactive']);
+            $model->update($id, ['status' => 'archived']);
 
             // 📧 Send Unregistered Email
             if ($student && !empty($student['email'])) {
-                $this->_sendItemNotification($student['email'], $student['first_name'], $itemName, 'inactive');
+                $this->_sendItemNotification($student['email'], $student['first_name'], $itemName, 'archived');
             }
-            return redirect()->back()->with('success', 'Unregistration approved. Item moved to Inactive Archive.');
+            return redirect()->back()->with('success', 'Unregistration approved. Item moved to Archive.');
         }
         elseif ($action === 'deny_unregister') {
-            $model->update($id, ['status' => 'flagged']);
-            return redirect()->back()->with('error', 'Unregistration denied. Item flagged.');
+            $model->update($id, ['status' => 'approved']);
+            return redirect()->back()->with('error', 'Unregistration denied. Item restored to active status.');
         }
 
         // 2. Standard Registration Rejections
@@ -181,14 +181,14 @@ class Items extends BaseController
                 <p style='font-size: 16px; color: #555;'>Unfortunately, the registration for your <strong>{$itemName}</strong> has been rejected by the administration.</p>
                 <p style='font-size: 16px; color: #555;'>This may be due to an unclear photo or incorrect serial number. Please visit the admin office for clarification.</p>
             ";
-        } elseif ($status === 'inactive') {
+        } elseif ($status === 'archived') {
             $subject = 'GATE: Item Unregistered';
             $messageBody = "
-                <h2 style='color: #2a3547;'>Item Unregistration Complete</h2>
-                <p style='font-size: 16px;'>Hi {$name},</p>
-                <p style='font-size: 16px; color: #555;'>Your request to unregister your <strong>{$itemName}</strong> has been approved.</p>
-                <p style='font-size: 16px; color: #555;'>This item has been deactivated in our system and can no longer be used to enter the campus. If you wish to bring it back in the future, you will need to register it again.</p>
-            ";
+        <h2 style='color: #2a3547;'>Item Unregistration Complete</h2>
+        <p style='font-size: 16px;'>Hi {$name},</p>
+        <p style='font-size: 16px; color: #555;'>Your request to unregister your <strong>{$itemName}</strong> has been approved.</p>
+        <p style='font-size: 16px; color: #555;'>This item has been archived in our system and can no longer be used to enter the campus. If you wish to bring it back in the future, you will need to register it again.</p>
+    ";
         }
 
         // Failsafe
