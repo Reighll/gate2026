@@ -32,15 +32,15 @@ $slideIn = (strpos($referrer, 'item-registration') !== false || strpos($referrer
 
                 <div class="skeleton-wrapper">
                     <div class="digital-id-card mb-4 rounded-4 overflow-hidden border border-light">
-                        <div class="skeleton" style="height: 100px; border-radius: 15px 15px 0 0;"></div>
+                        <div class="skeleton" style="height: 160px; border-radius: 15px 15px 0 0;"></div>
                         <div class="digital-id-body pb-4 bg-white rounded-bottom shadow-sm text-center position-relative">
                             <div class="skeleton rounded-circle border border-4 border-white shadow-sm mx-auto" style="width: 120px; height: 120px; margin-top: -60px; position: relative; z-index: 2;"></div>
                             <div class="pt-3 d-flex flex-column align-items-center">
                                 <div class="skeleton skeleton-title w-50 mb-2"></div>
-                                <div class="skeleton skeleton-text w-25 mb-4"></div>
-                                <div class="row w-100 px-4">
-                                    <div class="col-6"><div class="skeleton rounded-3 w-100" style="height: 60px;"></div></div>
-                                    <div class="col-6"><div class="skeleton rounded-3 w-100" style="height: 60px;"></div></div>
+                                <div class="skeleton skeleton-text w-25 mb-3"></div>
+                                <div class="row bg-light rounded-3 p-3 mx-2 mx-md-4 w-auto">
+                                    <div class="col-6"><div class="skeleton skeleton-text w-50 mb-1" style="height: 10px;"></div><div class="skeleton skeleton-text w-75 mb-0" style="height: 14px;"></div></div>
+                                    <div class="col-6"><div class="skeleton skeleton-text w-50 mb-1" style="height: 10px;"></div><div class="skeleton rounded-pill w-50" style="height: 20px;"></div></div>
                                 </div>
                             </div>
                         </div>
