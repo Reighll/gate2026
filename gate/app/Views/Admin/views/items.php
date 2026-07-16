@@ -10,9 +10,9 @@
                     <h4 class="fw-semibold mb-0">Student Equipment Management</h4>
                 </div>
 
-                <div class="row mb-3 skeleton-wrapper">
-                    <?php for($i=0; $i<3; $i++): ?>
-                        <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <div class="row mb-4 skeleton-wrapper">
+                    <?php for($i=0; $i<4; $i++): ?>
+                        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                             <div class="card border-0 shadow-sm h-100 rounded-4">
                                 <div class="card-body p-4">
                                     <div class="d-flex align-items-center justify-content-between">
@@ -28,8 +28,8 @@
                     <?php endfor; ?>
                 </div>
 
-                <div class="row mb-3 real-wrapper d-none">
-                    <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                <div class="row mb-4 real-wrapper d-none">
+                    <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                         <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-warning rounded-4">
                             <div class="card-body p-4">
                                 <div class="d-flex align-items-center justify-content-between">
