@@ -156,7 +156,7 @@ class Dashboard extends BaseController
                     if ($item['status'] === 'missing') {
                         $lastItem = $item;
                         $scannedItemsList[] = $item;
-                        $warningMessages[] = "🚨 MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
+                        $warningMessages[] = "MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
                         continue;
                     }
 
@@ -165,7 +165,7 @@ class Dashboard extends BaseController
                         $scannedItemsList[] = $item;
 
                         if (in_array($item['status'], ['pending', 'staged'])) {
-                            $warningMessages[] = "⏳ NOT YET CLEARED: {$itemName} ({$studentName}) status is '{$item['status']}'.";
+                            $warningMessages[] = "NOT YET CLEARED: {$itemName} ({$studentName}) status is '{$item['status']}'.";
                         } else {
                             $errorMessages[] = "DENIED: {$itemName} status is '{$item['status']}'.";
                         }
@@ -233,7 +233,7 @@ class Dashboard extends BaseController
             }
 
             if (!empty($warningMessages)) {
-                session()->setFlashdata('warning', "🚨 SECURITY ALERT:<br>" . implode('<br>', $warningMessages));
+                session()->setFlashdata('warning', "SECURITY ALERT:<br>" . implode('<br>', $warningMessages));
             }
 
             if (!empty($errorMessages)) {
