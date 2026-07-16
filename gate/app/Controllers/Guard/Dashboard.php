@@ -154,11 +154,15 @@ class Dashboard extends BaseController
                     $item['student_profile_pic']    = $student['profile_pic'] ?? null;
 
                     if ($item['status'] === 'missing') {
+                        $lastItem = $item;
+                        $scannedItemsList[] = $item;
                         $warningMessages[] = "🚨 MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
                         continue;
                     }
 
                     if ($item['status'] !== 'approved') {
+                        $lastItem = $item;
+                        $scannedItemsList[] = $item;
                         $errorMessages[] = "DENIED: {$itemName} status is '{$item['status']}'.";
                         continue;
                     }

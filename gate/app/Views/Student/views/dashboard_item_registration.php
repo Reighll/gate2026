@@ -67,7 +67,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                         <label class="form-label">Item Category</label>
                         <select class="form-select" name="category" required>
                             <option value="" disabled <?= empty(old('category')) ? 'selected' : '' ?>>Select a category...</option>
-                            <option value="Personal Computing & Mobile" <?= old('category') == 'Personal Computing & Mobile' ? 'selected' : '' ?>>Personal Computing & Mobile</option>
+                            <option value="Personal Computing & Mobile" <?= old('category') == 'Personal Computing Device' ? 'selected' : '' ?>>Personal Computing & Mobile</option>
                             <option value="Photography & Videography" <?= old('category') == 'Photography & Videography' ? 'selected' : '' ?>>Photography & Videography</option>
                             <option value="Audio & Music Equipment" <?= old('category') == 'Audio & Music Equipment' ? 'selected' : '' ?>>Audio & Music Equipment</option>
                             <option value="Technical & Engineering Gear" <?= old('category') == 'Technical & Engineering Gear' ? 'selected' : '' ?>>Technical & Engineering Gear</option>

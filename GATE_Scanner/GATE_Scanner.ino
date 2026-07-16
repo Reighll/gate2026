@@ -132,7 +132,7 @@ void setup() {
         delay(500);
     }
     
-    uhf.setTxPower(1600); // Max power
+    uhf.setTxPower(2600); // Max power
     Serial.println("✅ Scanner Ready! Hold button to scan students...");
 }
 
