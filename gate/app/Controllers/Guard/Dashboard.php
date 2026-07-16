@@ -156,7 +156,7 @@ class Dashboard extends BaseController
                     if ($item['status'] === 'missing') {
                         $lastItem = $item;
                         $scannedItemsList[] = $item;
-                        $warningMessages[] = "MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
+                        $errorMessages[] = "MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
                         continue;
                     }
 
