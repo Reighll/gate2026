@@ -7,8 +7,8 @@
         </div>
 
         <div class="row mb-4 skeleton-wrapper">
-            <?php for($i=0; $i<3; $i++): ?>
-                <div class="col-lg-4 col-md-6 mb-3 mb-md-4">
+            <?php for($i=0; $i<2; $i++): ?>
+                <div class="col-lg-6 col-md-6 mb-3 mb-md-4">
                     <div class="card border-0 shadow-sm h-100 rounded-4">
                         <div class="card-body p-3 p-md-4">
                             <div class="d-flex align-items-center justify-content-between">
