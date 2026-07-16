@@ -13,7 +13,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
         <?php if (!empty($items)): ?>
             <div class="row px-2 px-md-0 skeleton-wrapper">
-                <?php for($i=0; $i<min(count($items), 3); $i++): ?>
+                <?php for($i=0; $i<min(count($items), 4); $i++): ?>
                     <div class="col-6 col-md-6 col-xl-4 mb-3 mb-md-4 px-2">
                         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                             <div class="skeleton w-100" style="height: 150px; border-radius: 0;"></div>
