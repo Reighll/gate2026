@@ -27,13 +27,15 @@ class Items extends BaseController
         $pendingItemsCount  = $db->table('student_items')->where('status', 'pending')->countAllResults();
         $approvedItemsCount = $db->table('student_items')->where('status', 'approved')->countAllResults();
         $rejectedItemsCount = $db->table('student_items')->where('status', 'rejected')->countAllResults();
+        $archivedItemsCount = $db->table('student_items')->where('status', 'archived')->countAllResults();
 
         $data = [
             'title' => 'Manage Student Items',
             'items' => $items,
             'pendingItemsCount'  => $pendingItemsCount,
             'approvedItemsCount' => $approvedItemsCount,
-            'rejectedItemsCount' => $rejectedItemsCount
+            'rejectedItemsCount' => $rejectedItemsCount,
+            'archivedItemsCount' => $archivedItemsCount
         ];
 
         return view('Admin/views/items', $data);

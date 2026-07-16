@@ -10,7 +10,7 @@
                     <h4 class="fw-semibold mb-0">Student Equipment Management</h4>
                 </div>
 
-                <div class="row mb-4 skeleton-wrapper">
+                <div class="row mb-3 skeleton-wrapper">
                     <?php for($i=0; $i<3; $i++): ?>
                         <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
                             <div class="card border-0 shadow-sm h-100 rounded-4">
@@ -28,7 +28,7 @@
                     <?php endfor; ?>
                 </div>
 
-                <div class="row mb-4 real-wrapper d-none">
+                <div class="row mb-3 real-wrapper d-none">
                     <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
                         <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-warning rounded-4">
                             <div class="card-body p-4">
@@ -45,7 +45,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                         <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-success rounded-4">
                             <div class="card-body p-4">
                                 <div class="d-flex align-items-center justify-content-between">
@@ -61,7 +61,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-md-6">
+                    <div class="col-lg-3 col-md-6">
                         <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4">
                             <div class="card-body p-4">
                                 <div class="d-flex align-items-center justify-content-between">
@@ -71,6 +71,21 @@
                                     </div>
                                     <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 54px; height: 54px;">
                                         <i class="ti ti-x fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3 mb-md-4">
+                        <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4">
+                            <div class="card-body p-3 p-md-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted fw-normal mb-2">Inactive / Archived</h6>
+                                        <h3 class="fw-bold mb-0 text-secondary"><?= esc($archivedItemsCount ?? 0) ?></h3>
+                                    </div>
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px;">
+                                        <i class="ti ti-archive fs-4"></i>
                                     </div>
                                 </div>
                             </div>

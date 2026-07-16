@@ -20,13 +20,13 @@ class ItemReports extends BaseController
 
         // Calculate Overview Counts for the summary cards
         $activeMissingCount = $db->table('student_items')->where('status', 'missing')->countAllResults();
-        $archivedCount      = $db->table('student_items')->where('status', 'archived')->countAllResults();
+        $resolvedCount      = $db->table('student_items')->where('resolved_at IS NOT NULL')->countAllResults();
 
         $data = [
             'title'              => 'Reported Items',
             'missingReports'     => $missingReports,
             'activeMissingCount' => $activeMissingCount,
-            'archivedCount'      => $archivedCount
+            'resolvedCount'      => $resolvedCount
         ];
 
         return view('Admin/views/item_reports', $data);
@@ -39,7 +39,10 @@ class ItemReports extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $db->table('student_items')->where('id', $id)->update(['status' => 'approved']);
+        $db->table('student_items')->where('id', $id)->update([
+            'status'      => 'approved',
+            'resolved_at' => date('Y-m-d H:i:s')
+        ]);
 
         return redirect()->back()->with('success', 'Report marked as resolved. The item is now active again.');
     }

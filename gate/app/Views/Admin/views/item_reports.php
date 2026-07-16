@@ -42,31 +42,15 @@
             </div>
 
             <div class="col-lg-6 col-md-6 mb-3 mb-md-4">
-                <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4">
+                <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-success rounded-4">
                     <div class="card-body p-3 p-md-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <h6 class="text-muted fw-normal mb-2">Archived Items</h6>
-                                <h3 class="fw-bold mb-0 text-secondary"><?= esc($archivedCount ?? 0) ?></h3>
+                                <h6 class="text-muted fw-normal mb-2">Resolved Items</h6>
+                                <h3 class="fw-bold mb-0 text-success"><?= esc($resolvedCount ?? 0) ?></h3>
                             </div>
-                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px;">
-                                <i class="ti ti-archive fs-4"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 mb-3 mb-md-4">
-                <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4">
-                    <div class="card-body p-3 p-md-4">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <h6 class="text-muted fw-normal mb-2">Inactive / Archived</h6>
-                                <h3 class="fw-bold mb-0 text-secondary"><?= esc($inactiveCount ?? 0) ?></h3>
-                            </div>
-                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px;">
-                                <i class="ti ti-archive fs-4"></i>
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px;">
+                                <i class="ti ti-rotate fs-4"></i>
                             </div>
                         </div>
                     </div>
