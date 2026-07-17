@@ -10,7 +10,26 @@ $adminActive = (bool) session()->get('admin_logged_in');
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GATE | Item Protection System</title>
+
+    <!-- ============== SEARCH ENGINE / SEO TAGS ============== -->
+    <title>GATE | RFID-Based Item Protection System - TUP Taguig</title>
+    <meta name="description" content="GATE is the official RFID-based item protection and gatepass system for Technological University of the Philippines - Taguig. Register belongings, track items, and manage gate entry logs.">
+    <meta name="keywords" content="GATE system, TUP Taguig, RFID item tracking, gatepass system, campus security">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://tuptgate.tech/">
+
+    <!-- ============== OPEN GRAPH (Facebook, Messenger, LinkedIn previews) ============== -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tuptgate.tech/">
+    <meta property="og:title" content="GATE | RFID-Based Item Protection System">
+    <meta property="og:description" content="Register belongings, track items, and manage gate entry logs at TUP Taguig.">
+    <meta property="og:image" content="https://tuptgate.tech/assets/images/logos/og-preview.png">
+
+    <!-- ============== TWITTER/X CARD ============== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="GATE | RFID-Based Item Protection System">
+    <meta name="twitter:description" content="Register belongings, track items, and manage gate entry logs at TUP Taguig.">
+    <meta name="twitter:image" content="https://tuptgate.tech/assets/images/logos/og-preview.png">
 
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
