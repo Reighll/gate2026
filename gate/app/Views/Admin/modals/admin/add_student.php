@@ -50,7 +50,7 @@
                 <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-grid gap-2 d-sm-flex justify-content-sm-end">
                     <button type="button" class="btn btn-adaptive-cancel fw-bold px-4 py-2 m-0" style="border-radius: 10px;" data-bs-dismiss="modal">Cancel</button>
 
-                    <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm m-0" style="border-radius: 10px;">Create Student</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm m-0" style="border-radius: 10px;">Create Account</button>
                 </div>
             </form>
         </div>
