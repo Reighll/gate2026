@@ -4,8 +4,8 @@
 #include <WiFiClientSecure.h>
 
 // --- PRIMARY Wi-Fi & Server ---
-const char* ssid1 = "REDMI Turbo 4 Pro";
-const char* pass1 = "12345678";
+const char* ssid1 = "Nothing Phone (1)";
+const char* pass1 = "password";
 String server1 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
 
 // --- SECONDARY Wi-Fi & Server ---
@@ -14,8 +14,8 @@ const char* pass2 = "HEHEHEHEHE";
 String server2 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
 
 // --- TERTIARY Wi-Fi & Server ---
-const char* ssid3 = "Nothing Phone (1)";
-const char* pass3 = "password";
+const char* ssid3 = "REDMI Turbo 4 Pro";
+const char* pass3 = "12345678";
 String server3 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
 
 // This variable will hold whichever server we actually connect to
