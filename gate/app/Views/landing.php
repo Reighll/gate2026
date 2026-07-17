@@ -23,13 +23,13 @@ $adminActive = (bool) session()->get('admin_logged_in');
     <meta property="og:url" content="https://tuptgate.tech/">
     <meta property="og:title" content="GATE | RFID-Based Item Protection System">
     <meta property="og:description" content="Register belongings, track items, and manage gate entry logs at TUP Taguig.">
-    <meta property="og:image" content="https://tuptgate.tech/assets/images/logos/og-preview.png">
+    <meta property="og:image" content="https://tuptgate.tech/favicon.ico">
 
     <!-- ============== TWITTER/X CARD ============== -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="GATE | RFID-Based Item Protection System">
     <meta name="twitter:description" content="Register belongings, track items, and manage gate entry logs at TUP Taguig.">
-    <meta name="twitter:image" content="https://tuptgate.tech/assets/images/logos/og-preview.png">
+    <meta name="twitter:image" content="https://tuptgate.tech/favicon.ico">
 
     <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/styles.min.css') ?>" />
