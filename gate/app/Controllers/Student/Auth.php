@@ -124,9 +124,9 @@ class Auth extends BaseController
         $emailSent = $this->_sendVerificationEmail($fullEmail, $data['first_name'], $verifyToken);
 
         if ($emailSent) {
-            return redirect()->to('student/login')->with('success', 'Registration successful! Please check your GSFE email inbox (or spam) to verify your account before logging in.');
+            return redirect()->to('student/login')->with('success', 'Registration successful! Please check your TUP email inbox (or spam folder) to verify your account before logging in. If you did not receive the email, the email address you registered may be incorrect. Please try registering again.');
         } else {
-            return redirect()->to('student/login')->with('error', 'Registered, but the email failed to send. Check your SMTP settings.');
+            return redirect()->to('student/login')->with('error', 'Registered, but the email failed to send.');
         }
     }
 
