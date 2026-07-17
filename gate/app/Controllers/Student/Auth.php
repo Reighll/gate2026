@@ -34,12 +34,10 @@ class Auth extends BaseController
 
             // SECURITY CHECK: Is the email verified?
             if ($student['is_verified'] == 0) {
-                // Generate a resend link and display it INSIDE the error alert!
                 $resendUrl = base_url('student/resendVerification/' . urlencode($student['email']));
                 return redirect()->back()->withInput()->with('error', "Please verify your GSFE email address first.<br><br><a href='{$resendUrl}' class='btn btn-sm btn-danger fw-bold mt-2 shadow-sm'>Resend Verification Email</a>");
             }
 
-            // Set session data
             $sessionData = [
                 'student_id'         => $student['id'],
                 'student_name'       => $student['first_name'] . ' ' . $student['last_name'],
@@ -59,7 +57,21 @@ class Auth extends BaseController
     {
         $model = new StudentModel();
 
+        $studentNumber = $this->request->getPost('student_number');
+        if (!preg_match('/^TUPT-\d{2}-\d{4}$/', $studentNumber)) {
+            return redirect()->back()->withInput()->with('error', 'Please enter a valid Student Number in the format TUPT-XX-XXXX.');
+        }
+
         $fullEmail = $this->request->getPost('email');
+        if (!preg_match('/^[^@\s]+@tup\.edu\.ph$/i', $fullEmail)) {
+            return redirect()->back()->withInput()->with('error', 'Please use a valid @tup.edu.ph email address.');
+        }
+
+        $password = $this->request->getPost('password');
+        if (empty($password) || strlen($password) < 8) {
+            return redirect()->back()->withInput()->with('error', 'Password must be at least 8 characters long.');
+        }
+
         $existingStudent = $model->where('email', $fullEmail)->first();
 
         // 1. Generate a random secure token
@@ -68,7 +80,7 @@ class Auth extends BaseController
         $data = [
             'first_name'     => $this->request->getPost('first_name'),
             'last_name'      => $this->request->getPost('last_name'),
-            'student_number' => $this->request->getPost('student_number'),
+            'student_number' => $studentNumber,
             'email'          => $fullEmail,
             'password'       => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
             'department'     => $this->request->getPost('department'),

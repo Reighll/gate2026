@@ -21,33 +21,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         inputElement.addEventListener('input', function(e) {
-            // 1. Temporarily remove the prefix and dashes
             let userInput = this.value.toUpperCase().replace('TUPT', '').replace(/-/g, '');
-
-            // 2. The Magic Fix: Strip out ANY character that is not a number (0-9)
             let numbersOnly = userInput.replace(/\D/g, '');
-
-            // 3. Limit the input to a maximum of 6 digits
             numbersOnly = numbersOnly.substring(0, 6);
 
-            // 4. Reconstruct the perfectly formatted string
             let formatted = 'TUPT-';
-            if (numbersOnly.length > 0) {
-                formatted += numbersOnly.substring(0, 2);
-            }
-            if (numbersOnly.length > 2) {
-                formatted += '-' + numbersOnly.substring(2, 6);
-            }
+            if (numbersOnly.length > 0) formatted += numbersOnly.substring(0, 2);
+            if (numbersOnly.length > 2) formatted += '-' + numbersOnly.substring(2, 6);
 
-            // 5. Instantly update the input field
             this.value = formatted;
+
+            // NEW: mark valid/invalid based on complete digit count
+            this.setCustomValidity(numbersOnly.length === 6 ? '' : 'Please enter your full Student Number (TUPT-XX-XXXX).');
         });
 
         inputElement.addEventListener('keydown', function(e) {
-            // Prevent deleting the prefix
             if (e.key === 'Backspace' && this.value === 'TUPT-') {
                 e.preventDefault();
             }
+        });
+
+        // NEW: catch the case where the field is left as just "TUPT-" (never triggers 'input')
+        inputElement.addEventListener('blur', function() {
+            const digits = this.value.replace(/\D/g, '');
+            this.setCustomValidity(digits.length === 6 ? '' : 'Please enter your full Student Number (TUPT-XX-XXXX).');
         });
     }
 
@@ -64,16 +61,43 @@ document.addEventListener('DOMContentLoaded', function() {
     const domain = '@tup.edu.ph';
 
     if (prefixInput && fullEmailInput) {
+
+        // NEW: strip "@" as soon as it's typed and warn the user
         prefixInput.addEventListener('input', function() {
+            if (this.value.includes('@')) {
+                this.value = this.value.replace(/@.*$/, ''); // drop "@" and anything after it
+                showEmailWarning();
+            }
             fullEmailInput.value = this.value ? this.value + domain : '';
         });
 
-        // Trigger on load for browsers that autofill passwords/usernames
+        // FIXED: moved inside this guard so it doesn't run (and throw) on pages
+        // like the login view where #email_prefix doesn't exist
+        prefixInput.addEventListener('keydown', function(e) {
+            if (e.key === '@') {
+                e.preventDefault();
+                showEmailWarning();
+            }
+        });
+
         if (prefixInput.value) {
             fullEmailInput.value = prefixInput.value + domain;
         }
     }
 
+    function showEmailWarning() {
+        let warning = document.getElementById('email-domain-warning');
+        if (!warning) {
+            warning = document.createElement('div');
+            warning.id = 'email-domain-warning';
+            warning.className = 'form-text text-danger mt-1';
+            warning.innerHTML = '<i class="ti ti-alert-triangle"></i> Just enter your username — the @tup.edu.ph domain is already added for you.';
+            prefixInput.closest('.mb-3').appendChild(warning);
+        }
+        warning.style.display = 'block';
+        clearTimeout(warning._hideTimer);
+        warning._hideTimer = setTimeout(() => { warning.style.display = 'none'; }, 4000);
+    }
     // ==========================================
     // SHOW / HIDE PASSWORD TOGGLE
     // ==========================================
