@@ -196,7 +196,18 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">Email Address</label>
-                <input type="email" class="form-control form-control-lg bg-light rounded-3" name="email" value="<?= old('email') ?>" required>
+                <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
+                    <input type="text"
+                           class="form-control bg-light border-end-0 email-local-part"
+                           id="email_local"
+                           placeholder="juandelacruz"
+                           value="<?= old('email') ? esc(str_replace('@tup.edu.ph', '', old('email'))) : '' ?>"
+                           autocomplete="off"
+                           required>
+                    <span class="input-group-text bg-light border-start-0 text-muted fw-semibold">@tup.edu.ph</span>
+                </div>
+                <input type="hidden" name="email" id="email_full" value="<?= old('email') ?>">
+                <div class="invalid-feedback d-block text-danger small mt-1 email-error" style="display:none !important;"></div>
             </div>
 
             <div class="mb-3">
@@ -270,6 +281,56 @@ $registerClass = $isRegister ? 'form-slide-in' : 'form-slide-out-right';
                     }
                 });
             });
+
+            // Email local-part handling: force the @tup.edu.ph domain server-side
+            // regardless of what the user types, so duplicated/mistyped domains
+            // (e.g. "juan@tup.edu.ph@tup.edu.ph" or "juan@gmail.com") can never
+            // reach the backend and silently break notification delivery.
+            const EMAIL_DOMAIN = '@tup.edu.ph';
+            const emailLocalInput = document.getElementById('email_local');
+            const emailFullInput = document.getElementById('email_full');
+            const emailErrorEl = document.querySelector('.email-error');
+
+            function sanitizeLocalPart(raw) {
+                // Strip anything after an "@" the user typed, and strip the
+                // domain itself if they pasted/typed it in full.
+                let value = raw.split('@')[0];
+                // Remove characters that aren't valid in an email local-part.
+                value = value.replace(/[^a-zA-Z0-9._-]/g, '');
+                return value;
+            }
+
+            if (emailLocalInput) {
+                emailLocalInput.addEventListener('input', function() {
+                    const clean = sanitizeLocalPart(this.value);
+                    if (clean !== this.value) this.value = clean;
+                    emailFullInput.value = clean ? clean + EMAIL_DOMAIN : '';
+                    emailErrorEl.style.display = 'none !important';
+                });
+
+                // Catch paste of a full email address explicitly.
+                emailLocalInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+                    this.value = sanitizeLocalPart(pasted);
+                    emailFullInput.value = this.value ? this.value + EMAIL_DOMAIN : '';
+                });
+
+                const registerForm = emailLocalInput.closest('form');
+                if (registerForm) {
+                    registerForm.addEventListener('submit', function(e) {
+                        const clean = sanitizeLocalPart(emailLocalInput.value);
+                        if (!clean) {
+                            e.preventDefault();
+                            emailErrorEl.textContent = 'Please enter your TUP username only — the @tup.edu.ph domain is added automatically.';
+                            emailErrorEl.style.removeProperty('display');
+                            emailLocalInput.focus();
+                            return;
+                        }
+                        emailFullInput.value = clean + EMAIL_DOMAIN;
+                    });
+                }
+            }
 
             // Sliding & Height Logic
             const btnToRegister = document.getElementById('btn-to-register');
