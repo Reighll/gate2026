@@ -72,7 +72,12 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('error', 'Password must be at least 8 characters long.');
         }
 
-        $existingStudent = $model->where('email', $fullEmail)->first();
+        // CHANGED: Look up by BOTH student_number and email. student_number is the
+        // real, stable identity (school-issued, can't be "mistyped into someone else's"
+        // account the way a free-text email can), so it takes priority over email when
+        // deciding whether this is a genuine duplicate or just a retry/typo-fix.
+        $existingByNumber = $model->where('student_number', $studentNumber)->first();
+        $existingByEmail  = $model->where('email', $fullEmail)->first();
 
         // 1. Generate a random secure token
         $verifyToken = bin2hex(random_bytes(24));
@@ -89,19 +94,29 @@ class Auth extends BaseController
             'verify_token'   => $verifyToken
         ];
 
+        // Block only on a genuinely VERIFIED conflict — either identity.
+        if ($existingByNumber && $existingByNumber['is_verified'] == 1) {
+            return redirect()->back()->withInput()->with('error', 'This Student Number is already registered and verified. Please log in.');
+        }
+        if ($existingByEmail && $existingByEmail['is_verified'] == 1) {
+            return redirect()->back()->withInput()->with('error', 'This email is already registered and verified. Please log in.');
+        }
+
         // SMART REGISTRATION: Overwrite unverified accounts instead of blocking them!
-        if ($existingStudent) {
-            if ($existingStudent['is_verified'] == 1) {
-                return redirect()->back()->withInput()->with('error', 'This email is already registered and verified. Please log in.');
-            } else {
-                // Update their existing pending record with the fresh token
-                $model->update($existingStudent['id'], $data);
+        // Prefer the row matched by student_number (their real identity) as the one to
+        // update, since that's what a typo'd email would have orphaned.
+        $rowToOverwrite = $existingByNumber ?: $existingByEmail;
+
+        if ($rowToOverwrite) {
+            $model->update($rowToOverwrite['id'], $data);
+
+            // If number and email matched two DIFFERENT unverified rows (e.g. they typo'd
+            // the email once, then typo'd the number on a later attempt), we just merged
+            // into one — delete the other leftover so it doesn't block future retries.
+            if ($existingByNumber && $existingByEmail && $existingByNumber['id'] !== $existingByEmail['id']) {
+                $model->delete($existingByEmail['id']);
             }
         } else {
-            // Ensure the student number isn't taken by another account
-            if ($model->where('student_number', $data['student_number'])->first()) {
-                return redirect()->back()->withInput()->with('error', 'This Student Number is already registered.');
-            }
             $model->insert($data);
         }
 
