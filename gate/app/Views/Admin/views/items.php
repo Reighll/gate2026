@@ -28,9 +28,9 @@
                     <?php endfor; ?>
                 </div>
 
-                <div class="row mb-4 real-wrapper d-none">
+                <div class="row mb-4 real-wrapper d-none" id="statusFilterCards">
                     <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                        <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-warning rounded-4">
+                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-warning rounded-4" data-status-filter="pending" role="button" tabindex="0">
                             <div class="card-body p-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
@@ -46,7 +46,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-                        <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-success rounded-4">
+                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-success rounded-4" data-status-filter="approved" role="button" tabindex="0">
                             <div class="card-body p-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
@@ -62,7 +62,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6">
-                        <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4">
+                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4" data-status-filter="rejected" role="button" tabindex="0">
                             <div class="card-body p-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4">
+                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4" data-status-filter="archived" role="button" tabindex="0">
                             <div class="card-body p-3 p-md-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
@@ -101,6 +101,7 @@
                 <?php endif; ?>
 
                 <?php
+                $items = $items ?? [];
                 $unregisterRequests = array_filter($items, function($item) {
                     return $item['status'] === 'staged';
                 });
@@ -268,7 +269,7 @@
                             </tr>
                         <?php else : ?>
                             <?php foreach ($items as $item) : ?>
-                                <tr style="border-bottom: 1px solid #f6f6f6;">
+                                <tr style="border-bottom: 1px solid #f6f6f6;" data-status="<?= esc($item['status']) ?>">
                                     <td data-label="ID" class="py-3 text-muted"><?= $item['id'] ?></td>
                                     <td data-label="Student Name" class="py-3 text-muted"><?= esc($item['first_name'] . ' ' . $item['last_name']) ?></td>
                                     <td data-label="Student Number" class="py-3 text-muted"><?= esc($item['student_number'] ?? 'N/A') ?></td>
@@ -417,6 +418,13 @@
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
+
+    <style>
+        .status-filter-card { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .status-filter-card:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1) !important; }
+        .status-filter-card.status-filter-active { box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.18) !important; outline: 2px solid rgba(0,0,0,0.08); }
+    </style>
+
     <script src="<?= base_url('assets/js/admin/admin-items.js') ?>"></script>
 
 <?= $this->endSection() ?>

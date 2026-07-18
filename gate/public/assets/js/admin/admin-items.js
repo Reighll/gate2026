@@ -87,23 +87,93 @@ if (!window.iotScannerRunning) {
 }
 
 // ==========================================================================
-// 3. UI INITIALIZATION (Search Bar)
+// 3. UI INITIALIZATION (Search Bar + Status Filter Cards)
 // ==========================================================================
+
+// Tracks which summary card (if any) is currently filtering the table.
+// Lives outside initAdminItemsUI so it isn't reset on htmx re-init.
+let activeStatusFilter = null;
+
+// Applies both the text search and the active status card filter together.
+function applyItemsFilters() {
+    const table = document.getElementById('itemsTable');
+    if (!table) return;
+
+    const searchInput = document.getElementById('itemSearch');
+    const term = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+    const rows = table.querySelectorAll('tbody tr:not(.no-data-row)');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const matchesStatus = !activeStatusFilter || row.dataset.status === activeStatusFilter;
+        const matchesSearch = !term || row.textContent.toLowerCase().includes(term);
+        const show = matchesStatus && matchesSearch;
+
+        row.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
+    });
+
+    // Show/hide a "no results" row when the search + filter combo matches nothing
+    let emptyRow = table.querySelector('tbody tr.filter-empty-row');
+    if (visibleCount === 0) {
+        if (!emptyRow) {
+            const tbody = table.querySelector('tbody.real-wrapper') || table.querySelector('tbody');
+            if (tbody) {
+                emptyRow = document.createElement('tr');
+                emptyRow.className = 'filter-empty-row';
+                const colCount = table.querySelectorAll('thead th').length || 9;
+                emptyRow.innerHTML = '<td colspan="' + colCount + '" class="text-center py-5 text-muted">No items match this filter.</td>';
+                tbody.appendChild(emptyRow);
+            }
+        } else {
+            emptyRow.style.display = '';
+        }
+    } else if (emptyRow) {
+        emptyRow.style.display = 'none';
+    }
+}
+
 function initAdminItemsUI() {
+    // --- Search bar ---
     const searchInput = document.getElementById('itemSearch');
     if (searchInput) {
+        // Clone/replace to strip old listeners before re-binding (safe across htmx re-renders)
         searchInput.replaceWith(searchInput.cloneNode(true));
         const newSearchInput = document.getElementById('itemSearch');
-
-        newSearchInput.addEventListener('input', function() {
-            const filter = this.value.toLowerCase().trim();
-            const tableRows = document.querySelectorAll('#itemsTable tbody tr:not(.no-data-row)');
-
-            tableRows.forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
-            });
-        });
+        newSearchInput.addEventListener('input', applyItemsFilters);
     }
+
+    // --- Status filter cards (Pending / Approved / Declined / Archived) ---
+    document.querySelectorAll('.status-filter-card').forEach(card => {
+        const freshCard = card.cloneNode(true);
+        card.parentNode.replaceChild(freshCard, card);
+    });
+
+    document.querySelectorAll('.status-filter-card').forEach(card => {
+        card.addEventListener('click', function () {
+            const status = this.dataset.statusFilter;
+            // Clicking the already-active card clears the filter
+            activeStatusFilter = (activeStatusFilter === status) ? null : status;
+
+            document.querySelectorAll('.status-filter-card').forEach(c => {
+                c.classList.toggle('status-filter-active', c.dataset.statusFilter === activeStatusFilter);
+            });
+
+            applyItemsFilters();
+        });
+
+        // Keyboard accessibility since cards use role="button"
+        card.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+    });
+
+    // Re-apply whatever filter/search state is active (covers htmx refresh)
+    applyItemsFilters();
 }
 
 document.addEventListener('DOMContentLoaded', initAdminItemsUI);
