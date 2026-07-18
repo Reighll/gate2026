@@ -86,49 +86,69 @@
 
                         <!-- STUDENTS TAB -->
                         <div class="tab-pane fade show active" id="students">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                                 <h6 class="fw-semibold mb-0 text-dark">Registered Students</h6>
-                                <button class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
-                                    <i class="ti ti-plus me-1"></i> Add Student
-                                </button>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="input-group input-group-sm" style="width: 240px;">
+                                        <span class="input-group-text bg-white border-end-0 rounded-start-pill">
+                                            <i class="ti ti-search text-muted"></i>
+                                        </span>
+                                        <input type="text" id="studentSearchInput" class="form-control border-start-0 rounded-end-pill" placeholder="Search students...">
+                                    </div>
+                                    <button class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                        <i class="ti ti-plus me-1"></i> Add Student
+                                    </button>
+                                </div>
                             </div>
                             <div class="table-responsive">
-                                <table class="table text-nowrap mb-0 align-middle border-light table-hover">
+                                <table class="table text-nowrap mb-0 align-middle border-light table-hover" id="studentsTable">
                                     <thead style="border-bottom: 2px solid #f0f0f0;">
                                     <tr>
                                         <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Student No.</th>
                                         <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Name</th>
                                         <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Email</th>
+                                        <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Status</th>
                                         <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <?php if (empty($students)): ?>
                                         <tr>
-                                            <td colspan="4" class="text-center py-5 text-muted">
+                                            <td colspan="5" class="text-center py-5 text-muted">
                                                 <i class="ti ti-users fs-1 d-block mb-2 opacity-50"></i>
                                                 No students registered yet.
                                             </td>
                                         </tr>
                                     <?php else: ?>
-                                    <?php foreach ($students as $student): ?>
-                                        <tr style="border-bottom: 1px solid #f6f6f6;">
-                                            <td data-label="Student No." class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($student['student_number']) ?></h6></td>
-                                            <td data-label="Name" class="py-3 text-muted"><?= esc($student['first_name'] . ' ' . $student['last_name']) ?></td>
-                                            <td data-label="Email" class="py-3 text-muted"><?= esc($student['email']) ?></td>
-                                            <td data-label="Action" class="py-3">
-                                                <button class="btn btn-sm btn-info text-white shadow-sm rounded-2 me-1" data-bs-toggle="modal" data-bs-target="#editStudentModal<?= $student['id'] ?>">
-                                                    <i class="ti ti-pencil"></i> Edit
-                                                </button>
-                                                <a href="javascript:void(0)" class="btn btn-sm btn-danger text-white shadow-sm rounded-2"
-                                                   data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
-                                                   data-bs-url="<?= base_url('admin/users/deleteStudent/' . $student['id']) ?>"
-                                                   data-bs-message="Delete this student? This removes all their registered items as well.">
-                                                    <i class="ti ti-trash"></i> Delete
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <?= view('Admin/modals/admin/edit_student', ['student' => $student]) ?>
+                                        <?php foreach ($students as $student): ?>
+                                            <tr style="border-bottom: 1px solid #f6f6f6;" class="student-row">
+                                                <td data-label="Student No." class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($student['student_number']) ?></h6></td>
+                                                <td data-label="Name" class="py-3 text-muted"><?= esc($student['first_name'] . ' ' . $student['last_name']) ?></td>
+                                                <td data-label="Email" class="py-3 text-muted"><?= esc($student['email']) ?></td>
+                                                <td data-label="Status" class="py-3">
+                                                    <?php if ((int) ($student['is_verified'] ?? 0) === 1): ?>
+                                                        <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                                                        <i class="ti ti-circle-check me-1"></i> Verified
+                                                    </span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-2">
+                                                        <i class="ti ti-circle-x me-1"></i> Not Verified
+                                                    </span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td data-label="Action" class="py-3">
+                                                    <button class="btn btn-sm btn-info text-white shadow-sm rounded-2 me-1" data-bs-toggle="modal" data-bs-target="#editStudentModal<?= $student['id'] ?>">
+                                                        <i class="ti ti-pencil"></i> Edit
+                                                    </button>
+                                                    <a href="javascript:void(0)" class="btn btn-sm btn-danger text-white shadow-sm rounded-2"
+                                                       data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                                       data-bs-url="<?= base_url('admin/users/deleteStudent/' . $student['id']) ?>"
+                                                       data-bs-message="Delete this student? This removes all their registered items as well.">
+                                                        <i class="ti ti-trash"></i> Delete
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?= view('Admin/modals/admin/edit_student', ['student' => $student]) ?>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                     </tbody>
@@ -162,23 +182,23 @@
                                             </td>
                                         </tr>
                                     <?php else: ?>
-                                    <?php foreach ($guards as $guard): ?>
-                                        <tr style="border-bottom: 1px solid #f6f6f6;">
-                                            <td data-label="Username" class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($guard['username']) ?></h6></td>
-                                            <td data-label="Name" class="py-3 text-muted"><?= esc($guard['first_name'] . ' ' . $guard['last_name']) ?></td>
-                                            <td data-label="Action" class="py-3">
-                                                <button class="btn btn-sm btn-info text-white shadow-sm rounded-2 me-1" data-bs-toggle="modal" data-bs-target="#editGuardModal<?= $guard['id'] ?>">
-                                                    <i class="ti ti-pencil"></i> Edit
-                                                </button>
-                                                <a href="javascript:void(0)" class="btn btn-sm btn-danger text-white shadow-sm rounded-2"
-                                                   data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
-                                                   data-bs-url="<?= base_url('admin/users/deleteGuard/' . $guard['id']) ?>"
-                                                   data-bs-message="Are you sure you want to delete this guard account?">
-                                                    <i class="ti ti-trash"></i> Delete
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <?= view('Admin/modals/admin/edit_guard', ['guard' => $guard]) ?>
+                                        <?php foreach ($guards as $guard): ?>
+                                            <tr style="border-bottom: 1px solid #f6f6f6;">
+                                                <td data-label="Username" class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($guard['username']) ?></h6></td>
+                                                <td data-label="Name" class="py-3 text-muted"><?= esc($guard['first_name'] . ' ' . $guard['last_name']) ?></td>
+                                                <td data-label="Action" class="py-3">
+                                                    <button class="btn btn-sm btn-info text-white shadow-sm rounded-2 me-1" data-bs-toggle="modal" data-bs-target="#editGuardModal<?= $guard['id'] ?>">
+                                                        <i class="ti ti-pencil"></i> Edit
+                                                    </button>
+                                                    <a href="javascript:void(0)" class="btn btn-sm btn-danger text-white shadow-sm rounded-2"
+                                                       data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                                       data-bs-url="<?= base_url('admin/users/deleteGuard/' . $guard['id']) ?>"
+                                                       data-bs-message="Are you sure you want to delete this guard account?">
+                                                        <i class="ti ti-trash"></i> Delete
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?= view('Admin/modals/admin/edit_guard', ['guard' => $guard]) ?>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                     </tbody>
@@ -212,25 +232,25 @@
                                             </td>
                                         </tr>
                                     <?php else: ?>
-                                    <?php foreach ($admins as $admin): ?>
-                                        <tr style="border-bottom: 1px solid #f6f6f6;">
-                                            <td data-label="Username" class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($admin['username']) ?></h6></td>
-                                            <td data-label="Name" class="py-3 text-muted"><?= esc($admin['first_name'] . ' ' . $admin['last_name']) ?></td>
-                                            <td data-label="Action" class="py-3">
-                                                <button class="btn btn-sm btn-info text-white shadow-sm rounded-2 me-1" data-bs-toggle="modal" data-bs-target="#editAdminModal<?= $admin['id'] ?>">
-                                                    <i class="ti ti-pencil"></i> Edit
-                                                </button>
-                                                <?php if ($admin['username'] !== 'admin'): ?>
-                                                    <a href="javascript:void(0)" class="btn btn-sm btn-danger text-white shadow-sm rounded-2"
-                                                       data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
-                                                       data-bs-url="<?= base_url('admin/users/deleteAdmin/' . $admin['id']) ?>"
-                                                       data-bs-message="Are you sure you want to delete this admin account?">
-                                                        <i class="ti ti-trash"></i> Delete
-                                                    </a>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                        <?= view('Admin/modals/admin/edit_admin', ['admin' => $admin]) ?>
+                                        <?php foreach ($admins as $admin): ?>
+                                            <tr style="border-bottom: 1px solid #f6f6f6;">
+                                                <td data-label="Username" class="py-3"><h6 class="fw-bold mb-0 text-dark"><?= esc($admin['username']) ?></h6></td>
+                                                <td data-label="Name" class="py-3 text-muted"><?= esc($admin['first_name'] . ' ' . $admin['last_name']) ?></td>
+                                                <td data-label="Action" class="py-3">
+                                                    <button class="btn btn-sm btn-info text-white shadow-sm rounded-2 me-1" data-bs-toggle="modal" data-bs-target="#editAdminModal<?= $admin['id'] ?>">
+                                                        <i class="ti ti-pencil"></i> Edit
+                                                    </button>
+                                                    <?php if ($admin['username'] !== 'admin'): ?>
+                                                        <a href="javascript:void(0)" class="btn btn-sm btn-danger text-white shadow-sm rounded-2"
+                                                           data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                                           data-bs-url="<?= base_url('admin/users/deleteAdmin/' . $admin['id']) ?>"
+                                                           data-bs-message="Are you sure you want to delete this admin account?">
+                                                            <i class="ti ti-trash"></i> Delete
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                            <?= view('Admin/modals/admin/edit_admin', ['admin' => $admin]) ?>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                     </tbody>
@@ -264,6 +284,30 @@
         document.addEventListener("DOMContentLoaded", hideMySkeletons);
         // Run on HTMX navigation (from your sidebar)
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+        // ------------------------------------------------------------
+        // Student search bar: filters the students table client-side
+        // by student number, name, or email as the admin types.
+        // ------------------------------------------------------------
+        function bindStudentSearch() {
+            const searchInput = document.getElementById('studentSearchInput');
+            const table = document.getElementById('studentsTable');
+            if (!searchInput || !table || searchInput.dataset.bound === '1') return;
+
+            searchInput.dataset.bound = '1';
+            searchInput.addEventListener('input', function () {
+                const term = this.value.trim().toLowerCase();
+                const rows = table.querySelectorAll('tbody tr.student-row');
+
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(term) ? '' : 'none';
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', bindStudentSearch);
+        document.body.addEventListener('htmx:afterSettle', bindStudentSearch);
 
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.toggle-password-btn');
