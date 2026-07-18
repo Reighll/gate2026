@@ -199,7 +199,8 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                             </td>
                                             <td class="py-3">
                                                 <div class="d-flex flex-column">
-                                                    <span class="fw-semibold"><?= esc($log['brand_model'] ?? $log['item_name_fallback'] ?? 'Unknown Item') ?></span>                                                    <span class="text-muted small font-monospace">SN: <?= esc($log['serial_number'] ?? 'N/A') ?></span>
+                                                    <span class="fw-semibold"><?= esc($log['brand_model'] ?? $log['item_name_fallback'] ?? 'Unknown Item') ?></span>
+                                                    <span class="text-muted small font-monospace">SN: <?= esc($log['serial_number'] ?? $log['serial_fallback'] ?? 'N/A') ?></span>
                                                 </div>
                                             </td>
                                         </tr>

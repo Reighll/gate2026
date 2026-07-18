@@ -149,6 +149,14 @@ class Items extends BaseController
 
         // 3. Force Delete
         elseif ($action === 'delete') {
+            $db = \Config\Database::connect();
+            $db->table('item_logs')
+                ->where('item_id', $id)
+                ->update([
+                    'item_name_fallback' => $item['brand_model'],
+                    'serial_fallback'    => $item['serial_number'],
+                ]);
+
             $model->delete($id);
             return redirect()->back()->with('success', 'Item permanently deleted from database.');
         }
