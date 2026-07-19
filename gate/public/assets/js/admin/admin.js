@@ -24,10 +24,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (dateFilter) {
         dateFilter.addEventListener('change', function() {
-            if(this.value === 'custom') {
+            if (this.value === 'custom') {
                 customContainer.classList.remove('d-none');
+                // Custom still needs both dates picked, so wait for the Filter button
             } else {
                 customContainer.classList.add('d-none');
+                // Preset ranges (Today / 7 Days / Month / Year) apply instantly
+                this.form.submit();
             }
         });
     }
@@ -77,66 +80,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         }, 1000);
-    }
-
-    // --- 6. DASHBOARD: Overview Card Click Filter ---
-    // Clicking a summary card filters the Live Gatepass Activity table by
-    // its matching data-log-action. Click the same card again to clear it.
-    // Only "Student Entries" (time_in) has matching rows in this table —
-    // Visitor Entries and Missing Item Reports aren't represented here,
-    // so selecting them correctly shows "no results" rather than doing nothing.
-    const dashboardFilterCards = document.querySelectorAll('.dashboard-filter-card');
-    const gatepassLogsTable = document.getElementById('gatepassLogsTable');
-
-    if (dashboardFilterCards.length && gatepassLogsTable) {
-        let activeDashboardFilter = null;
-
-        const applyDashboardCardFilter = function () {
-            const rows = gatepassLogsTable.querySelectorAll('tbody.real-wrapper tr.log-row');
-            let visibleCount = 0;
-
-            rows.forEach(row => {
-                const show = !activeDashboardFilter || row.dataset.logAction === activeDashboardFilter;
-                row.style.display = show ? '' : 'none';
-                if (show) visibleCount++;
-            });
-
-            let emptyRow = gatepassLogsTable.querySelector('tbody.real-wrapper tr.dashboard-filter-empty-row');
-            if (visibleCount === 0 && rows.length > 0) {
-                if (!emptyRow) {
-                    const tbody = gatepassLogsTable.querySelector('tbody.real-wrapper');
-                    emptyRow = document.createElement('tr');
-                    emptyRow.className = 'dashboard-filter-empty-row';
-                    const colCount = gatepassLogsTable.querySelectorAll('thead th').length || 4;
-                    emptyRow.innerHTML = '<td colspan="' + colCount + '" class="text-center py-5 text-muted">No records for this category in the current date range.</td>';
-                    tbody.appendChild(emptyRow);
-                } else {
-                    emptyRow.style.display = '';
-                }
-            } else if (emptyRow) {
-                emptyRow.style.display = 'none';
-            }
-        };
-
-        dashboardFilterCards.forEach(card => {
-            card.addEventListener('click', function () {
-                const action = this.dataset.filterAction;
-                activeDashboardFilter = (activeDashboardFilter === action) ? null : action;
-
-                dashboardFilterCards.forEach(c => {
-                    c.classList.toggle('dashboard-filter-active', c.dataset.filterAction === activeDashboardFilter);
-                });
-
-                applyDashboardCardFilter();
-            });
-
-            card.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.click();
-                }
-            });
-        });
     }
 
     console.log("Admin JS Loaded successfully.");

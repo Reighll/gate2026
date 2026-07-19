@@ -57,7 +57,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
         <div class="row real-wrapper d-none">
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card dashboard-filter-card border-0 shadow-sm h-100" data-filter-action="time_in" role="button" tabindex="0">
+                <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
@@ -76,7 +76,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             </div>
 
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card dashboard-filter-card border-0 shadow-sm h-100" data-filter-action="visitor" role="button" tabindex="0">
+                <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
@@ -95,7 +95,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             </div>
 
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card dashboard-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-danger" data-filter-action="missing" role="button" tabindex="0">
+                <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-danger">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
@@ -127,7 +127,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table align-middle text-nowrap mb-0 border-light table-hover" id="gatepassLogsTable">
+                            <table class="table align-middle text-nowrap mb-0 border-light table-hover">
                                 <thead style="border-bottom: 2px solid #f0f0f0;">
                                 <tr>
                                     <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Date & Time</th>
@@ -170,7 +170,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach($recentLogs as $log): ?>
-                                        <tr style="border-bottom: 1px solid #f6f6f6;" class="log-row" data-log-action="<?= esc($log['action']) ?>">
+                                        <tr style="border-bottom: 1px solid #f6f6f6;">
                                             <td class="py-3">
                                                 <?php
                                                 $logTime = new DateTime($log['created_at']);
@@ -214,12 +214,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             </div>
         </div>
     </div>
-
-    <style>
-        .dashboard-filter-card { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
-        .dashboard-filter-card:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1) !important; }
-        .dashboard-filter-card.dashboard-filter-active { box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.18) !important; outline: 2px solid rgba(0,0,0,0.08); }
-    </style>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
