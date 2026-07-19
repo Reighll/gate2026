@@ -27,6 +27,22 @@ class Auth extends BaseController
         $studentNumber = $this->request->getPost('student_number');
         $password = $this->request->getPost('password');
 
+        // --- RATE LIMIT: max 5 failed login attempts per 3-minute window, per IP ---
+        $cache = \Config\Services::cache();
+        $cacheKey = 'login_attempts_student_' . $this->request->getIPAddress();
+        $record = $cache->get($cacheKey);
+        $now = time();
+
+        if (!$record || ($now - $record['first_attempt_at']) >= 180) {
+            $record = ['count' => 0, 'first_attempt_at' => $now];
+        }
+
+        if ($record['count'] >= 5) {
+            $secondsLeft = 180 - ($now - $record['first_attempt_at']);
+            return redirect()->back()->withInput()->with('error', "Too many failed login attempts. Please try again in " . max(1, $secondsLeft) . " seconds.");
+        }
+        // --- END RATE LIMIT CHECK (failure is registered below) ---
+
         // CHANGED: Search the database by student_number
         $student = $model->where('student_number', $studentNumber)->first();
 
@@ -46,11 +62,18 @@ class Auth extends BaseController
                 'student_logged_in'  => true,
             ];
             session()->set($sessionData);
+            $cache->delete($cacheKey); // clear the failed-attempt counter on success
 
             return redirect()->to('student/dashboard')->with('success', 'Welcome back!');
         }
 
-        return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
+        $record['count']++;
+        $cache->save($cacheKey, $record, 190);
+        $attemptsLeft = 5 - $record['count'];
+        $msg = $attemptsLeft > 0
+            ? "Invalid student number or password. You have {$attemptsLeft} attempt(s) left before you're locked out for 3 minutes."
+            : "Invalid student number or password. Too many failed attempts — please try again in 3 minutes.";
+        return redirect()->back()->withInput()->with('error', $msg);
     }
 
     public function save()
