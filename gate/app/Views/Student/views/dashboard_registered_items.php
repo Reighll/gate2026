@@ -201,7 +201,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                             <?php endif; ?>
                                                             <label class="form-label small fw-bold text-muted mb-1">Replace Photo</label>
                                                             <input type="file" class="form-control" name="photo" accept="image/*">
-                                                            <div class="form-text">Leave blank to keep the current photo.</div>
+                                                            <div class="form-text">Max file size: 50MB. Leave blank to keep the current photo.</div>
                                                         </div>
 
                                                         <div class="col-md-7">

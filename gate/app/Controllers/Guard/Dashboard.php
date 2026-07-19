@@ -352,6 +352,14 @@ class Dashboard extends BaseController
 
     public function checkLatestScan()
     {
+        // This endpoint is polled every second in the background. Without this,
+        // a poll landing between a scan's redirect and the dashboard's actual
+        // page render can silently consume/expire flashdata meant for that page.
+        session()->keepFlashdata([
+            'scanned_item', 'scanned_items', 'scanned_student',
+            'departed_visitor', 'success', 'error', 'warning', 'info', 'visitor_rfid'
+        ]);
+
         $file = WRITEPATH . 'latest_scan.txt';
 
         if (file_exists($file)) {

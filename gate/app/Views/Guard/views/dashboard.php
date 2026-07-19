@@ -28,6 +28,11 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 <i class="ti ti-alert-triangle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('warning') ?></span>
             </div>
         <?php endif; ?>
+        <?php if (session()->getFlashdata('info')): ?>
+            <div class="alert alert-info p-3 shadow-sm border-0 d-flex align-items-center rounded-3 mb-4">
+                <i class="ti ti-info-circle fs-4 me-2"></i><span class="fw-semibold"><?= session()->getFlashdata('info') ?></span>
+            </div>
+        <?php endif; ?>
 
         <div class="row g-4 pb-5 skeleton-wrapper">
             <div class="col-6 col-lg-5">
@@ -180,14 +185,22 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                 $scannedItems = $scannedData;
                             }
                         }
+
+                        // Bring missing items to the front so they're never buried in a batch
+                        usort($scannedItems, function($a, $b) {
+                            $aMissing = (($a['status'] ?? '') === 'missing') ? 0 : 1;
+                            $bMissing = (($b['status'] ?? '') === 'missing') ? 0 : 1;
+                            return $aMissing <=> $bMissing;
+                        });
                         ?>
 
                         <?php if (!empty($scannedItems) && $scannedStudent): ?>
 
-                        <?php if (count($scannedItems) === 1): ?>
-                            <?php $item = $scannedItems[0]; ?>
-                            <?php $itemStudentPic = $item['student_profile_pic'] ?? $scannedStudent['profile_pic'] ?? 'default.png'; ?>
-                            <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4">
+                            <?php if (count($scannedItems) === 1): ?>
+                                <?php $item = $scannedItems[0]; ?>
+                                <?php $itemStudentPic = $item['student_profile_pic'] ?? $scannedStudent['profile_pic'] ?? 'default.png'; ?>
+                                <?php $isMissingSingle = (($item['status'] ?? '') === 'missing'); ?>
+                                <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4 <?= $isMissingSingle ? 'bg-danger-subtle border-danger' : '' ?>">
                                 <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
                                     <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
                                     <div class="d-flex flex-column">
@@ -252,7 +265,8 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
                                 <div class="d-flex flex-column gap-3 pe-2" style="max-height: 380px; overflow-y: auto; overflow-x: hidden;">
                                     <?php foreach ($scannedItems as $item): ?>
-                                        <div class="row align-items-center p-3 border rounded-3 bg-light shadow-sm mx-0">
+                                        <?php $isMissingCard = (($item['status'] ?? '') === 'missing'); ?>
+                                        <div class="row align-items-center p-3 border rounded-3 <?= $isMissingCard ? 'bg-danger-subtle border-danger' : 'bg-light' ?> shadow-sm mx-0">
                                             <div class="col-md-7 order-2 order-md-1 mt-3 mt-md-0">
                                                 <?php
                                                 // MULTIPLE ITEM LOGIC
