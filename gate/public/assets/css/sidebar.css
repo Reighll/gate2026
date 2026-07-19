@@ -106,3 +106,13 @@ body.modal-open .mobile-fab,
 body.modal-open .mobile-bottom-nav {
     z-index: 1030 !important;
 }
+/* ==========================================================================
+   KEEP MODALS ABOVE THE FIXED HEADER
+   ========================================================================== */
+.modal-backdrop {
+    z-index: 1150 !important;
+}
+
+.modal {
+    z-index: 1160 !important;
+}
