@@ -169,7 +169,7 @@
                                                     </div>
                                                 <?php endif; ?>
                                             </td>
-                                            <td data-label="Item Name" class="py-3 text-muted"><?= esc($req['name'] ?? $req['item_name'] ?? 'Unknown Item') ?></td>
+                                            <td data-label="Item Name" class="py-3 text-muted"><?= esc($req['brand_model'] ?? $req['name'] ?? $req['item_name'] ?? 'Unknown Item') ?></td>
                                             <td data-label="Serial Number" class="py-3 text-muted"><?= esc($req['serial_number'] ?? 'N/A') ?></td>
                                             <td data-label="Action" class="py-3">
                                                 <button class="btn btn-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#viewUnregisterModal<?= $req['id'] ?>">VIEW</button>
