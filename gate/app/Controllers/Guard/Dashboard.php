@@ -449,6 +449,27 @@ class Dashboard extends BaseController
         // 1. Handle Profile Picture Upload
         $file = $this->request->getFile('profile_pic');
         if ($file && $file->isValid() && !$file->hasMoved()) {
+
+            // --- RATE LIMIT: max 3 picture changes per 2-minute window ---
+            $cache = \Config\Services::cache();
+            $cacheKey = 'profile_pic_attempts_guard_' . $guardId;
+            $record = $cache->get($cacheKey);
+            $now = time();
+
+            // Reset the window if it doesn't exist yet or the 2 minutes have passed
+            if (!$record || ($now - $record['first_attempt_at']) >= 120) {
+                $record = ['count' => 0, 'first_attempt_at' => $now];
+            }
+
+            if ($record['count'] >= 3) {
+                $secondsLeft = 120 - ($now - $record['first_attempt_at']);
+                return redirect()->back()->with('error', "You've reached the limit of 3 profile picture changes. Please try again in " . max(1, $secondsLeft) . " seconds.");
+            }
+
+            $record['count']++;
+            $cache->save($cacheKey, $record, 130); // stored slightly longer than the window itself
+            // --- END RATE LIMIT ---
+
             $newName = $file->getRandomName();
             $file->move(FCPATH . 'uploads/profiles', $newName);
             $updateData['profile_pic'] = $newName;
