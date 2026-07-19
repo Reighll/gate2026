@@ -43,6 +43,7 @@ body * { visibility: hidden; }
     display: flex !important;
     align-items: center !important;
     justify-content: flex-start !important;
+    white-space: nowrap !important;
 }
 
 /* Just in case the icon itself has a sneaky margin pushing it right */
@@ -89,6 +90,21 @@ body * { visibility: hidden; }
     vertical-align: middle !important;
 }
 
+/* 5C. PREVENT BADGE/TEXT WRAPPING IN TABLE CELLS */
+#printableTable td,
+#printableTable th {
+    white-space: nowrap !important;
+}
+
+#printableTable td:nth-child(3),
+#printableTable td:nth-child(4) {
+    white-space: normal !important; /* Student & Equipment columns can still wrap if long */
+}
+
+#printableTable table {
+    table-layout: auto !important; /* Let columns size to content instead of forcing equal width */
+}
+
 /* 6. CLEAN UP CARDS & TYPOGRAPHY */
 #printableTable .card {
     border: none !important;
@@ -125,5 +141,36 @@ body * { visibility: hidden; }
 #printableTable .skeleton-wrapper,
 #printableTable tbody.d-none,
 #printableTable tr.d-none {
+    display: none !important;
+}
+
+/* ==========================================================================
+   8. BREAK OUT OF SIMPLEBAR / SCROLL-LOCKED CONTAINERS FOR PRINTING
+   ========================================================================== */
+html, body {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.page-wrapper,
+.body-wrapper,
+.container-fluid,
+#app-content,
+[data-simplebar],
+.simplebar-wrapper,
+.simplebar-mask,
+.simplebar-offset,
+.simplebar-content-wrapper,
+.simplebar-content {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.simplebar-track,
+.simplebar-scrollbar {
     display: none !important;
 }
