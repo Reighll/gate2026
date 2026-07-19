@@ -309,9 +309,7 @@
                                             <?= ucfirst(esc($item['status'])) ?>
                                         </span>
                                     </td>
-                                    <td data-label="Actions" class="py-3">
-                                        <div class="dropdown">
-                                            <td data-label="Processed By" class="py-3 text-muted">
+                                    <td data-label="Processed By" class="py-3 text-muted">
                                                 <?php if ($item['status'] === 'archived' && !empty($item['unregistered_by_first_name'])): ?>
                                                     <span class="fw-semibold"><?= esc($item['unregistered_by_first_name'] . ' ' . $item['unregistered_by_last_name']) ?></span>
                                                 <?php elseif (!empty($item['approved_by_first_name'])): ?>
