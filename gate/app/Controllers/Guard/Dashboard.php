@@ -57,6 +57,7 @@ class Dashboard extends BaseController
         $lastVisitorName  = null;
         $lastVisitorPhoto = null;
         $isVisitorHandled = false;
+        $newVisitorRfid   = null;
 
         // 2. LOOP THROUGH EVERY TAG IN THE BATCH
         foreach ($rfidArray as $rfid) {
@@ -122,11 +123,11 @@ class Dashboard extends BaseController
                                 }
                             }
                         }
-
-                        // If it's a NEW visitor (or they are already checked out), show the details form
                         if (!$isVisitorHandled) {
-                            session()->setFlashdata('visitor_rfid', $rfid);
-                            return redirect()->to('guard/dashboard')->with('info', 'VISITOR PASS DETECTED. Please enter details.');
+                            if ($newVisitorRfid === null) {
+                                $newVisitorRfid = $rfid;
+                            }
+                            continue;
                         }
                     }
                 }
@@ -198,6 +199,30 @@ class Dashboard extends BaseController
                     $errorMessages[] = "Unrecognized Card ({$rfid})";
                 }
             }
+        }
+
+        // Handle a new/unregistered visitor pass found in this batch, now that the
+        // rest of the batch (items) has already been processed above.
+        if ($newVisitorRfid !== null) {
+            session()->setFlashdata('visitor_rfid', $newVisitorRfid);
+
+            if (!empty($scannedItemsList) && $lastStudent) {
+                if (count($scannedItemsList) === 1) {
+                    session()->setFlashdata('scanned_item', $scannedItemsList[0]);
+                } else {
+                    session()->setFlashdata('scanned_items', $scannedItemsList);
+                }
+                session()->setFlashdata('scanned_student', $lastStudent);
+            }
+
+            $combined = array_merge($errorMessages, $warningMessages);
+            if (!empty($combined)) {
+                return redirect()->to('guard/dashboard')
+                    ->with('error', implode('<br>', $combined))
+                    ->with('info', 'VISITOR PASS DETECTED. Please enter details.');
+            }
+
+            return redirect()->to('guard/dashboard')->with('info', 'VISITOR PASS DETECTED. Please enter details.');
         }
 
         // 3. BATCH SUMMARY RESULTS
