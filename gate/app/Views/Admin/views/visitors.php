@@ -157,8 +157,22 @@
                                                 </div>
                                             </td>
                                             <td data-label="Tag Used"><span class="badge bg-light-secondary text-secondary font-monospace"><?= esc($log['tag_id']) ?></span></td>
-                                            <td data-label="Time In"><?= date('h:i A', strtotime($log['time_in'])) ?></td>
-                                            <td data-label="Time Out"><?= $log['time_out'] ? date('h:i A', strtotime($log['time_out'])) : '<span class="badge bg-warning">Active</span>' ?></td>
+                                            <td data-label="Time In">
+                                                <div class="d-flex flex-column">
+                                                    <span class="fw-semibold text-dark"><?= date('M d, Y', strtotime($log['time_in'])) ?></span>
+                                                    <span class="text-muted small"><?= date('h:i A', strtotime($log['time_in'])) ?></span>
+                                                </div>
+                                            </td>
+                                            <td data-label="Time Out">
+                                                <?php if ($log['time_out']): ?>
+                                                    <div class="d-flex flex-column">
+                                                        <span class="fw-semibold text-dark"><?= date('M d, Y', strtotime($log['time_out'])) ?></span>
+                                                        <span class="text-muted small"><?= date('h:i A', strtotime($log['time_out'])) ?></span>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <span class="badge bg-warning">Active</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td data-label="Status">
                                                 <?php if ($log['status'] === 'active'): ?>
                                                     <span class="badge bg-success">Inside</span>
