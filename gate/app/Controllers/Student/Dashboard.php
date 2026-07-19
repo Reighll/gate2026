@@ -76,14 +76,28 @@ class Dashboard extends BaseController
 
         // 4. Pass everything to the view
         $data = [
-            'title'        => 'Student Dashboard',
-            'student'      => $student,     // This passes first_name, last_name, etc. safely
-            'campusStatus' => $campusStatus,
-            'badgeClass'   => $badgeClass
+            'title'          => 'Student Dashboard',
+            'student'        => $student,     // This passes first_name, last_name, etc. safely
+            'campusStatus'   => $campusStatus,
+            'badgeClass'     => $badgeClass,
+            'showTermsModal' => empty($student['terms_accepted'])
         ];
 
         return view('Student/views/dashboard', $data);
     }
+
+    public function acceptTerms()
+    {
+        if (!session()->get('student_logged_in')) {
+            return $this->response->setStatusCode(403);
+        }
+
+        $studentModel = new StudentModel();
+        $studentModel->update(session()->get('student_id'), ['terms_accepted' => 1]);
+
+        return $this->response->setJSON(['status' => 'success']);
+    }
+
     public function itemRegistration()
     {
         if (!$this->getCurrentStudent()) return redirect()->to('student/login');

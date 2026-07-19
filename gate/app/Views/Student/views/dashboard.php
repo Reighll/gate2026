@@ -8,6 +8,41 @@ $slideIn = (strpos($referrer, 'item-registration') !== false || strpos($referrer
 <?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
+<?php if (!empty($showTermsModal)): ?>
+    <div class="modal fade" id="termsModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow-lg">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold text-primary"><i class="ti ti-shield-lock me-2"></i> Data Privacy Notice</h5>
+                </div>
+                <div class="modal-body px-4 pb-2">
+                    <p class="text-muted mb-3">
+                        Before using the GATE system, please review how your personal data is collected and used.
+                    </p>
+                    <div class="bg-light rounded-3 p-3 mb-3" style="max-height: 280px; overflow-y: auto; font-size: 0.9rem;">
+                        <p><strong>Data We Collect:</strong> Your name, student number, department, year level, email address, profile photo, and equipment/item details you register (brand, model, serial number, and photos).</p>
+                        <p><strong>Purpose:</strong> This information is used solely to verify your identity at the campus gate, process equipment registration requests, and maintain accurate entry/exit logs for campus security.</p>
+                        <p><strong>Access:</strong> Your data is accessible only to authorized GATE administrators and security personnel for the purposes described above.</p>
+                        <p><strong>Retention:</strong> Your data is retained for as long as you remain an active student, and in accordance with the university's records retention policy.</p>
+                        <p class="mb-0">By clicking "I Accept" below, you acknowledge that you have read and understood this notice, and you consent to the collection and processing of your personal data as described, in accordance with the Data Privacy Act of 2012 (RA 10173).</p>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="termsNeverShowAgain" checked>
+                        <label class="form-check-label small text-muted" for="termsNeverShowAgain">
+                            Don't show this again
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-2">
+                    <button type="button" id="btnAcceptTerms" class="btn btn-primary fw-bold px-4 rounded-3 shadow-sm">
+                        I Accept
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
     <div id="dashboard-container" class="page-transition-container pt-5 mt-4 <?= $slideIn ? 'page-slide-in' : '' ?>">
         <div class="row mt-2">
             <div class="col-12">
@@ -104,6 +139,32 @@ $slideIn = (strpos($referrer, 'item-registration') !== false || strpos($referrer
 
 <?= $this->section('scripts') ?>
     <script>
+        <?php if (!empty($showTermsModal)): ?>
+        document.addEventListener('DOMContentLoaded', function () {
+            const termsModalEl = document.getElementById('termsModal');
+            if (!termsModalEl) return;
+
+            const termsModal = new bootstrap.Modal(termsModalEl);
+            termsModal.show();
+
+            document.getElementById('btnAcceptTerms').addEventListener('click', function () {
+                const rememberChecked = document.getElementById('termsNeverShowAgain').checked;
+
+                if (rememberChecked) {
+                    fetch("<?= base_url('student/accept-terms') ?>", {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            '<?= csrf_header() ?>': '<?= csrf_hash() ?>'
+                        }
+                    }).catch(() => {});
+                }
+
+                termsModal.hide();
+            });
+        });
+        <?php endif; ?>
+
         function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));

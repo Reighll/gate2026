@@ -119,6 +119,7 @@ $routes->group('student', function($routes) {
     $routes->get('dashboard', 'Student\Dashboard::index', ['filter' => 'studentAuth']);
     $routes->get('profile', 'Student\Dashboard::profile', ['filter' => 'studentAuth']);
     $routes->post('profile/update', 'Student\Dashboard::updateProfile', ['filter' => 'studentAuth']);
+    $routes->post('student/accept-terms', 'Student\Dashboard::acceptTerms');
 
     // NEW: The routes matching your sidebar.php links
     $routes->get('item-registration', 'Student\Dashboard::itemRegistration', ['filter' => 'studentAuth']);
