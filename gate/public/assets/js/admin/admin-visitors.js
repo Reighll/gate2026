@@ -20,17 +20,19 @@ if (myModal) {
 }
 
 // 2. Intercept Scan
-scanForm.addEventListener('submit', function(e) {
-    e.preventDefault(); // Stop form
+if (scanForm) {
+    scanForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Stop form
 
-    // Only process if we are waiting for a scan
-    if (scanState.style.display !== 'none') {
-        const scannedValue = rfidInput.value.trim();
-        if (scannedValue) {
-            checkDuplicate(scannedValue);
+        // Only process if we are waiting for a scan
+        if (scanState.style.display !== 'none') {
+            const scannedValue = rfidInput.value.trim();
+            if (scannedValue) {
+                checkDuplicate(scannedValue);
+            }
         }
-    }
-});
+    });
+}
 
 // 3. AJAX Check Function
 function checkDuplicate(rfid) {
@@ -40,7 +42,7 @@ function checkDuplicate(rfid) {
     rfidInput.readOnly = true; // Lock input
 
     // AJAX Call
-    fetch(`<?= base_url('admin/visitors/check-tag') ?>?rfid=${encodeURIComponent(rfid)}`, {
+    fetch(window.location.origin + '/admin/visitors/check-tag?rfid=' + encodeURIComponent(rfid), {
         headers: { "X-Requested-With": "XMLHttpRequest" }
     })
         .then(response => response.json())
@@ -85,7 +87,7 @@ function finalSubmit() {
 
 // 6. Focus Trap
 document.addEventListener('click', function(e) {
-    if(myModal.classList.contains('show') && scanState.style.display !== 'none') {
+    if (myModal && myModal.classList.contains('show') && scanState.style.display !== 'none') {
         if(!e.target.closest('button')) {
             rfidInput.focus();
         }
