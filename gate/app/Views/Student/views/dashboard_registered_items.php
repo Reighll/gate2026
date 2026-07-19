@@ -230,25 +230,24 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 </div>
             <?php endif; ?>
         </div>
+
+        <script>
+            function hideMySkeletons() {
+                setTimeout(() => {
+                    document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                    document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+                }, 600);
+            }
+
+            document.addEventListener("DOMContentLoaded", hideMySkeletons);
+            document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+            window.toggleEditMode = function(id) {
+                document.getElementById('viewMode' + id).classList.toggle('d-none');
+                document.getElementById('editMode' + id).classList.toggle('d-none');
+            };
+        </script>
+
     </div>
 
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
-    <script>
-        function hideMySkeletons() {
-            setTimeout(() => {
-                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-            }, 600);
-        }
-
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
-
-        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-        function toggleEditMode(id) {
-            document.getElementById('viewMode' + id).classList.toggle('d-none');
-            document.getElementById('editMode' + id).classList.toggle('d-none');
-        }
-    </script>
 <?= $this->endSection() ?>
