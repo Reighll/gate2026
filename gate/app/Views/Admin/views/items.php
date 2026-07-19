@@ -241,6 +241,7 @@
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Serial/Brand</th>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">RFID</th>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Status</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Processed By</th>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Actions</th>
                         </tr>
                         </thead>
@@ -257,6 +258,7 @@
                                 <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-badge rounded-1" style="..."></div></td>
                                 <td><div class="skeleton skeleton-badge rounded-1" style="..."></div></td>
+                                <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-badge rounded-2" style="..."></div></td>
                             </tr>
                         <?php endfor; ?>
@@ -265,7 +267,7 @@
                         <tbody class="real-wrapper d-none">
                         <?php if (empty($items)) : ?>
                             <tr class="no-data-row">
-                                <td colspan="9" class="text-center py-5 text-muted">No items found in the system.</td>
+                                <td colspan="10" class="text-center py-5 text-muted">No items found in the system.</td>
                             </tr>
                         <?php else : ?>
                             <?php foreach ($items as $item) : ?>
@@ -309,6 +311,17 @@
                                     </td>
                                     <td data-label="Actions" class="py-3">
                                         <div class="dropdown">
+                                            <td data-label="Processed By" class="py-3 text-muted">
+                                                <?php if ($item['status'] === 'archived' && !empty($item['unregistered_by_first_name'])): ?>
+                                                    <span class="fw-semibold"><?= esc($item['unregistered_by_first_name'] . ' ' . $item['unregistered_by_last_name']) ?></span>
+                                                <?php elseif (!empty($item['approved_by_first_name'])): ?>
+                                                    <span class="fw-semibold"><?= esc($item['approved_by_first_name'] . ' ' . $item['approved_by_last_name']) ?></span>
+                                                <?php else: ?>
+                                                    <span class="text-muted small fst-italic">—</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td data-label="Actions" class="py-3">
+                                                <div class="dropdown">
                                             <button class="btn btn-sm btn-outline-primary bg-white shadow-sm dropdown-toggle fw-semibold rounded-2 px-3 py-1" style="border-color: #5d87ff; color: #5d87ff;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Actions
                                             </button>
