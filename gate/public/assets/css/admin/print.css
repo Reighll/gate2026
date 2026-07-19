@@ -174,3 +174,15 @@ html, body {
 .simplebar-scrollbar {
     display: none !important;
 }
+/* ==========================================================================
+   9. FORCE "SCANNED BY" NAME TO STAY ON ONE LINE
+   ========================================================================== */
+#printableTable td:nth-child(5) span {
+    white-space: nowrap !important;
+    text-align: left !important;
+    display: inline !important;
+}
+
+#printableTable td:nth-child(5) {
+    text-align: left !important;
+}
