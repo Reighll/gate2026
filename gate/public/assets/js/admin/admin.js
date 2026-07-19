@@ -36,19 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- 4. ITEMS: Real-time Search Filter ---
-    const searchInput = document.getElementById('itemSearch');
-    const itemsTable = document.getElementById('itemsTable');
-
-    if (searchInput && itemsTable) {
-        searchInput.addEventListener('input', function() {
-            const filter = this.value.toLowerCase().trim();
-            const rows = itemsTable.querySelectorAll('tbody tr:not(.no-data-row)');
-
-            rows.forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
-            });
-        });
-    }
+    // Moved to admin-items.js (handles dash-insensitive matching + status
+    // card filtering together). Kept out of here to avoid two competing
+    // listeners fighting over the same #itemSearch input.
 
     // --- 5. RFID: Background Scanner Logic ---
     const scanForm = document.getElementById('scanForm');
