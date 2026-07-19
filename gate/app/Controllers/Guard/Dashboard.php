@@ -223,6 +223,10 @@ class Dashboard extends BaseController
                 return redirect()->to('guard/dashboard')->with('success', "{$lastAction} LOGGED: " . esc($lastItem['brand_model'] ?? 'Item'));
 
             } elseif (!empty($errorMessages)) {
+                if ($lastItem) {
+                    session()->setFlashdata('scanned_item', $lastItem);
+                    session()->setFlashdata('scanned_student', $lastStudent);
+                }
                 return redirect()->to('guard/dashboard')->with('error', implode('<br>', $errorMessages));
             }
 
