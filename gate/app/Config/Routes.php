@@ -100,6 +100,7 @@ $routes->group('guard', function($routes) {
     // API Scanner
     $routes->get('check-latest-scan', 'Guard\Dashboard::checkLatestScan');
 });
+// Student Routes
 $routes->group('student', function($routes) {
     // Auth
     $routes->get('login', 'Student\Auth::index');
@@ -127,6 +128,7 @@ $routes->group('student', function($routes) {
     $routes->get('history', 'Student\Dashboard::history', ['filter' => 'studentAuth']);
 
     // Item Management Actions (POST/Logic)
+    $routes->post('items/update/(:num)', 'Student\Items::update/$1');
     $routes->post('items/store', 'Student\Items::store');
     $routes->post('items/request-unregister/(:num)', 'Student\Items::requestUnregister/$1');
     $routes->post('items/report', 'Student\Items::report');

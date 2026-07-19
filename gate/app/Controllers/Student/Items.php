@@ -77,6 +77,57 @@ class Items extends BaseController
         return redirect()->to('student/dashboard')->with('success', 'Item registered successfully! Please proceed to the Administration Office for item verification to claim your RFID sticker.');
     }
 
+    public function update($id)
+    {
+        if (!session()->get('student_logged_in')) return redirect()->to('student/login');
+
+        $model = new StudentItemModel();
+        $item = $model->where('id', $id)->where('student_id', session()->get('student_id'))->first();
+
+        if (!$item) {
+            return redirect()->to('student/dashboard')->with('error', 'Item not found.');
+        }
+
+        $rules = ['serial_number' => 'required'];
+        $photo = $this->request->getFile('photo');
+        if ($photo && $photo->isValid()) {
+            $rules['photo'] = 'is_image[photo]|max_size[photo,51200]';
+        }
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->with('error', implode('<br>', $this->validator->getErrors()));
+        }
+
+        $updateData = [
+            'serial_number' => $this->request->getPost('serial_number'),
+        ];
+
+        if ($photo && $photo->isValid() && !$photo->hasMoved()) {
+            if (!empty($item['photo']) && file_exists(FCPATH . 'uploads/items/' . $item['photo'])) {
+                unlink(FCPATH . 'uploads/items/' . $item['photo']);
+            }
+
+            $photoName = $photo->getRandomName();
+            $uploadPath = FCPATH . 'uploads/items/';
+            $photo->move($uploadPath, $photoName);
+
+            try {
+                \Config\Services::image()
+                    ->withFile($uploadPath . $photoName)
+                    ->resize(800, 800, true, 'auto')
+                    ->save($uploadPath . $photoName, 60);
+            } catch (\Exception $e) {
+                log_message('error', 'Image Compression Failed: ' . $e->getMessage());
+            }
+
+            $updateData['photo'] = $photoName;
+        }
+
+        $model->update($id, $updateData);
+
+        return redirect()->to('student/registered-items')->with('success', 'Item updated successfully.');
+    }
+
     public function requestUnregister($id)
     {
         if (!session()->get('student_logged_in')) return redirect()->to('student/login');
