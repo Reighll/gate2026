@@ -124,7 +124,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                     <?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?>
                                                 </h5>
                                                 <div class="d-flex align-items-center gap-2">
-                                                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" onclick="toggleEditMode(<?= $item['id'] ?>)">
+                                                    <button type="button" id="editBtn<?= $item['id'] ?>" class="btn btn-sm btn-light border rounded-pill px-3" onclick="toggleEditMode(<?= $item['id'] ?>)">
                                                         <i class="ti ti-pencil me-1"></i> Edit
                                                     </button>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -132,7 +132,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                             </div>
 
                                             <!-- VIEW MODE -->
-                                            <div id="viewMode<?= $item['id'] ?>">
+                                            <div id="viewMode<?= $item['id'] ?>" class="item-mode-panel">
                                                 <div class="row align-items-center">
                                                     <div class="col-md-5 text-center mb-4 mb-md-0">
                                                         <?php if (!empty($item['photo'])): ?>
@@ -186,7 +186,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                             </div>
 
                                             <!-- EDIT MODE -->
-                                            <div id="editMode<?= $item['id'] ?>" class="d-none">
+                                            <div id="editMode<?= $item['id'] ?>" class="item-mode-panel d-none">
                                                 <form action="<?= base_url('student/items/update/' . $item['id']) ?>" method="POST" enctype="multipart/form-data">
                                                     <?= csrf_field() ?>
                                                     <div class="row">
@@ -231,6 +231,15 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             <?php endif; ?>
         </div>
 
+        <style>
+            .item-mode-panel { transition: opacity 0.2s ease, transform 0.2s ease; }
+            .item-mode-panel-out { opacity: 0; transform: translateY(6px); }
+            .item-mode-panel-in { opacity: 0; transform: translateY(-6px); animation: itemModeFadeIn 0.22s ease forwards; }
+            @keyframes itemModeFadeIn {
+                from { opacity: 0; transform: translateY(-6px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+        </style>
         <script>
             function hideMySkeletons() {
                 setTimeout(() => {
@@ -243,8 +252,29 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
 
             window.toggleEditMode = function(id) {
-                document.getElementById('viewMode' + id).classList.toggle('d-none');
-                document.getElementById('editMode' + id).classList.toggle('d-none');
+                const viewPanel = document.getElementById('viewMode' + id);
+                const editPanel = document.getElementById('editMode' + id);
+                const editBtn = document.getElementById('editBtn' + id);
+
+                const showingView = !viewPanel.classList.contains('d-none');
+                const outgoing = showingView ? viewPanel : editPanel;
+                const incoming = showingView ? editPanel : viewPanel;
+
+                outgoing.classList.add('item-mode-panel-out');
+
+                setTimeout(() => {
+                    outgoing.classList.add('d-none');
+                    outgoing.classList.remove('item-mode-panel-out');
+
+                    incoming.classList.remove('d-none');
+                    incoming.classList.add('item-mode-panel-in');
+
+                    if (editBtn) {
+                        editBtn.classList.toggle('d-none', showingView);
+                    }
+
+                    setTimeout(() => incoming.classList.remove('item-mode-panel-in'), 220);
+                }, 180);
             };
         </script>
 
