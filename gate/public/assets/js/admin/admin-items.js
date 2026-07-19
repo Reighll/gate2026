@@ -101,13 +101,19 @@ function applyItemsFilters() {
 
     const searchInput = document.getElementById('itemSearch');
     const term = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    // Strip dashes for comparison so "TUPT-23-0264" matches a search for
+    // "230264" (no dash). This never removes a match that already worked —
+    // it only adds matches, so names containing a dash (e.g. "Mary-Jane")
+    // still match exactly as before.
+    const termNoDash = term.replace(/-/g, '');
 
     const rows = table.querySelectorAll('tbody tr:not(.no-data-row)');
     let visibleCount = 0;
 
     rows.forEach(row => {
         const matchesStatus = !activeStatusFilter || row.dataset.status === activeStatusFilter;
-        const matchesSearch = !term || row.textContent.toLowerCase().includes(term);
+        const rowTextNoDash = row.textContent.toLowerCase().replace(/-/g, '');
+        const matchesSearch = !term || rowTextNoDash.includes(termNoDash);
         const show = matchesStatus && matchesSearch;
 
         row.style.display = show ? '' : 'none';
