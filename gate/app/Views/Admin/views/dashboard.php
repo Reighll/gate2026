@@ -134,6 +134,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                     <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Action</th>
                                     <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Student</th>
                                     <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Equipment Details</th>
+                                    <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Scanned By</th>
                                 </tr>
                                 </thead>
 
@@ -155,6 +156,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                         <td class="py-3">
                                             <div class="skeleton skeleton-text w-100"></div>
                                             <div class="skeleton skeleton-text w-50 mb-0 mt-1"></div>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="skeleton skeleton-text w-75"></div>
                                         </td>
                                     </tr>
                                 <?php endfor; ?>
@@ -202,6 +206,13 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                                     <span class="fw-semibold"><?= esc($log['brand_model'] ?? $log['item_name_fallback'] ?? 'Unknown Item') ?></span>
                                                     <span class="text-muted small font-monospace">SN: <?= esc($log['serial_number'] ?? $log['serial_fallback'] ?? 'N/A') ?></span>
                                                 </div>
+                                            </td>
+                                            <td class="py-3">
+                                                <?php if (!empty($log['guard_first_name'])): ?>
+                                                    <span class="fw-semibold"><?= esc($log['guard_first_name'] . ' ' . $log['guard_last_name']) ?></span>
+                                                <?php else: ?>
+                                                    <span class="text-muted small fst-italic">Unknown</span>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

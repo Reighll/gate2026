@@ -179,7 +179,7 @@ class Dashboard extends BaseController
                     if (isset($item['in_campus']) && $item['in_campus'] == 1) {
                         $itemModel->update($item['id'], ['in_campus' => 0]);
                         if ($db->tableExists('item_logs')) {
-                            $logModel->insert(['item_id' => $item['id'], 'action' => 'time_out', 'created_at' => $timestamp]);
+                            $logModel->insert(['item_id' => $item['id'], 'guard_id' => session()->get('guard_id'), 'action' => 'time_out', 'created_at' => $timestamp]);
                         }
                         $successCount++;
                         $lastAction = 'TIME-OUT';
@@ -187,7 +187,7 @@ class Dashboard extends BaseController
                     } else {
                         $itemModel->update($item['id'], ['in_campus' => 1]);
                         if ($db->tableExists('item_logs')) {
-                            $logModel->insert(['item_id' => $item['id'], 'action' => 'time_in', 'created_at' => $timestamp]);
+                            $logModel->insert(['item_id' => $item['id'], 'guard_id' => session()->get('guard_id'), 'action' => 'time_in', 'created_at' => $timestamp]);
                         }
                         $successCount++;
                         $lastAction = 'TIME-IN';
