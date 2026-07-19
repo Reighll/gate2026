@@ -78,6 +78,26 @@
                     <li class="nav-item">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#passes">Manage RFID Passes</button>
                     </li>
+
+                    <li class="nav-item ms-auto d-flex align-items-center" id="visitorFilterTabItem">
+                        <form action="<?= base_url('admin/visitors') ?>" method="GET" class="d-flex align-items-center gap-2 bg-white p-2 rounded-3 shadow-sm border">
+                            <select name="filter" id="visitorDateFilter" class="form-select form-select-sm border-0 bg-light fw-bold text-secondary cursor-pointer" style="width: auto;">
+                                <option value="today" <?= $filter === 'today' ? 'selected' : '' ?>>Today</option>
+                                <option value="7days" <?= $filter === '7days' ? 'selected' : '' ?>>Past 7 Days</option>
+                                <option value="month" <?= $filter === 'month' ? 'selected' : '' ?>>This Month</option>
+                                <option value="year" <?= $filter === 'year' ? 'selected' : '' ?>>This Year</option>
+                                <option value="custom" <?= $filter === 'custom' ? 'selected' : '' ?>>Custom Date</option>
+                            </select>
+
+                            <div id="visitorCustomDateContainer" class="d-flex align-items-center gap-2 <?= $filter === 'custom' ? '' : 'd-none' ?>">
+                                <input type="date" name="start_date" class="form-control form-control-sm border-0 bg-light text-secondary" value="<?= esc($startDateRaw ?? '') ?>">
+                                <span class="text-muted fw-bold">-</span>
+                                <input type="date" name="end_date" class="form-control form-control-sm border-0 bg-light text-secondary" value="<?= esc($endDateRaw ?? '') ?>">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-sm fw-bold px-3"><i class="ti ti-filter me-1"></i> Filter</button>
+                        </form>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -159,15 +179,15 @@
                                             <td data-label="Tag Used"><span class="badge bg-light-secondary text-secondary font-monospace"><?= esc($log['tag_id']) ?></span></td>
                                             <td data-label="Time In">
                                                 <div class="d-flex flex-column">
-                                                    <span class="fw-semibold text-dark"><?= date('M d, Y', strtotime($log['time_in'])) ?></span>
-                                                    <span class="text-muted small"><?= date('h:i A', strtotime($log['time_in'])) ?></span>
+                                                    <span class="fw-semibold text-dark"><?= date('h:i A', strtotime($log['time_in'])) ?></span>
+                                                    <span class="text-muted small"><?= date('M d, Y', strtotime($log['time_in'])) ?></span>
                                                 </div>
                                             </td>
                                             <td data-label="Time Out">
                                                 <?php if ($log['time_out']): ?>
                                                     <div class="d-flex flex-column">
-                                                        <span class="fw-semibold text-dark"><?= date('M d, Y', strtotime($log['time_out'])) ?></span>
-                                                        <span class="text-muted small"><?= date('h:i A', strtotime($log['time_out'])) ?></span>
+                                                        <span class="fw-semibold text-dark"><?= date('h:i A', strtotime($log['time_out'])) ?></span>
+                                                        <span class="text-muted small"><?= date('M d, Y', strtotime($log['time_out'])) ?></span>
                                                     </div>
                                                 <?php else: ?>
                                                     <span class="badge bg-warning">Active</span>

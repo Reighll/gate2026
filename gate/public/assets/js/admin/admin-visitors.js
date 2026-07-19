@@ -108,3 +108,33 @@ function showId(url, idText) {
         modalText.textContent = idText;
     }
 }
+
+// 7. History Logs date filter (same behavior as the Admin Dashboard filter)
+const visitorDateFilter = document.getElementById('visitorDateFilter');
+const visitorCustomDateContainer = document.getElementById('visitorCustomDateContainer');
+
+if (visitorDateFilter) {
+    visitorDateFilter.addEventListener('change', function () {
+        if (this.value === 'custom') {
+            visitorCustomDateContainer.classList.remove('d-none');
+            // Custom still needs both dates picked, so wait for the Filter button
+        } else {
+            visitorCustomDateContainer.classList.add('d-none');
+            // Preset ranges (Today / 7 Days / Month / Year) apply instantly
+            this.form.submit();
+        }
+    });
+}
+
+// The date filter only applies to History Logs, so hide it on the Passes tab
+const visitorTabs = document.getElementById('visitorTabs');
+const visitorFilterTabItem = document.getElementById('visitorFilterTabItem');
+
+if (visitorTabs && visitorFilterTabItem) {
+    visitorTabs.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tabButton => {
+        tabButton.addEventListener('shown.bs.tab', function () {
+            const isLogsTab = this.getAttribute('data-bs-target') === '#logs';
+            visitorFilterTabItem.classList.toggle('d-none', !isLogsTab);
+        });
+    });
+}

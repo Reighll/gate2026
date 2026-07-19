@@ -13,6 +13,27 @@ class Visitors extends BaseController
         $logModel = new VisitorLogModel();
         $tagModel = new VisitorTagModel();
 
+        // 1. Get the requested filter from the dropdown (Default to 'today')
+        $filter       = $this->request->getGet('filter') ?? 'today';
+        $startDateRaw = $this->request->getGet('start_date');
+        $endDateRaw   = $this->request->getGet('end_date');
+
+        // 2. Calculate the exact Date Range based on the filter
+        $startDate = date('Y-m-d 00:00:00');
+        $endDate   = date('Y-m-d 23:59:59');
+
+        if ($filter === '7days') {
+            $startDate = date('Y-m-d 00:00:00', strtotime('-7 days'));
+        } elseif ($filter === 'month') {
+            $startDate = date('Y-m-01 00:00:00');
+        } elseif ($filter === 'year') {
+            $startDate = date('Y-01-01 00:00:00');
+        } elseif ($filter === 'custom') {
+            // Fallback to today if they selected custom but left it blank
+            $startDate = ($startDateRaw ?: date('Y-m-d')) . ' 00:00:00';
+            $endDate   = ($endDateRaw ?: date('Y-m-d')) . ' 23:59:59';
+        }
+
         // Stats
         $total_tags = $tagModel->countAllResults();
 
@@ -22,12 +43,21 @@ class Visitors extends BaseController
         $next_number = $total_tags + 1;
         $next_label  = "Visitor Pass " . $next_number;
 
+        // Apply the date filter to the history logs only (stats/tags stay all-time)
+        $logs = $logModel->orderBy('time_in', 'DESC')
+            ->where('time_in >=', $startDate)
+            ->where('time_in <=', $endDate)
+            ->findAll();
+
         $data = [
             'visitors_inside' => $logModel->where('status', 'active')->countAllResults(),
             'slots_available' => $tagModel->where('status', 'available')->countAllResults(),
             'total_tags'      => $total_tags,
             'next_label'      => $next_label,
-            'logs'            => $logModel->orderBy('time_in', 'DESC')->findAll(),
+            'filter'          => $filter,
+            'startDateRaw'    => $startDateRaw,
+            'endDateRaw'      => $endDateRaw,
+            'logs'            => $logs,
             'tags'            => $tagModel->findAll()
         ];
 
