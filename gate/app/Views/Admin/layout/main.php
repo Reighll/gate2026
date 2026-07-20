@@ -191,7 +191,11 @@
 
         function getNavItems() {
             const nav = document.querySelector('.mobile-bottom-nav');
-            if (!nav || nav.classList.contains('d-none') || nav.offsetParent === null) return null;
+            if (!nav || nav.classList.contains('d-none')) return null;
+
+            const style = window.getComputedStyle(nav);
+            if (style.display === 'none' || style.visibility === 'hidden') return null;
+
             return Array.from(nav.querySelectorAll('.mobile-bottom-item'));
         }
 
