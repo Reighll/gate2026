@@ -242,6 +242,8 @@
             incoming.style.transform = '';
             outgoing.innerHTML = '';
             incoming.innerHTML = '';
+            outgoing.className = '';
+            incoming.className = '';
             setDim(0);
             direction = null;
             targetLink = null;
@@ -270,13 +272,15 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const el = doc.getElementById('app-content');
-            return el ? el.innerHTML : html;
+            return el ? { html: el.innerHTML, className: el.className } : { html: html, className: '' };
         }
 
         function renderIncoming() {
             incoming.dataset.waiting = '0';
             if (prefetchedHTML) {
-                incoming.innerHTML = extractAppContent(prefetchedHTML);
+                const extracted = extractAppContent(prefetchedHTML);
+                incoming.className = extracted.className;
+                incoming.innerHTML = extracted.html;
             }
         }
 
@@ -303,6 +307,7 @@
             stageWidth = window.innerWidth;
 
             positionStage();
+            outgoing.className = appContent.className;
             outgoing.innerHTML = appContent.innerHTML;
             setDim(0);
             incoming.dataset.waiting = '1';
@@ -392,15 +397,10 @@
                 incoming.style.transform = `translateX(0px)`;
 
                 const linkToClick = targetLink;
-                const container = document.querySelector('#app-content .page-transition-container');
-                if (container) container.style.opacity = '0';
 
                 setTimeout(function () {
                     linkToClick.click(); // real hx-boost navigation — swaps #app-content normally
                     setTimeout(resetStage, 50);
-                    setTimeout(function () {
-                        if (container) container.style.opacity = '';
-                    }, 350);
                 }, 230);
             } else {
                 stage.classList.add('snapping');
