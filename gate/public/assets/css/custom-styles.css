@@ -301,6 +301,18 @@ html, body {
     #swipe-stage.snapping #swipe-outgoing::after {
         transition: opacity 0.25s cubic-bezier(0.25, 1, 0.5, 1);
     }
+
+    /* Subtle settle bounce once a swipe finishes landing — adds a bit of
+       life to the transition and helps mask any minor edge/alignment
+       artifacts since motion draws the eye away from static edges. */
+    @keyframes swipe-land-bounce {
+        0%   { transform: translateX(var(--land-x, 0px)) scaleX(1); }
+        50%  { transform: translateX(var(--land-x, 0px)) scaleX(1.02); }
+        100% { transform: translateX(var(--land-x, 0px)) scaleX(1); }
+    }
+    .landing {
+        animation: swipe-land-bounce 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
 }
 html, body {
     overscroll-behavior-x: none;

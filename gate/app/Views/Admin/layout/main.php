@@ -394,22 +394,50 @@
 
             if (clearedThreshold && targetLink) {
                 stage.classList.add('snapping');
-                outgoing.style.transform = `translateX(${deltaX < 0 ? -stageWidth * PARALLAX : stageWidth * PARALLAX}px)`;
+                const restOffset = deltaX < 0 ? -stageWidth * PARALLAX : stageWidth * PARALLAX;
+                outgoing.style.transform = `translateX(${restOffset}px)`;
                 setDim(MAX_DIM);
                 incoming.style.transform = `translateX(0px)`;
 
                 const linkToClick = targetLink;
+                let settled = false;
+
+                function finishSwipe() {
+                    if (settled) return;
+                    settled = true;
+                    document.body.removeEventListener('htmx:afterSettle', finishSwipe);
+                    resetStage();
+                }
+
+                // Settle bounce once the 0.25s slide-in transition lands
+                setTimeout(function () {
+                    incoming.style.setProperty('--land-x', '0px');
+                    incoming.classList.add('landing');
+                    outgoing.style.setProperty('--land-x', restOffset + 'px');
+                    outgoing.classList.add('landing');
+                }, 250);
+
+                // Wait for the real htmx swap to actually finish before hiding
+                // the overlay — a fixed timer here is what caused the stutter,
+                // since the real navigation's timing varies with the network.
+                document.body.addEventListener('htmx:afterSettle', finishSwipe);
+                setTimeout(finishSwipe, 4000); // safety net if htmx never settles
 
                 setTimeout(function () {
                     linkToClick.click(); // real hx-boost navigation — swaps #app-content normally
-                    setTimeout(resetStage, 50);
-                }, 230);
+                }, 250);
             } else {
                 stage.classList.add('snapping');
                 outgoing.style.transform = 'translateX(0px)';
                 setDim(0);
                 incoming.style.transform = direction === 'next' ? `translateX(${stageWidth}px)` : `translateX(${-stageWidth}px)`;
-                setTimeout(resetStage, 260);
+
+                setTimeout(function () {
+                    outgoing.style.setProperty('--land-x', '0px');
+                    outgoing.classList.add('landing');
+                }, 250);
+
+                setTimeout(resetStage, 550);
             }
         }, { passive: true });
 
