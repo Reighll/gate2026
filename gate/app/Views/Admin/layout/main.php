@@ -242,7 +242,7 @@
             if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
             document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
 
-            stage.classList.remove('active', 'snapping', 'height-transition', 'landing');
+            stage.classList.remove('active', 'snapping', 'landing');
             outgoing.classList.remove('landing');
             incoming.classList.remove('landing');
             outgoing.style.transform = '';
@@ -318,8 +318,6 @@
 
             positionStage();
             outgoing.innerHTML = appContent.innerHTML;
-            outgoingHeight = Math.max(viewportGapHeight, outgoing.scrollHeight);
-            incomingHeight = viewportGapHeight;
             incoming.dataset.waiting = '1';
 
             const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
@@ -343,7 +341,7 @@
                 isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
                 if (isHorizontal) {
                     stage.classList.add('active');
-                    stage.classList.remove('snapping', 'height-transition');
+                    stage.classList.remove('snapping');
                 }
             }
 
@@ -383,7 +381,6 @@
                 : `translateX(${dragX - stageWidth}px)`;
 
             const progress = targetLink ? Math.min(1, Math.abs(dragX) / stageWidth) : 0;
-            stage.style.height = (outgoingHeight + (incomingHeight - outgoingHeight) * progress) + 'px';
             outgoing.style.setProperty('--dim-opacity', (progress * 0.15).toFixed(3));
         }, { passive: false });
 
@@ -398,10 +395,9 @@
 
             if (clearedThreshold && targetLink) {
                 const exitDistance = direction === 'next' ? -stageWidth : stageWidth;
-                stage.classList.add('snapping', 'height-transition');
+                stage.classList.add('snapping');
                 outgoing.style.transform = `translateX(${exitDistance}px)`;
                 incoming.style.transform = `translateX(0px)`;
-                stage.style.height = incomingHeight + 'px';
                 outgoing.style.setProperty('--dim-opacity', '0.15');
 
                 const linkToClick = targetLink;
@@ -420,10 +416,9 @@
                     }, 350);
                 }, 230);
             } else {
-                stage.classList.add('snapping', 'height-transition');
+                stage.classList.add('snapping');
                 outgoing.style.transform = 'translateX(0px)';
                 incoming.style.transform = direction === 'next' ? `translateX(${stageWidth}px)` : `translateX(${-stageWidth}px)`;
-                stage.style.height = outgoingHeight + 'px';
                 outgoing.style.setProperty('--dim-opacity', '0');
 
                 setTimeout(function () {
