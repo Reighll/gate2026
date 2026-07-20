@@ -286,3 +286,10 @@ html, body {
         transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
     }
 }
+html, body {
+    overscroll-behavior-x: none;
+}
+
+#app-content {
+    touch-action: pan-y;
+}

@@ -287,6 +287,7 @@
             if (!appContent) return;
 
             const touch = e.touches[0];
+            if (touch.clientX < 24 || touch.clientX > window.innerWidth - 24) return;
             startX = touch.clientX;
             startY = touch.clientY;
             currentX = startX;

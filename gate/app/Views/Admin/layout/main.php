@@ -289,6 +289,7 @@
             if (!appContent) return;
 
             const touch = e.touches[0];
+            if (touch.clientX < 24 || touch.clientX > window.innerWidth - 24) return; // avoid OS edge-gesture zones
             startX = touch.clientX;
             startY = touch.clientY;
             currentX = startX;
