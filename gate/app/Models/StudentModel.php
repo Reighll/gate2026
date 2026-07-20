@@ -24,6 +24,7 @@ class StudentModel extends Model
         'verify_token',
         'profile_pic',
         'reset_token',
-        'reset_token_expires'
+        'reset_token_expires',
+        'terms_accepted'
     ];
 }
