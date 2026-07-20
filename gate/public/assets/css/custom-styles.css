@@ -246,6 +246,20 @@ html, body {
         from { opacity: 1; transform: translateX(0); }
         to   { opacity: 0; transform: translateX(-32px); }
     }
+    @keyframes slideOutToRight {
+        from { opacity: 1; transform: translateX(0); }
+        to   { opacity: 0; transform: translateX(32px); }
+    }
     .page-slide-in  { animation: slideInFromRight 0.3s ease forwards; }
     .page-slide-out { animation: slideOutToLeft 0.25s ease forwards; }
+    .page-slide-out-right { animation: slideOutToRight 0.25s ease forwards; }
+
+    /* Swipe-drag: while actively dragging, JS sets transform directly with no transition */
+    .page-transition-container.swipe-dragging {
+        transition: none !important;
+    }
+    /* Swipe-drag: on release, animate the snap-back or finish smoothly */
+    .page-transition-container.swipe-snapping {
+        transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    }
 }

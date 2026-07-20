@@ -174,20 +174,23 @@
         }
     });
 </script>
-
 <script>
-    // Swipe navigation for mobile bottom nav — reuses existing hx-boost links,
-    // so it stays in sync with whatever pages are rendered in the nav.
+    // Swipe navigation for mobile bottom nav — drags in real time with the
+    // finger (Instagram-style), then either completes the page switch or
+    // snaps back if the swipe didn't clear the threshold.
     (function () {
-        const SWIPE_MIN_DISTANCE = 60;      // px, minimum horizontal travel to count as a swipe
-        const SWIPE_MAX_VERTICAL = 60;      // px, max vertical drift allowed (avoids hijacking scrolls)
-        const SWIPE_MAX_DURATION = 600;     // ms, ignore slow drags
+        const SWIPE_MIN_DISTANCE = 60;   // px, minimum travel to count as a committed swipe
+        const SWIPE_MAX_VERTICAL = 60;   // px, max vertical drift before we treat it as a scroll
+        const RESISTANCE = 0.35;         // drag multiplier past the first/last tab (rubber-band feel)
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
 
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let touchStartTime = 0;
-        let touchActive = false;
+        let startX = 0, startY = 0;
+        let currentX = 0;
+        let dragging = false;
+        let isHorizontal = null; // null = undecided yet, true/false once determined
+        let container = null;
+        let containerWidth = 0;
+        let atLeftEdge = false, atRightEdge = false;
 
         function getNavItems() {
             const nav = document.querySelector('.mobile-bottom-nav');
@@ -199,53 +202,113 @@
             return Array.from(nav.querySelectorAll('.mobile-bottom-item'));
         }
 
-        function navigateToOffset(offset) {
-            const items = getNavItems();
-            if (!items || items.length === 0) return;
+        function getCurrentIndex(items) {
+            return items.findIndex(item => item.classList.contains('active'));
+        }
 
-            const currentIndex = items.findIndex(item => item.classList.contains('active'));
-            if (currentIndex === -1) return;
-
-            const targetIndex = currentIndex + offset;
-            if (targetIndex < 0 || targetIndex >= items.length) return; // clamp at the ends, don't wrap
-
-            const targetLink = items[targetIndex];
-            const container = document.querySelector('#app-content .page-transition-container');
-            if (container) container.classList.add('page-slide-out');
-
-            targetLink.click(); // reuses the same hx-boost navigation the nav already uses
+        function resetContainer() {
+            if (!container) return;
+            container.classList.remove('swipe-dragging', 'swipe-snapping');
+            container.style.transform = '';
         }
 
         document.addEventListener('touchstart', function (e) {
             if (window.innerWidth >= 992) return; // matches d-lg-none breakpoint
-            if (e.target.closest(IGNORE_SELECTORS)) { touchActive = false; return; }
-            if (!e.target.closest('#app-content')) { touchActive = false; return; }
+            if (e.target.closest(IGNORE_SELECTORS)) return;
+            if (!e.target.closest('#app-content')) return;
+
+            const items = getNavItems();
+            if (!items || items.length === 0) return;
+
+            const currentIndex = getCurrentIndex(items);
+            if (currentIndex === -1) return;
+
+            container = document.querySelector('#app-content .page-transition-container');
+            if (!container) return;
+
+            atLeftEdge = currentIndex === 0;                     // can't go "previous" (swipe right)
+            atRightEdge = currentIndex === items.length - 1;     // can't go "next" (swipe left)
 
             const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-            touchStartTime = Date.now();
-            touchActive = true;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            currentX = startX;
+            isHorizontal = null;
+            dragging = true;
+            containerWidth = container.getBoundingClientRect().width || window.innerWidth;
         }, { passive: true });
 
-        document.addEventListener('touchend', function (e) {
-            if (!touchActive) return;
-            touchActive = false;
+        document.addEventListener('touchmove', function (e) {
+            if (!dragging || !container) return;
 
-            const touch = e.changedTouches[0];
-            const deltaX = touch.clientX - touchStartX;
-            const deltaY = touch.clientY - touchStartY;
-            const duration = Date.now() - touchStartTime;
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
 
-            if (duration > SWIPE_MAX_DURATION) return;
-            if (Math.abs(deltaY) > SWIPE_MAX_VERTICAL) return;
-            if (Math.abs(deltaX) < SWIPE_MIN_DISTANCE) return;
-
-            if (deltaX < 0) {
-                navigateToOffset(1);  // swiped left -> next page in the nav
-            } else {
-                navigateToOffset(-1); // swiped right -> previous page in the nav
+            if (isHorizontal === null) {
+                if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return; // too small to decide yet
+                isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+                if (isHorizontal) {
+                    container.classList.add('swipe-dragging');
+                    container.classList.remove('swipe-snapping');
+                }
             }
+
+            if (!isHorizontal) return; // let the page scroll vertically as normal
+
+            e.preventDefault(); // stop vertical scroll from fighting the drag
+
+            let dragX = deltaX;
+
+            // Rubber-band resistance if trying to swipe past the first/last tab
+            if ((dragX > 0 && atLeftEdge) || (dragX < 0 && atRightEdge)) {
+                dragX *= RESISTANCE;
+            }
+
+            currentX = dragX;
+            container.style.transform = `translateX(${dragX}px)`;
+        }, { passive: false });
+
+        document.addEventListener('touchend', function () {
+            if (!dragging) return;
+            dragging = false;
+
+            if (!isHorizontal || !container) {
+                resetContainer();
+                return;
+            }
+
+            const deltaX = currentX;
+            const swipedLeft = deltaX < 0;
+            const blockedByEdge = (swipedLeft && atRightEdge) || (!swipedLeft && atLeftEdge);
+            const clearedThreshold = Math.abs(deltaX) >= SWIPE_MIN_DISTANCE;
+
+            if (clearedThreshold && !blockedByEdge) {
+                // Commit: finish sliding off in the swiped direction, then navigate
+                const exitDistance = swipedLeft ? -containerWidth : containerWidth;
+                container.classList.add('swipe-snapping');
+                container.style.transform = `translateX(${exitDistance}px)`;
+
+                const items = getNavItems();
+                const currentIndex = items ? getCurrentIndex(items) : -1;
+                const targetLink = items && currentIndex !== -1
+                    ? items[currentIndex + (swipedLeft ? 1 : -1)]
+                    : null;
+
+                setTimeout(function () {
+                    if (targetLink) targetLink.click(); // reuses existing hx-boost navigation
+                }, 220);
+            } else {
+                // Snap back — swipe was too short, wrong direction, or blocked at an edge
+                container.classList.add('swipe-snapping');
+                container.style.transform = '';
+                setTimeout(resetContainer, 260);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchcancel', function () {
+            dragging = false;
+            resetContainer();
         }, { passive: true });
     })();
 </script>
