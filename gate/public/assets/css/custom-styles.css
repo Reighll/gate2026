@@ -10,8 +10,7 @@
     z-index: 1100;
 }
 
-.content-paddi
-ng-fix {
+.content-padding-fix {
     padding-top: 130px !important;
 }
 
@@ -284,10 +283,6 @@ html, body {
     #swipe-stage.snapping #swipe-outgoing,
     #swipe-stage.snapping #swipe-incoming {
         transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-
-    #swipe-outgoing {
-        position: relative; /* needed so the ::after dim overlay can be positioned inside it */
     }
 
     #swipe-outgoing::after {
