@@ -185,6 +185,7 @@
         const SWIPE_MIN_DISTANCE = 60;
         const SWIPE_MAX_VERTICAL = 60;
         const RESISTANCE = 0.35;
+        const PARALLAX = 0.3;
         const EDGE_GUARD = 24;
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
 
@@ -196,9 +197,6 @@
         let targetLink = null;
         let prefetchedHTML = null;
         let prefetchXHR = null;
-        let viewportGapHeight = 0;
-        let outgoingHeight = 0;
-        let incomingHeight = 0;
         let settleFallbackTimer = null;
 
         const stage = document.getElementById('swipe-stage');
@@ -234,21 +232,23 @@
             }
 
             stage.style.top = topOffset + 'px';
-            viewportGapHeight = Math.max(0, window.innerHeight - topOffset - bottomOffset);
-            stage.style.height = viewportGapHeight + 'px';
+            stage.style.height = Math.max(0, window.innerHeight - topOffset - bottomOffset) + 'px';
+        }
+
+        function clearLayerState() {
+            [outgoing, incoming].forEach(function (el) {
+                el.classList.remove('swipe-top', 'swipe-back');
+                el.style.transform = '';
+                el.style.removeProperty('--dim-opacity');
+            });
         }
 
         function resetStage() {
             if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
             document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
 
-            stage.classList.remove('active', 'snapping', 'landing');
-            outgoing.classList.remove('landing');
-            incoming.classList.remove('landing');
-            outgoing.style.transform = '';
-            incoming.style.transform = '';
-            stage.style.removeProperty('--dim-opacity');
-            outgoing.style.setProperty('--dim-opacity', '0');
+            stage.classList.remove('active', 'snapping');
+            clearLayerState();
             outgoing.innerHTML = '';
             incoming.innerHTML = '';
             direction = null;
@@ -281,16 +281,24 @@
 
         function renderIncoming() {
             incoming.dataset.waiting = '0';
-            if (prefetchedHTML) {
-                incoming.innerHTML = extractAppContent(prefetchedHTML);
-                incomingHeight = Math.max(viewportGapHeight, incoming.scrollHeight);
-            }
+            if (prefetchedHTML) incoming.innerHTML = extractAppContent(prefetchedHTML);
         }
 
         function onRealSwapSettled() {
             document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
             if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
             resetStage();
+        }
+
+        function assignLayerRoles(dir) {
+            clearLayerState();
+            if (dir === 'next') {
+                incoming.classList.add('swipe-top');
+                outgoing.classList.add('swipe-back');
+            } else if (dir === 'prev') {
+                outgoing.classList.add('swipe-top');
+                incoming.classList.add('swipe-back');
+            }
         }
 
         document.addEventListener('touchstart', function (e) {
@@ -354,7 +362,6 @@
                 direction = wantDirection;
                 incoming.innerHTML = '';
                 prefetchedHTML = null;
-                incomingHeight = viewportGapHeight;
                 if (prefetchXHR) { try { prefetchXHR.abort(); } catch (err) {} }
 
                 if (direction === 'next' && this._nextItem) {
@@ -367,21 +374,34 @@
                     targetLink = null;
                 }
 
-                if (targetLink && prefetchedHTML) renderIncoming();
-                else if (targetLink) incoming.dataset.waiting = '1';
+                if (targetLink) {
+                    assignLayerRoles(direction);
+                    if (prefetchedHTML) renderIncoming();
+                    else incoming.dataset.waiting = '1';
+                } else {
+                    clearLayerState();
+                }
             }
 
-            let dragX = deltaX;
-            if (!targetLink) dragX *= RESISTANCE;
+            if (!targetLink) {
+                const dragX = deltaX * RESISTANCE;
+                currentX = dragX;
+                outgoing.style.transform = `translateX(${dragX}px)`;
+                return;
+            }
 
-            currentX = dragX;
-            outgoing.style.transform = `translateX(${dragX}px)`;
-            incoming.style.transform = direction === 'next'
-                ? `translateX(${dragX + stageWidth}px)`
-                : `translateX(${dragX - stageWidth}px)`;
+            const progress = Math.min(1, Math.abs(deltaX) / stageWidth);
+            currentX = deltaX;
 
-            const progress = targetLink ? Math.min(1, Math.abs(dragX) / stageWidth) : 0;
-            outgoing.style.setProperty('--dim-opacity', (progress * 0.15).toFixed(3));
+            if (direction === 'next') {
+                incoming.style.transform = `translateX(${stageWidth + deltaX}px)`;
+                outgoing.style.transform = `translateX(${deltaX * PARALLAX}px)`;
+                outgoing.style.setProperty('--dim-opacity', (progress * 0.22).toFixed(3));
+            } else {
+                outgoing.style.transform = `translateX(${deltaX}px)`;
+                incoming.style.transform = `translateX(${-stageWidth * PARALLAX * (1 - progress)}px)`;
+                incoming.style.setProperty('--dim-opacity', ((1 - progress) * 0.22).toFixed(3));
+            }
         }, { passive: false });
 
         document.addEventListener('touchend', function () {
@@ -394,18 +414,23 @@
             const clearedThreshold = Math.abs(deltaX) >= SWIPE_MIN_DISTANCE;
 
             if (clearedThreshold && targetLink) {
-                const exitDistance = direction === 'next' ? -stageWidth : stageWidth;
                 stage.classList.add('snapping');
-                outgoing.style.transform = `translateX(${exitDistance}px)`;
-                incoming.style.transform = `translateX(0px)`;
-                outgoing.style.setProperty('--dim-opacity', '0.15');
+
+                if (direction === 'next') {
+                    incoming.style.transform = 'translateX(0px)';
+                    outgoing.style.transform = `translateX(${-stageWidth * PARALLAX}px)`;
+                    outgoing.style.setProperty('--dim-opacity', '0.22');
+                } else {
+                    outgoing.style.transform = `translateX(${stageWidth}px)`;
+                    incoming.style.transform = 'translateX(0px)';
+                    incoming.style.setProperty('--dim-opacity', '0');
+                }
 
                 const linkToClick = targetLink;
                 const container = document.querySelector('#app-content .page-transition-container');
                 if (container) container.style.opacity = '0';
 
                 setTimeout(function () {
-                    incoming.classList.add('landing');
                     linkToClick.click(); // real hx-boost navigation
 
                     settleFallbackTimer = setTimeout(resetStage, 1200); // safety net
@@ -414,17 +439,23 @@
                     setTimeout(function () {
                         if (container) container.style.opacity = '';
                     }, 350);
-                }, 230);
+                }, 320);
             } else {
                 stage.classList.add('snapping');
-                outgoing.style.transform = 'translateX(0px)';
-                incoming.style.transform = direction === 'next' ? `translateX(${stageWidth}px)` : `translateX(${-stageWidth}px)`;
-                outgoing.style.setProperty('--dim-opacity', '0');
 
-                setTimeout(function () {
-                    outgoing.classList.add('landing');
-                    setTimeout(resetStage, 300);
-                }, 260);
+                if (direction === 'next') {
+                    incoming.style.transform = `translateX(${stageWidth}px)`;
+                    outgoing.style.transform = 'translateX(0px)';
+                    outgoing.style.setProperty('--dim-opacity', '0');
+                } else if (direction === 'prev') {
+                    outgoing.style.transform = 'translateX(0px)';
+                    incoming.style.transform = `translateX(${-stageWidth * PARALLAX}px)`;
+                    incoming.style.setProperty('--dim-opacity', '0.22');
+                } else {
+                    outgoing.style.transform = 'translateX(0px)';
+                }
+
+                setTimeout(resetStage, 340);
             }
         }, { passive: true });
 
