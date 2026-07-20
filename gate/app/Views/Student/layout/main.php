@@ -198,6 +198,26 @@
         const outgoing = document.getElementById('swipe-outgoing');
         const incoming = document.getElementById('swipe-incoming');
 
+        function positionStage() {
+            const header = document.querySelector('.fixed-top-banner');
+            const appHeader = document.querySelector('.app-header');
+            const bottomNav = document.querySelector('.mobile-bottom-nav');
+
+            let topOffset = header ? header.getBoundingClientRect().bottom : 0;
+            if (appHeader) {
+                const r = appHeader.getBoundingClientRect();
+                if (r.bottom > topOffset) topOffset = r.bottom;
+            }
+
+            let bottomOffset = 0;
+            if (bottomNav && !bottomNav.classList.contains('d-none')) {
+                bottomOffset = window.innerHeight - bottomNav.getBoundingClientRect().top;
+            }
+
+            stage.style.top = topOffset + 'px';
+            stage.style.bottom = bottomOffset + 'px';
+        }
+
         function getNavItems() {
             const nav = document.querySelector('.mobile-bottom-nav');
             if (!nav || nav.classList.contains('d-none')) return null;
@@ -274,6 +294,7 @@
             dragging = true;
             stageWidth = window.innerWidth;
 
+            positionStage();
             outgoing.innerHTML = appContent.innerHTML;
             incoming.dataset.waiting = '1';
 

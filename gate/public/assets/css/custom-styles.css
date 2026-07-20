@@ -251,14 +251,22 @@ html, body {
 
     #swipe-stage {
         position: fixed;
-        inset: 0;
-        z-index: 1150;
+        left: 0;
+        right: 0;
+        z-index: 900;
         overflow: hidden;
         pointer-events: none;
         display: none;
         background: var(--bs-body-bg);
     }
     #swipe-stage.active { display: block; }
+
+    .fixed-top-banner,
+    .app-header,
+    .mobile-bottom-nav,
+    .mobile-fab {
+        z-index: 1600 !important;
+    }
 
     #swipe-outgoing,
     #swipe-incoming {
