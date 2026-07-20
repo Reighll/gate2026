@@ -174,5 +174,76 @@
         }
     });
 </script>
+
+<script>
+    // Swipe navigation for mobile bottom nav — reuses existing hx-boost links,
+    // so it stays in sync with whatever pages are rendered in the nav.
+    (function () {
+        const SWIPE_MIN_DISTANCE = 60;      // px, minimum horizontal travel to count as a swipe
+        const SWIPE_MAX_VERTICAL = 60;      // px, max vertical drift allowed (avoids hijacking scrolls)
+        const SWIPE_MAX_DURATION = 600;     // ms, ignore slow drags
+        const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let touchActive = false;
+
+        function getNavItems() {
+            const nav = document.querySelector('.mobile-bottom-nav');
+            if (!nav || nav.classList.contains('d-none') || nav.offsetParent === null) return null;
+            return Array.from(nav.querySelectorAll('.mobile-bottom-item'));
+        }
+
+        function navigateToOffset(offset) {
+            const items = getNavItems();
+            if (!items || items.length === 0) return;
+
+            const currentIndex = items.findIndex(item => item.classList.contains('active'));
+            if (currentIndex === -1) return;
+
+            const targetIndex = currentIndex + offset;
+            if (targetIndex < 0 || targetIndex >= items.length) return; // clamp at the ends, don't wrap
+
+            const targetLink = items[targetIndex];
+            const container = document.querySelector('#app-content .page-transition-container');
+            if (container) container.classList.add('page-slide-out');
+
+            targetLink.click(); // reuses the same hx-boost navigation the nav already uses
+        }
+
+        document.addEventListener('touchstart', function (e) {
+            if (window.innerWidth >= 992) return; // matches d-lg-none breakpoint
+            if (e.target.closest(IGNORE_SELECTORS)) { touchActive = false; return; }
+            if (!e.target.closest('#app-content')) { touchActive = false; return; }
+
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            touchStartTime = Date.now();
+            touchActive = true;
+        }, { passive: true });
+
+        document.addEventListener('touchend', function (e) {
+            if (!touchActive) return;
+            touchActive = false;
+
+            const touch = e.changedTouches[0];
+            const deltaX = touch.clientX - touchStartX;
+            const deltaY = touch.clientY - touchStartY;
+            const duration = Date.now() - touchStartTime;
+
+            if (duration > SWIPE_MAX_DURATION) return;
+            if (Math.abs(deltaY) > SWIPE_MAX_VERTICAL) return;
+            if (Math.abs(deltaX) < SWIPE_MIN_DISTANCE) return;
+
+            if (deltaX < 0) {
+                navigateToOffset(1);  // swiped left -> next page in the nav
+            } else {
+                navigateToOffset(-1); // swiped right -> previous page in the nav
+            }
+        }, { passive: true });
+    })();
+</script>
 </body>
 </html>
