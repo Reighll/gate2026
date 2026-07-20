@@ -183,22 +183,37 @@
         const SWIPE_MIN_DISTANCE = 60;
         const SWIPE_MAX_VERTICAL = 60;
         const RESISTANCE = 0.35;
-        const PARALLAX = 0.3;      // how much the outgoing page moves relative to your finger (iOS-style peek)
-        const MAX_DIM = 0.35;      // max darkness of the outgoing page as it recedes
+        const EDGE_GUARD = 24;
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
 
         let startX = 0, startY = 0, currentX = 0;
         let dragging = false;
         let isHorizontal = null;
         let stageWidth = 0;
-        let direction = null;     // 'next' | 'prev'
+        let direction = null;
         let targetLink = null;
         let prefetchedHTML = null;
         let prefetchXHR = null;
+        let viewportGapHeight = 0;
+        let outgoingHeight = 0;
+        let incomingHeight = 0;
+        let settleFallbackTimer = null;
 
         const stage = document.getElementById('swipe-stage');
         const outgoing = document.getElementById('swipe-outgoing');
         const incoming = document.getElementById('swipe-incoming');
+
+        function getNavItems() {
+            const nav = document.querySelector('.mobile-bottom-nav');
+            if (!nav || nav.classList.contains('d-none')) return null;
+            const style = window.getComputedStyle(nav);
+            if (style.display === 'none' || style.visibility === 'hidden') return null;
+            return Array.from(nav.querySelectorAll('.mobile-bottom-item'));
+        }
+
+        function getCurrentIndex(items) {
+            return items.findIndex(item => item.classList.contains('active'));
+        }
 
         function positionStage() {
             const header = document.querySelector('.fixed-top-banner');
@@ -217,34 +232,23 @@
             }
 
             stage.style.top = topOffset + 'px';
-            stage.style.bottom = bottomOffset + 'px';
-        }
-
-        function getNavItems() {
-            const nav = document.querySelector('.mobile-bottom-nav');
-            if (!nav || nav.classList.contains('d-none')) return null;
-            const style = window.getComputedStyle(nav);
-            if (style.display === 'none' || style.visibility === 'hidden') return null;
-            return Array.from(nav.querySelectorAll('.mobile-bottom-item'));
-        }
-
-        function getCurrentIndex(items) {
-            return items.findIndex(item => item.classList.contains('active'));
-        }
-
-        function setDim(opacity) {
-            outgoing.style.setProperty('--dim-opacity', opacity);
+            viewportGapHeight = Math.max(0, window.innerHeight - topOffset - bottomOffset);
+            stage.style.height = viewportGapHeight + 'px';
         }
 
         function resetStage() {
-            stage.classList.remove('active', 'snapping');
+            if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
+            document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
+
+            stage.classList.remove('active', 'snapping', 'height-transition', 'landing');
+            outgoing.classList.remove('landing');
+            incoming.classList.remove('landing');
             outgoing.style.transform = '';
             incoming.style.transform = '';
+            stage.style.removeProperty('--dim-opacity');
+            outgoing.style.setProperty('--dim-opacity', '0');
             outgoing.innerHTML = '';
             incoming.innerHTML = '';
-            outgoing.className = '';
-            incoming.className = '';
-            setDim(0);
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
@@ -260,9 +264,7 @@
             xhr.onload = function () {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     prefetchedHTML = xhr.responseText;
-                    if (incoming.dataset.waiting === '1') {
-                        renderIncoming();
-                    }
+                    if (incoming.dataset.waiting === '1') renderIncoming();
                 }
             };
             xhr.send();
@@ -272,16 +274,21 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const el = doc.getElementById('app-content');
-            return el ? { html: el.innerHTML, className: el.className } : { html: html, className: '' };
+            return el ? el.innerHTML : html;
         }
 
         function renderIncoming() {
             incoming.dataset.waiting = '0';
             if (prefetchedHTML) {
-                const extracted = extractAppContent(prefetchedHTML);
-                incoming.className = extracted.className;
-                incoming.innerHTML = extracted.html;
+                incoming.innerHTML = extractAppContent(prefetchedHTML);
+                incomingHeight = Math.max(viewportGapHeight, incoming.scrollHeight);
             }
+        }
+
+        function onRealSwapSettled() {
+            document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
+            if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
+            resetStage();
         }
 
         document.addEventListener('touchstart', function (e) {
@@ -298,7 +305,8 @@
             if (!appContent) return;
 
             const touch = e.touches[0];
-            if (touch.clientX < 24 || touch.clientX > window.innerWidth - 24) return; // avoid OS edge-gesture zones
+            if (touch.clientX < EDGE_GUARD || touch.clientX > window.innerWidth - EDGE_GUARD) return;
+
             startX = touch.clientX;
             startY = touch.clientY;
             currentX = startX;
@@ -307,9 +315,9 @@
             stageWidth = window.innerWidth;
 
             positionStage();
-            outgoing.className = appContent.className;
             outgoing.innerHTML = appContent.innerHTML;
-            setDim(0);
+            outgoingHeight = Math.max(viewportGapHeight, outgoing.scrollHeight);
+            incomingHeight = viewportGapHeight;
             incoming.dataset.waiting = '1';
 
             const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
@@ -331,24 +339,22 @@
             if (isHorizontal === null) {
                 if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
                 isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
-
                 if (isHorizontal) {
                     stage.classList.add('active');
-                    stage.classList.remove('snapping');
+                    stage.classList.remove('snapping', 'height-transition');
                 }
             }
 
             if (!isHorizontal) return;
             e.preventDefault();
 
-            const items = getNavItems();
-            const currentIndex = items ? getCurrentIndex(items) : -1;
             const wantDirection = deltaX < 0 ? 'next' : 'prev';
 
             if (direction !== wantDirection) {
                 direction = wantDirection;
                 incoming.innerHTML = '';
                 prefetchedHTML = null;
+                incomingHeight = viewportGapHeight;
                 if (prefetchXHR) { try { prefetchXHR.abort(); } catch (err) {} }
 
                 if (direction === 'next' && this._nextItem) {
@@ -366,19 +372,17 @@
             }
 
             let dragX = deltaX;
-            if (!targetLink) dragX *= RESISTANCE; // no page in that direction — rubber band only
+            if (!targetLink) dragX *= RESISTANCE;
 
             currentX = dragX;
-
-            // Outgoing page: slow parallax drift + progressive dim (iOS "peek" style)
-            const progress = Math.min(Math.abs(dragX) / stageWidth, 1);
-            outgoing.style.transform = `translateX(${dragX * PARALLAX}px)`;
-            setDim(progress * MAX_DIM);
-
-            // Incoming page: full-speed slide, fully covers the outgoing page as it arrives
+            outgoing.style.transform = `translateX(${dragX}px)`;
             incoming.style.transform = direction === 'next'
                 ? `translateX(${dragX + stageWidth}px)`
                 : `translateX(${dragX - stageWidth}px)`;
+
+            const progress = targetLink ? Math.min(1, Math.abs(dragX) / stageWidth) : 0;
+            stage.style.height = (outgoingHeight + (incomingHeight - outgoingHeight) * progress) + 'px';
+            outgoing.style.setProperty('--dim-opacity', (progress * 0.15).toFixed(3));
         }, { passive: false });
 
         document.addEventListener('touchend', function () {
@@ -391,51 +395,39 @@
             const clearedThreshold = Math.abs(deltaX) >= SWIPE_MIN_DISTANCE;
 
             if (clearedThreshold && targetLink) {
-                stage.classList.add('snapping');
-                const restOffset = deltaX < 0 ? -stageWidth * PARALLAX : stageWidth * PARALLAX;
-                outgoing.style.transform = `translateX(${restOffset}px)`;
-                setDim(MAX_DIM);
+                const exitDistance = direction === 'next' ? -stageWidth : stageWidth;
+                stage.classList.add('snapping', 'height-transition');
+                outgoing.style.transform = `translateX(${exitDistance}px)`;
                 incoming.style.transform = `translateX(0px)`;
+                stage.style.height = incomingHeight + 'px';
+                outgoing.style.setProperty('--dim-opacity', '0.15');
 
                 const linkToClick = targetLink;
-                let settled = false;
+                const container = document.querySelector('#app-content .page-transition-container');
+                if (container) container.style.opacity = '0';
 
-                function finishSwipe() {
-                    if (settled) return;
-                    settled = true;
-                    document.body.removeEventListener('htmx:afterSettle', finishSwipe);
-                    resetStage();
-                }
-
-                // Settle bounce once the 0.25s slide-in transition lands
                 setTimeout(function () {
-                    incoming.style.setProperty('--land-x', '0px');
                     incoming.classList.add('landing');
-                    outgoing.style.setProperty('--land-x', restOffset + 'px');
-                    outgoing.classList.add('landing');
-                }, 250);
+                    linkToClick.click(); // real hx-boost navigation
 
-                // Wait for the real htmx swap to actually finish before hiding
-                // the overlay — a fixed timer here is what caused the stutter,
-                // since the real navigation's timing varies with the network.
-                document.body.addEventListener('htmx:afterSettle', finishSwipe);
-                setTimeout(finishSwipe, 4000); // safety net if htmx never settles
+                    settleFallbackTimer = setTimeout(resetStage, 1200); // safety net
+                    document.addEventListener('htmx:afterSettle', onRealSwapSettled);
 
-                setTimeout(function () {
-                    linkToClick.click(); // real hx-boost navigation — swaps #app-content normally
-                }, 250);
+                    setTimeout(function () {
+                        if (container) container.style.opacity = '';
+                    }, 350);
+                }, 230);
             } else {
-                stage.classList.add('snapping');
+                stage.classList.add('snapping', 'height-transition');
                 outgoing.style.transform = 'translateX(0px)';
-                setDim(0);
                 incoming.style.transform = direction === 'next' ? `translateX(${stageWidth}px)` : `translateX(${-stageWidth}px)`;
+                stage.style.height = outgoingHeight + 'px';
+                outgoing.style.setProperty('--dim-opacity', '0');
 
                 setTimeout(function () {
-                    outgoing.style.setProperty('--land-x', '0px');
                     outgoing.classList.add('landing');
-                }, 250);
-
-                setTimeout(resetStage, 550);
+                    setTimeout(resetStage, 300);
+                }, 260);
             }
         }, { passive: true });
 
