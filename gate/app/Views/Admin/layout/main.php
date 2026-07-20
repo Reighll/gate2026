@@ -250,7 +250,9 @@
             stage.classList.remove('active', 'snapping');
             clearLayerState();
             outgoing.innerHTML = '';
+            outgoing.className = '';
             incoming.innerHTML = '';
+            incoming.className = '';
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
@@ -276,12 +278,18 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const el = doc.getElementById('app-content');
-            return el ? el.innerHTML : html;
+            return el
+                ? { html: el.innerHTML, className: el.className }
+                : { html: html, className: '' };
         }
 
         function renderIncoming() {
             incoming.dataset.waiting = '0';
-            if (prefetchedHTML) incoming.innerHTML = extractAppContent(prefetchedHTML);
+            if (prefetchedHTML) {
+                const extracted = extractAppContent(prefetchedHTML);
+                incoming.className = extracted.className;
+                incoming.innerHTML = extracted.html;
+            }
         }
 
         function onRealSwapSettled() {
@@ -325,6 +333,7 @@
             stageWidth = window.innerWidth;
 
             positionStage();
+            outgoing.className = appContent.className;
             outgoing.innerHTML = appContent.innerHTML;
             incoming.dataset.waiting = '1';
 
