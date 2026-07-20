@@ -172,31 +172,37 @@
         }
     });
 </script>
+
+<div id="swipe-stage">
+    <div id="swipe-outgoing"></div>
+    <div id="swipe-incoming"></div>
+</div>
+
 <script>
-    // Swipe navigation for mobile bottom nav — drags in real time with the
-    // finger (Instagram-style), then either completes the page switch or
-    // snaps back if the swipe didn't clear the threshold.
     (function () {
-        const SWIPE_MIN_DISTANCE = 60;   // px, minimum travel to count as a committed swipe
-        const SWIPE_MAX_VERTICAL = 60;   // px, max vertical drift before we treat it as a scroll
-        const RESISTANCE = 0.35;         // drag multiplier past the first/last tab (rubber-band feel)
+        const SWIPE_MIN_DISTANCE = 60;
+        const SWIPE_MAX_VERTICAL = 60;
+        const RESISTANCE = 0.35;
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
 
-        let startX = 0, startY = 0;
-        let currentX = 0;
+        let startX = 0, startY = 0, currentX = 0;
         let dragging = false;
-        let isHorizontal = null; // null = undecided yet, true/false once determined
-        let container = null;
-        let containerWidth = 0;
-        let atLeftEdge = false, atRightEdge = false;
+        let isHorizontal = null;
+        let stageWidth = 0;
+        let direction = null;     // 'next' | 'prev'
+        let targetLink = null;
+        let prefetchedHTML = null;
+        let prefetchXHR = null;
+
+        const stage = document.getElementById('swipe-stage');
+        const outgoing = document.getElementById('swipe-outgoing');
+        const incoming = document.getElementById('swipe-incoming');
 
         function getNavItems() {
             const nav = document.querySelector('.mobile-bottom-nav');
             if (!nav || nav.classList.contains('d-none')) return null;
-
             const style = window.getComputedStyle(nav);
             if (style.display === 'none' || style.visibility === 'hidden') return null;
-
             return Array.from(nav.querySelectorAll('.mobile-bottom-item'));
         }
 
@@ -204,28 +210,61 @@
             return items.findIndex(item => item.classList.contains('active'));
         }
 
-        function resetContainer() {
-            if (!container) return;
-            container.classList.remove('swipe-dragging', 'swipe-snapping');
-            container.style.transform = '';
+        function resetStage() {
+            stage.classList.remove('active', 'snapping');
+            outgoing.style.transform = '';
+            incoming.style.transform = '';
+            outgoing.innerHTML = '';
+            incoming.innerHTML = '';
+            direction = null;
+            targetLink = null;
+            prefetchedHTML = null;
+            if (prefetchXHR) { try { prefetchXHR.abort(); } catch (e) {} prefetchXHR = null; }
+        }
+
+        function startPrefetch(url) {
+            prefetchedHTML = null;
+            const xhr = new XMLHttpRequest();
+            prefetchXHR = xhr;
+            xhr.open('GET', url, true);
+            xhr.setRequestHeader('HX-Request', 'true');
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    prefetchedHTML = xhr.responseText;
+                    if (incoming.dataset.waiting === '1') {
+                        renderIncoming();
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function extractAppContent(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const el = doc.getElementById('app-content');
+            return el ? el.innerHTML : html;
+        }
+
+        function renderIncoming() {
+            incoming.dataset.waiting = '0';
+            if (prefetchedHTML) {
+                incoming.innerHTML = extractAppContent(prefetchedHTML);
+            }
         }
 
         document.addEventListener('touchstart', function (e) {
-            if (window.innerWidth >= 992) return; // matches d-lg-none breakpoint
+            if (window.innerWidth >= 992) return;
             if (e.target.closest(IGNORE_SELECTORS)) return;
             if (!e.target.closest('#app-content')) return;
 
             const items = getNavItems();
             if (!items || items.length === 0) return;
-
             const currentIndex = getCurrentIndex(items);
             if (currentIndex === -1) return;
 
-            container = document.querySelector('#app-content .page-transition-container');
-            if (!container) return;
-
-            atLeftEdge = currentIndex === 0;                     // can't go "previous" (swipe right)
-            atRightEdge = currentIndex === items.length - 1;     // can't go "next" (swipe left)
+            const appContent = document.getElementById('app-content');
+            if (!appContent) return;
 
             const touch = e.touches[0];
             startX = touch.clientX;
@@ -233,80 +272,111 @@
             currentX = startX;
             isHorizontal = null;
             dragging = true;
-            containerWidth = container.getBoundingClientRect().width || window.innerWidth;
+            stageWidth = window.innerWidth;
+
+            outgoing.innerHTML = appContent.innerHTML;
+            incoming.dataset.waiting = '1';
+
+            const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
+            const prevItem = currentIndex > 0 ? items[currentIndex - 1] : null;
+
+            if (nextItem) startPrefetch(nextItem.getAttribute('href'));
+
+            this._nextItem = nextItem;
+            this._prevItem = prevItem;
         }, { passive: true });
 
         document.addEventListener('touchmove', function (e) {
-            if (!dragging || !container) return;
+            if (!dragging) return;
 
             const touch = e.touches[0];
             const deltaX = touch.clientX - startX;
             const deltaY = touch.clientY - startY;
 
             if (isHorizontal === null) {
-                if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return; // too small to decide yet
+                if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
                 isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+
                 if (isHorizontal) {
-                    container.classList.add('swipe-dragging');
-                    container.classList.remove('swipe-snapping');
+                    stage.classList.add('active');
+                    stage.classList.remove('snapping');
                 }
             }
 
-            if (!isHorizontal) return; // let the page scroll vertically as normal
+            if (!isHorizontal) return;
+            e.preventDefault();
 
-            e.preventDefault(); // stop vertical scroll from fighting the drag
+            const items = getNavItems();
+            const currentIndex = items ? getCurrentIndex(items) : -1;
+            const wantDirection = deltaX < 0 ? 'next' : 'prev';
 
-            let dragX = deltaX;
+            if (direction !== wantDirection) {
+                direction = wantDirection;
+                incoming.innerHTML = '';
+                prefetchedHTML = null;
+                if (prefetchXHR) { try { prefetchXHR.abort(); } catch (err) {} }
 
-            // Rubber-band resistance if trying to swipe past the first/last tab
-            if ((dragX > 0 && atLeftEdge) || (dragX < 0 && atRightEdge)) {
-                dragX *= RESISTANCE;
+                if (direction === 'next' && this._nextItem) {
+                    targetLink = this._nextItem;
+                    startPrefetch(targetLink.getAttribute('href'));
+                } else if (direction === 'prev' && this._prevItem) {
+                    targetLink = this._prevItem;
+                    startPrefetch(targetLink.getAttribute('href'));
+                } else {
+                    targetLink = null;
+                }
+
+                if (targetLink && prefetchedHTML) renderIncoming();
+                else if (targetLink) incoming.dataset.waiting = '1';
             }
 
+            let dragX = deltaX;
+            if (!targetLink) dragX *= RESISTANCE; // no page in that direction — rubber band only
+
             currentX = dragX;
-            container.style.transform = `translateX(${dragX}px)`;
+            outgoing.style.transform = `translateX(${dragX}px)`;
+            incoming.style.transform = direction === 'next'
+                ? `translateX(${dragX + stageWidth}px)`
+                : `translateX(${dragX - stageWidth}px)`;
         }, { passive: false });
 
         document.addEventListener('touchend', function () {
             if (!dragging) return;
             dragging = false;
 
-            if (!isHorizontal || !container) {
-                resetContainer();
-                return;
-            }
+            if (!isHorizontal) { resetStage(); return; }
 
             const deltaX = currentX;
-            const swipedLeft = deltaX < 0;
-            const blockedByEdge = (swipedLeft && atRightEdge) || (!swipedLeft && atLeftEdge);
             const clearedThreshold = Math.abs(deltaX) >= SWIPE_MIN_DISTANCE;
 
-            if (clearedThreshold && !blockedByEdge) {
-                // Commit: finish sliding off in the swiped direction, then navigate
-                const exitDistance = swipedLeft ? -containerWidth : containerWidth;
-                container.classList.add('swipe-snapping');
-                container.style.transform = `translateX(${exitDistance}px)`;
+            if (clearedThreshold && targetLink) {
+                const exitDistance = direction === 'next' ? -stageWidth : stageWidth;
+                stage.classList.add('snapping');
+                outgoing.style.transform = `translateX(${exitDistance}px)`;
+                incoming.style.transform = `translateX(0px)`;
 
-                const items = getNavItems();
-                const currentIndex = items ? getCurrentIndex(items) : -1;
-                const targetLink = items && currentIndex !== -1
-                    ? items[currentIndex + (swipedLeft ? 1 : -1)]
-                    : null;
+                const linkToClick = targetLink;
+                const container = document.querySelector('#app-content .page-transition-container');
+                if (container) container.style.opacity = '0';
 
                 setTimeout(function () {
-                    if (targetLink) targetLink.click(); // reuses existing hx-boost navigation
-                }, 220);
+                    linkToClick.click(); // real hx-boost navigation — swaps #app-content normally
+                    setTimeout(resetStage, 50);
+                    setTimeout(function () {
+                        if (container) container.style.opacity = '';
+                    }, 350);
+                }, 230);
             } else {
-                // Snap back — swipe was too short, wrong direction, or blocked at an edge
-                container.classList.add('swipe-snapping');
-                container.style.transform = '';
-                setTimeout(resetContainer, 260);
+                stage.classList.add('snapping');
+                outgoing.style.transform = 'translateX(0px)';
+                incoming.style.transform = direction === 'next' ? `translateX(${stageWidth}px)` : `translateX(${-stageWidth}px)`;
+                setTimeout(resetStage, 260);
             }
         }, { passive: true });
 
         document.addEventListener('touchcancel', function () {
             dragging = false;
-            resetContainer();
+            resetStage();
         }, { passive: true });
     })();
 </script>

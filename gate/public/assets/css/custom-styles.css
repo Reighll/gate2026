@@ -246,20 +246,35 @@ html, body {
         from { opacity: 1; transform: translateX(0); }
         to   { opacity: 0; transform: translateX(-32px); }
     }
-    @keyframes slideOutToRight {
-        from { opacity: 1; transform: translateX(0); }
-        to   { opacity: 0; transform: translateX(32px); }
-    }
     .page-slide-in  { animation: slideInFromRight 0.3s ease forwards; }
     .page-slide-out { animation: slideOutToLeft 0.25s ease forwards; }
-    .page-slide-out-right { animation: slideOutToRight 0.25s ease forwards; }
 
-    /* Swipe-drag: while actively dragging, JS sets transform directly with no transition */
-    .page-transition-container.swipe-dragging {
-        transition: none !important;
+    #swipe-stage {
+        position: fixed;
+        inset: 0;
+        z-index: 1150;
+        overflow: hidden;
+        pointer-events: none;
+        display: none;
+        background: var(--bs-body-bg);
     }
-    /* Swipe-drag: on release, animate the snap-back or finish smoothly */
-    .page-transition-container.swipe-snapping {
+    #swipe-stage.active { display: block; }
+
+    #swipe-outgoing,
+    #swipe-incoming {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-height: 100%;
+        background: var(--bs-body-bg);
+        will-change: transform;
+    }
+    #swipe-outgoing { z-index: 1; }
+    #swipe-incoming { z-index: 2; }
+
+    #swipe-stage.snapping #swipe-outgoing,
+    #swipe-stage.snapping #swipe-incoming {
         transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
     }
 }
