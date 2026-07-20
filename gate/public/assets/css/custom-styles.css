@@ -285,6 +285,27 @@ html, body {
     #swipe-stage.snapping #swipe-incoming {
         transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
     }
+
+    #swipe-outgoing {
+        position: relative; /* needed so the ::after dim overlay can be positioned inside it */
+    }
+
+    #swipe-outgoing::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: #000;
+        opacity: var(--dim-opacity, 0);
+        pointer-events: none;
+    }
+
+    #swipe-incoming {
+        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18); /* gives the incoming page a lifted edge as it slides over */
+    }
+
+    #swipe-stage.snapping #swipe-outgoing::after {
+        transition: opacity 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    }
 }
 html, body {
     overscroll-behavior-x: none;

@@ -183,6 +183,8 @@
         const SWIPE_MIN_DISTANCE = 60;
         const SWIPE_MAX_VERTICAL = 60;
         const RESISTANCE = 0.35;
+        const PARALLAX = 0.3;      // how much the outgoing page moves relative to your finger (iOS-style peek)
+        const MAX_DIM = 0.35;      // max darkness of the outgoing page as it recedes
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
 
         let startX = 0, startY = 0, currentX = 0;
@@ -230,12 +232,17 @@
             return items.findIndex(item => item.classList.contains('active'));
         }
 
+        function setDim(opacity) {
+            outgoing.style.setProperty('--dim-opacity', opacity);
+        }
+
         function resetStage() {
             stage.classList.remove('active', 'snapping');
             outgoing.style.transform = '';
             incoming.style.transform = '';
             outgoing.innerHTML = '';
             incoming.innerHTML = '';
+            setDim(0);
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
@@ -297,6 +304,7 @@
 
             positionStage();
             outgoing.innerHTML = appContent.innerHTML;
+            setDim(0);
             incoming.dataset.waiting = '1';
 
             const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
@@ -356,7 +364,13 @@
             if (!targetLink) dragX *= RESISTANCE; // no page in that direction — rubber band only
 
             currentX = dragX;
-            outgoing.style.transform = `translateX(${dragX}px)`;
+
+            // Outgoing page: slow parallax drift + progressive dim (iOS "peek" style)
+            const progress = Math.min(Math.abs(dragX) / stageWidth, 1);
+            outgoing.style.transform = `translateX(${dragX * PARALLAX}px)`;
+            setDim(progress * MAX_DIM);
+
+            // Incoming page: full-speed slide, fully covers the outgoing page as it arrives
             incoming.style.transform = direction === 'next'
                 ? `translateX(${dragX + stageWidth}px)`
                 : `translateX(${dragX - stageWidth}px)`;
@@ -372,9 +386,9 @@
             const clearedThreshold = Math.abs(deltaX) >= SWIPE_MIN_DISTANCE;
 
             if (clearedThreshold && targetLink) {
-                const exitDistance = direction === 'next' ? -stageWidth : stageWidth;
                 stage.classList.add('snapping');
-                outgoing.style.transform = `translateX(${exitDistance}px)`;
+                outgoing.style.transform = `translateX(${deltaX < 0 ? -stageWidth * PARALLAX : stageWidth * PARALLAX}px)`;
+                setDim(MAX_DIM);
                 incoming.style.transform = `translateX(0px)`;
 
                 const linkToClick = targetLink;
@@ -391,6 +405,7 @@
             } else {
                 stage.classList.add('snapping');
                 outgoing.style.transform = 'translateX(0px)';
+                setDim(0);
                 incoming.style.transform = direction === 'next' ? `translateX(${stageWidth}px)` : `translateX(${-stageWidth}px)`;
                 setTimeout(resetStage, 260);
             }
