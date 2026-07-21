@@ -180,18 +180,13 @@
 
 <script>
     /**
-     * swipe-gesture.js
+     * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Uses HTMX for prefetching and smooth transitions.
+     * Includes clean DOM nesting and strict scroll-conflict resolution.
      */
     (function () {
-        // Configuration Constants
         const SWIPE_MIN_DISTANCE = 60;
-        const SWIPE_MAX_VERTICAL = 60;
-
-        // NEW: Tighter resistance for boundary restriction (first/last pages)
-        const RESISTANCE = 0.15;
-
+        const RESISTANCE = 0.15; // Tight boundary resistance for first/last pages
         const PARALLAX = 0.3;
         const EDGE_GUARD = 24;
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
@@ -222,7 +217,7 @@
             return items.findIndex(item => item.classList.contains('active'));
         }
 
-        function positionStage(appContent) {
+        function positionStage() {
             const header = document.querySelector('.fixed-top-banner');
             const appHeader = document.querySelector('.app-header');
 
@@ -232,15 +227,10 @@
                 if (r.bottom > topOffset) topOffset = r.bottom;
             }
 
-            // FIX: Lock the exact dimensions to prevent the "shrinking" layout shift
-            stageWidth = appContent.getBoundingClientRect().width;
+            stageWidth = window.innerWidth;
 
             stage.style.top = topOffset + 'px';
             stage.style.height = `calc(100dvh - ${topOffset}px)`;
-            stage.style.width = stageWidth + 'px';
-
-            outgoing.style.width = stageWidth + 'px';
-            incoming.style.width = stageWidth + 'px';
         }
 
         function clearLayerState() {
@@ -258,9 +248,7 @@
             stage.classList.remove('active', 'snapping');
             clearLayerState();
             outgoing.innerHTML = '';
-            outgoing.className = '';
             incoming.innerHTML = '';
-            incoming.className = '';
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
@@ -282,21 +270,20 @@
             xhr.send();
         }
 
+        // FIX 1: Cleanly wrap incoming HTML so it doesn't conflict with absolute positioning
         function extractAppContent(html) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const el = doc.getElementById('app-content');
             return el
-                ? { html: el.innerHTML, className: el.className }
-                : { html: html, className: '' };
+                ? `<div class="${el.className}" style="height: 100%;">${el.innerHTML}</div>`
+                : html;
         }
 
         function renderIncoming() {
             incoming.dataset.waiting = '0';
             if (prefetchedHTML) {
-                const extracted = extractAppContent(prefetchedHTML);
-                incoming.className = extracted.className;
-                incoming.innerHTML = extracted.html;
+                incoming.innerHTML = extractAppContent(prefetchedHTML);
             }
         }
 
@@ -341,11 +328,10 @@
             isHorizontal = null;
             dragging = true;
 
-            // Pass appContent to lock dimensions
-            positionStage(appContent);
+            positionStage();
 
-            outgoing.className = appContent.className;
-            outgoing.innerHTML = appContent.innerHTML;
+            // FIX 1: Cleanly wrap the outgoing content to prevent "squishing" from Bootstrap containers
+            outgoing.innerHTML = `<div class="${appContent.className}" style="height: 100%;">${appContent.innerHTML}</div>`;
             incoming.dataset.waiting = '1';
 
             const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
@@ -374,7 +360,16 @@
             }
 
             if (!isHorizontal) return;
-            e.preventDefault();
+
+            // FIX 2: Check if the browser has already forced a vertical scroll.
+            // If yes, abort our custom swipe cleanly without throwing a console error.
+            if (!e.cancelable) {
+                dragging = false;
+                resetStage();
+                return;
+            }
+
+            e.preventDefault(); // Now safe to prevent default behavior
 
             const wantDirection = deltaX < 0 ? 'next' : 'prev';
 
@@ -403,11 +398,9 @@
                 }
             }
 
-            // BOUNDARY RESTRICTION: Apply stiff resistance if there is no next/prev page
             if (!targetLink) {
                 const dragX = deltaX * RESISTANCE;
                 currentX = dragX;
-                // Only move the outgoing layer slightly to simulate a rubber-band wall
                 outgoing.style.transform = `translateX(${dragX}px)`;
                 return;
             }
@@ -463,7 +456,6 @@
                     }, 350);
                 }, 320);
             } else {
-                // BOUNDARY SNAP: If there was no target link, it snaps securely back to 0 here
                 stage.classList.add('snapping');
 
                 if (direction === 'next' && targetLink) {
