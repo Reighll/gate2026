@@ -150,24 +150,14 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                 <!-- VIEW MODE -->
                                                 <div id="viewMode<?= $item['id'] ?>" class="item-mode-panel">
                                                     <div class="row align-items-center">
-                                                        <div class="col-md-5 mb-4 mb-md-0">
-
-                                                            <div class="text-center mb-3">
-                                                                <?php if (!empty($item['photo'])): ?>
-                                                                    <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm" alt="Current Photo" style="max-height: 180px; object-fit: contain;">
-                                                                <?php else: ?>
-                                                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3" style="height:150px;">
-                                                                        <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
-                                                                    </div>
-                                                                <?php endif; ?>
-                                                            </div>
-
-                                                            <div class="text-start">
-                                                                <label class="form-label small fw-bold text-muted mb-1 d-block">Replace Photo</label>
-                                                                <input type="file" class="form-control" name="photo" accept="image/*">
-                                                                <div class="form-text">Max file size: 50MB. Leave blank to keep the current photo.</div>
-                                                            </div>
-
+                                                        <div class="col-md-5 text-center mb-4 mb-md-0">
+                                                            <?php if (!empty($item['photo'])): ?>
+                                                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm" alt="Item Photo" style="max-height: 220px; object-fit: contain;">
+                                                            <?php else: ?>
+                                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height:180px;">
+                                                                    <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
+                                                                </div>
+                                                            <?php endif; ?>
                                                         </div>
 
                                                         <div class="col-md-7">
@@ -216,17 +206,24 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                     <form action="<?= base_url('student/items/update/' . $item['id']) ?>" method="POST" enctype="multipart/form-data">
                                                         <?= csrf_field() ?>
                                                         <div class="row">
-                                                            <div class="col-md-5 text-center mb-4 mb-md-0">
-                                                                <?php if (!empty($item['photo'])): ?>
-                                                                    <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm mb-3" alt="Current Photo" style="max-height: 180px; object-fit: contain;">
-                                                                <?php else: ?>
-                                                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3" style="height:150px;">
-                                                                        <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
-                                                                    </div>
-                                                                <?php endif; ?>
-                                                                <label class="form-label small fw-bold text-muted mb-1">Replace Photo</label>
-                                                                <input type="file" class="form-control" name="photo" accept="image/*">
-                                                                <div class="form-text">Max file size: 50MB. Leave blank to keep the current photo.</div>
+                                                            <div class="col-md-5 mb-4 mb-md-0">
+
+                                                                <div class="text-center mb-3">
+                                                                    <?php if (!empty($item['photo'])): ?>
+                                                                        <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm" alt="Current Photo" style="max-height: 180px; object-fit: contain;">
+                                                                    <?php else: ?>
+                                                                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3" style="height:150px;">
+                                                                            <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
+                                                                        </div>
+                                                                    <?php endif; ?>
+                                                                </div>
+
+                                                                <div class="text-start">
+                                                                    <label class="form-label small fw-bold text-muted mb-1 d-block">Replace Photo</label>
+                                                                    <input type="file" class="form-control" name="photo" accept="image/*">
+                                                                    <div class="form-text">Max file size: 50MB. Leave blank to keep the current photo.</div>
+                                                                </div>
+
                                                             </div>
 
                                                             <div class="col-md-7">
