@@ -256,6 +256,9 @@ html, body {
         overflow: hidden;
         pointer-events: none;
         display: none;
+        /* FIX: Prevents text selection magnifiers (shrinking) on long hold */
+        user-select: none;
+        -webkit-user-select: none;
     }
     #swipe-stage.active { display: block; }
 
@@ -264,6 +267,12 @@ html, body {
     .mobile-bottom-nav,
     .mobile-fab {
         z-index: 1600 !important;
+    }
+
+    /* FIX: Prevents the cloned page from showing a duplicate, stuck nav pill */
+    #swipe-stage .mobile-bottom-nav,
+    #swipe-stage .mobile-fab {
+        display: none !important;
     }
 
     #swipe-outgoing,
@@ -276,6 +285,8 @@ html, body {
         background: var(--bs-body-bg);
         will-change: transform;
         z-index: 1;
+        /* FIX: Forces zero transition during manual drag to prevent scale/shrinking glitches */
+        transition: none;
     }
 
     #swipe-outgoing.swipe-top,
@@ -294,6 +305,7 @@ html, body {
         pointer-events: none;
     }
 
+    /* Re-enables smooth transitions only when the user releases the screen (snapping) */
     #swipe-stage.snapping #swipe-outgoing,
     #swipe-stage.snapping #swipe-incoming {
         transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
@@ -302,11 +314,4 @@ html, body {
     #swipe-stage.snapping #swipe-incoming.swipe-back::after {
         transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1);
     }
-}
-html, body {
-    overscroll-behavior-x: none;
-}
-
-#app-content {
-    touch-action: pan-y;
 }
