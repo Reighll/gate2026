@@ -182,7 +182,7 @@
     /**
      * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Features: Ghost Wrapper, True Boundaries, Instant Nav Sync on Touchmove.
+     * Features: Ghost Wrapper, True Boundaries, Instant Nav Sync, and Color Cloning.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -202,8 +202,6 @@
 
         let currentGhostRect = null;
         let currentGhostStyle = null;
-
-        // NEW: Save the originally active pill so we can revert it if the swipe cancels
         let originalActiveLink = null;
 
         const stage = document.getElementById('swipe-stage');
@@ -340,11 +338,18 @@
             isHorizontal = null;
             dragging = true;
 
-            // NEW: Remember which pill was active before the swipe started
             originalActiveLink = items[currentIndex];
 
             currentGhostRect = appContent.getBoundingClientRect();
             currentGhostStyle = window.getComputedStyle(appContent);
+
+            // NEW FIX: Measure the real background color and apply it to the swipe layers
+            let realBgColor = currentGhostStyle.backgroundColor;
+            if (realBgColor === 'rgba(0, 0, 0, 0)' || realBgColor === 'transparent') {
+                realBgColor = window.getComputedStyle(document.body).backgroundColor;
+            }
+            outgoing.style.backgroundColor = realBgColor;
+            incoming.style.backgroundColor = realBgColor;
 
             stageWidth = window.innerWidth;
             stage.style.top = '0px';
@@ -406,7 +411,6 @@
                     if (prefetchedHTML) renderIncoming();
                     else incoming.dataset.waiting = '1';
 
-                    // NEW: Instantly highlight the new target link during the drag
                     const navItems = getNavItems();
                     if (navItems) {
                         navItems.forEach(item => item.classList.remove('active'));
@@ -475,10 +479,8 @@
                     }, 350);
                 }, 320);
             } else {
-                // SNAP BACK: The swipe was canceled.
                 stage.classList.add('snapping');
 
-                // NEW: Rollback the highlight to the original page
                 const navItems = getNavItems();
                 if (navItems && originalActiveLink) {
                     navItems.forEach(item => item.classList.remove('active'));
@@ -504,7 +506,6 @@
         document.addEventListener('touchcancel', function () {
             dragging = false;
 
-            // NEW: Rollback the highlight on sudden touch cancel
             const navItems = getNavItems();
             if (navItems && originalActiveLink) {
                 navItems.forEach(item => item.classList.remove('active'));
