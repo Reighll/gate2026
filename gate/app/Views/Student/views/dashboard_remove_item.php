@@ -64,14 +64,24 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                             <form action="<?= base_url('student/items/request-unregister/' . $item['id']) ?>" method="POST">
                                                 <?= csrf_field() ?>
 
-                                                <div class="modal-header bg-warning-subtle border-0 rounded-top-4 sticky-top z-3 pt-3 pb-3">
-                                                    <h5 class="modal-title fw-bold text-warning-emphasis" id="unregisterModalLabel<?= $item['id'] ?>">
+                                                <div class="modal-header bg-warning-subtle border-0 rounded-top-4 sticky-top z-3 pt-3 pb-3 w-100 d-flex justify-content-between align-items-center">
+
+                                                    <h5 class="modal-title fw-bold text-warning-emphasis mb-0 text-truncate pe-2" id="unregisterModalLabel<?= $item['id'] ?>">
                                                         <i class="ti ti-alert-triangle me-1"></i> Confirm Unregistration
                                                     </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
-                                                        <i class="ti ti-x"></i>
-                                                    </button>
+
+                                                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                                        <!-- NEW: Cancel Button moved to the header! -->
+                                                        <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" data-bs-dismiss="modal">
+                                                            Cancel
+                                                        </button>
+
+                                                        <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
+                                                            <i class="ti ti-x"></i>
+                                                        </button>
+                                                    </div>
+
                                                 </div>
 
                                                 <div class="modal-body p-4 text-center">
@@ -105,9 +115,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                                                 </div>
 
-                                                <div class="modal-footer border-0 bg-light rounded-bottom-4 d-flex justify-content-center gap-2 pb-4 modal-actions-mobile">
-                                                    <button type="button" class="btn btn-light border fw-medium px-4" data-bs-dismiss="modal">Cancel</button>
-
+                                                <div class="modal-footer border-0 bg-light rounded-bottom-4 d-flex justify-content-center pb-4 modal-actions-mobile">
                                                     <button type="submit" class="btn btn-warning fw-bold px-4 shadow-sm">
                                                         Yes, Request Unregister
                                                     </button>

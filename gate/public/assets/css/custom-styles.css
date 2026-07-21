@@ -364,8 +364,8 @@ html, body {
     .modal-content {
         border-radius: 24px 24px 0 0 !important;
 
-        /* FIX: Strictly force a maximum height of 70% of the screen */
-        max-height: 70vh !important;
+        /* FIX: Strictly force a maximum height of 80% of the screen */
+        max-height: 80vh !important;
 
         /* FIX: Strictly enforce scrolling for overflow content */
         overflow-y: auto !important;

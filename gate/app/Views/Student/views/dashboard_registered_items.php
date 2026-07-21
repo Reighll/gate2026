@@ -120,17 +120,19 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                     <div class="modal-content border-0 rounded-4 shadow">
 
                                         <!-- NEW: Sticky Header with Edit and Cancel buttons -->
-                                        <div class="modal-header sticky-top bg-body px-4 pt-4 pb-2 border-0 z-3" style="border-radius: 24px 24px 0 0;">
-                                            <h5 class="fw-bold mb-0">
+                                        <!-- NEW: Sticky Header with Edit and Cancel buttons (Right-Aligned) -->
+                                        <div class="modal-header sticky-top bg-body px-4 pt-4 pb-2 border-0 z-3 w-100 d-flex justify-content-between align-items-center" style="border-radius: 24px 24px 0 0;">
+
+                                            <h5 class="fw-bold mb-0 text-truncate pe-2">
                                                 <?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?>
                                             </h5>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <!-- Edit Button -->
+
+                                            <!-- flex-shrink-0 prevents the buttons from being squished if the title is long -->
+                                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
                                                 <button type="button" id="editBtn<?= $item['id'] ?>" class="btn btn-sm btn-light border rounded-pill px-3" onclick="toggleEditMode(<?= $item['id'] ?>)">
                                                     <i class="ti ti-pencil me-1"></i> Edit
                                                 </button>
 
-                                                <!-- NEW: Cancel Button (Hidden by default) -->
                                                 <button type="button" id="cancelBtn<?= $item['id'] ?>" class="btn btn-sm btn-light border rounded-pill px-3 d-none" onclick="toggleEditMode(<?= $item['id'] ?>)">
                                                     Cancel
                                                 </button>
@@ -140,6 +142,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                     <i class="ti ti-x"></i>
                                                 </button>
                                             </div>
+
                                         </div>
 
                                         <div class="modal-body px-4 pb-4 pt-2">
