@@ -186,7 +186,7 @@
     /**
      * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Features: Pixel-Matched Bounding Box, 1:1 DOM Cloning, True Hard Boundaries.
+     * Features: "Ghost Wrapper" Pixel Mapping, True Hard Boundaries, Scroll Conflict Resolution.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -204,6 +204,10 @@
         let prefetchXHR = null;
         let settleFallbackTimer = null;
 
+        // Variables to store the exact coordinates of the content before swiping
+        let currentGhostRect = null;
+        let currentGhostStyle = null;
+
         const stage = document.getElementById('swipe-stage');
         const outgoing = document.getElementById('swipe-outgoing');
         const incoming = document.getElementById('swipe-incoming');
@@ -218,19 +222,6 @@
 
         function getCurrentIndex(items) {
             return items.findIndex(item => item.classList.contains('active'));
-        }
-
-        function positionStage(appContent) {
-            // Measure the EXACT pixel location of the real content
-            const rect = appContent.getBoundingClientRect();
-
-            stageWidth = rect.width;
-
-            // Lock the stage to identical coordinates so it cannot jump up or down
-            stage.style.top = rect.top + 'px';
-            stage.style.left = rect.left + 'px';
-            stage.style.width = stageWidth + 'px';
-            stage.style.height = `calc(100dvh - ${rect.top}px)`;
         }
 
         function clearLayerState() {
@@ -271,19 +262,40 @@
             xhr.send();
         }
 
+        /**
+         * Creates an invisible wrapper that forces the inner HTML to sit exactly
+         * where it was on the screen, matching all coordinates and paddings.
+         */
+        function buildGhost(htmlContent) {
+            if (!currentGhostRect || !currentGhostStyle) return htmlContent;
+
+            return `
+            <div style="
+                position: absolute;
+                top: ${currentGhostRect.top}px;
+                left: ${currentGhostRect.left}px;
+                width: ${currentGhostRect.width}px;
+                padding-top: ${currentGhostStyle.paddingTop};
+                padding-right: ${currentGhostStyle.paddingRight};
+                padding-bottom: ${currentGhostStyle.paddingBottom};
+                padding-left: ${currentGhostStyle.paddingLeft};
+                box-sizing: border-box;
+            ">
+                ${htmlContent}
+            </div>
+        `;
+        }
+
         function renderIncoming() {
             incoming.dataset.waiting = '0';
             if (prefetchedHTML) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(prefetchedHTML, 'text/html');
                 const el = doc.getElementById('app-content');
-                if (el) {
-                    el.removeAttribute('id');
-                    el.style.width = '100%';
-                    el.style.height = '100%';
-                    incoming.innerHTML = '';
-                    incoming.appendChild(el);
-                }
+
+                // Extract the raw innerHTML, then wrap it in our Ghost coordinates
+                const rawHTML = el ? el.innerHTML : prefetchedHTML;
+                incoming.innerHTML = buildGhost(rawHTML);
             }
         }
 
@@ -328,17 +340,19 @@
             isHorizontal = null;
             dragging = true;
 
-            // Map the stage directly onto the precise bounds of the real content
-            positionStage(appContent);
+            // 1. Snapshot the exact screen coordinates and padding of the content
+            currentGhostRect = appContent.getBoundingClientRect();
+            currentGhostStyle = window.getComputedStyle(appContent);
 
-            // Clone identical DOM structure
-            outgoing.innerHTML = '';
-            const clone = appContent.cloneNode(true);
-            clone.removeAttribute('id');
-            clone.style.width = '100%';
-            clone.style.height = '100%';
-            outgoing.appendChild(clone);
+            // 2. Lock the stage to cover the full screen (0,0)
+            stageWidth = window.innerWidth;
+            stage.style.top = '0px';
+            stage.style.left = '0px';
+            stage.style.width = '100%';
+            stage.style.height = '100dvh';
 
+            // 3. Build the Ghost Wrapper for the outgoing layer
+            outgoing.innerHTML = buildGhost(appContent.innerHTML);
             incoming.dataset.waiting = '1';
 
             const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
@@ -368,6 +382,7 @@
 
             if (!isHorizontal) return;
 
+            // Scroll conflict resolution
             if (e.cancelable) {
                 e.preventDefault();
             } else {
@@ -396,10 +411,11 @@
                 }
             }
 
-            // TRUE HARD WALL: If no target link, completely block the horizontal movement
+            // TRUE HARD WALL: Completely freezes movement if no page exists
             if (!targetLink) {
                 currentX = 0;
                 outgoing.style.transform = `translateX(0px)`;
+                incoming.style.transform = `translateX(0px)`;
                 return;
             }
 
