@@ -75,11 +75,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                         <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" data-bs-dismiss="modal">
                                                             Cancel
                                                         </button>
-
-                                                        <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
-                                                            <i class="ti ti-x"></i>
-                                                        </button>
                                                     </div>
 
                                                 </div>
