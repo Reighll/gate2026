@@ -178,7 +178,7 @@
     /**
      * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Features: Ghost Wrapper, True Boundaries, Instant Nav Sync, and Skeleton Stripping.
+     * Features: Ghost Wrapper, True Boundaries, Instant Nav Sync on Touchmove.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -198,6 +198,9 @@
 
         let currentGhostRect = null;
         let currentGhostStyle = null;
+
+        // NEW: Save the originally active pill so we can revert it if the swipe cancels
+        let originalActiveLink = null;
 
         const stage = document.getElementById('swipe-stage');
         const outgoing = document.getElementById('swipe-outgoing');
@@ -281,7 +284,6 @@
                 const el = doc.getElementById('app-content');
 
                 if (el) {
-                    // FIX: Instantly strip skeleton loaders from the pre-fetched swipe content
                     el.querySelectorAll('.skeleton-wrapper').forEach(s => s.classList.add('d-none'));
                     el.querySelectorAll('.real-wrapper').forEach(r => r.classList.remove('d-none'));
 
@@ -333,6 +335,9 @@
             currentX = 0;
             isHorizontal = null;
             dragging = true;
+
+            // NEW: Remember which pill was active before the swipe started
+            originalActiveLink = items[currentIndex];
 
             currentGhostRect = appContent.getBoundingClientRect();
             currentGhostStyle = window.getComputedStyle(appContent);
@@ -396,6 +401,13 @@
                     assignLayerRoles(direction);
                     if (prefetchedHTML) renderIncoming();
                     else incoming.dataset.waiting = '1';
+
+                    // NEW: Instantly highlight the new target link during the drag
+                    const navItems = getNavItems();
+                    if (navItems) {
+                        navItems.forEach(item => item.classList.remove('active'));
+                        targetLink.classList.add('active');
+                    }
                 } else {
                     clearLayerState();
                 }
@@ -434,13 +446,6 @@
             if (clearedThreshold && targetLink) {
                 stage.classList.add('snapping');
 
-                // FIX: Instantly trigger the nav pill animation on swipe release
-                const navItems = getNavItems();
-                if (navItems) {
-                    navItems.forEach(item => item.classList.remove('active'));
-                    targetLink.classList.add('active');
-                }
-
                 if (direction === 'next') {
                     incoming.style.transform = 'translateX(0px)';
                     outgoing.style.transform = `translateX(${-stageWidth * PARALLAX}px)`;
@@ -466,7 +471,15 @@
                     }, 350);
                 }, 320);
             } else {
+                // SNAP BACK: The swipe was canceled.
                 stage.classList.add('snapping');
+
+                // NEW: Rollback the highlight to the original page
+                const navItems = getNavItems();
+                if (navItems && originalActiveLink) {
+                    navItems.forEach(item => item.classList.remove('active'));
+                    originalActiveLink.classList.add('active');
+                }
 
                 if (direction === 'next' && targetLink) {
                     incoming.style.transform = `translateX(${stageWidth}px)`;
@@ -486,6 +499,14 @@
 
         document.addEventListener('touchcancel', function () {
             dragging = false;
+
+            // NEW: Rollback the highlight on sudden touch cancel
+            const navItems = getNavItems();
+            if (navItems && originalActiveLink) {
+                navItems.forEach(item => item.classList.remove('active'));
+                originalActiveLink.classList.add('active');
+            }
+
             resetStage();
         }, { passive: true });
     })();
