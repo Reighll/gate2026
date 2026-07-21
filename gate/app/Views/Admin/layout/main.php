@@ -81,10 +81,6 @@
         <div class="container-fluid" id="app-content">
             <?= $this->renderSection('content') ?>
         </div>
-
-        <div class="py-6 px-6 text-center">
-            <p class="mb-0 fs-4 text-muted">Student GATE System - Admin Portal</p>
-        </div>
     </div>
 </div>
 
@@ -105,12 +101,6 @@
 <?= $this->include('Admin/modals/delete_confirm') ?>
 
 <script>
-    document.body.addEventListener('htmx:configRequest', function(evt) {
-        evt.detail.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-        evt.detail.headers['Pragma'] = 'no-cache';
-        evt.detail.headers['Expires'] = '0';
-    });
-
     function updateNavProfileVisibility() {
         const navProfileItem = document.getElementById('navProfileItem');
         if (!navProfileItem) return;
@@ -119,25 +109,33 @@
         navProfileItem.classList.toggle('d-flex', !onProfilePage);
     }
 
+    let isInitialAppLoad = true;
+
     function hideMySkeletons() {
-        setTimeout(() => {
+        if (isInitialAppLoad) {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+                isInitialAppLoad = false;
+            }, 600);
+        } else {
             document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
             document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-        }, 600);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', updateNavProfileVisibility);
-    document.addEventListener('DOMContentLoaded', hideMySkeletons);
 
+    window.addEventListener('load', hideMySkeletons);
+
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        hideMySkeletons();
+    });
     document.body.addEventListener('htmx:afterSettle', function(evt) {
-
-        // --- 1. DYNAMIC NAVBAR VISIBILITY ---
         const currentPath = window.location.pathname;
         const bottomNav = document.querySelector('.mobile-bottom-nav');
-        const mobileFab = document.querySelector('.mobile-fab'); // Safe check, even if Admin doesn't have it
-
-        // Admin only needs to hide the bar on Profile
-        const shouldHideNav = currentPath.includes('profile');
+        const mobileFab = document.querySelector('.mobile-fab');
+        const shouldHideNav = currentPath.includes('item-registration') || currentPath.includes('profile');
 
         updateNavProfileVisibility();
 
@@ -149,27 +147,20 @@
             mobileFab.classList.toggle('d-none', shouldHideNav);
             mobileFab.classList.toggle('d-flex', !shouldHideNav);
         }
-
-        // --- 2. MOVE THE BLUE ACTIVE PILL (Foolproof URL Check) ---
         const activePath = window.location.pathname;
         const allNavLinks = document.querySelectorAll('.mobile-bottom-item, .sidebar-link');
 
         allNavLinks.forEach(link => {
             link.classList.remove('active');
             const linkPath = link.getAttribute('href');
-            // Check if the link exists and matches the URL
             if (linkPath && linkPath !== "javascript:void(0)" && activePath.includes(new URL(link.href).pathname)) {
                 link.classList.add('active');
             }
         });
-
-        // --- 3. HIDE STUCK PRELOADERS/SKELETONS ---
         const preloader = document.querySelector('.preloader');
         if (preloader) {
             preloader.style.display = 'none';
-        } hideMySkeletons();
-
-        // --- 4. RE-INITIALIZE JAVASCRIPT ---
+        }
         window.dispatchEvent(new Event('load'));
         if (typeof jQuery !== 'undefined') {
             $(window).trigger('load');
@@ -183,11 +174,12 @@
 </div>
 
 <script>
+    /**
+     * Inline Swipe Gesture Logic
+     * Features: iOS-Style Swipe, True Boundaries, Nav Sync, Forced Skeletons, Smart Abort, and Strict Animation Locks.
+     */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
-        const SWIPE_MAX_VERTICAL = 60;
-        const RESISTANCE = 0.35;
-        const PARALLAX = 0.3;
         const EDGE_GUARD = 24;
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
 
@@ -199,7 +191,19 @@
         let targetLink = null;
         let prefetchedHTML = null;
         let prefetchXHR = null;
+
+        // Timer Tracking Variables for Strict Cleanup
         let settleFallbackTimer = null;
+        let snapTimer = null;
+        let clickTimer = null;
+        let opacityTimer = null;
+
+        let currentGhostRect = null;
+        let currentGhostStyle = null;
+        let originalActiveLink = null;
+
+        // UI State Lock
+        let isNavigating = false;
 
         const stage = document.getElementById('swipe-stage');
         const outgoing = document.getElementById('swipe-outgoing');
@@ -217,26 +221,6 @@
             return items.findIndex(item => item.classList.contains('active'));
         }
 
-        function positionStage() {
-            const header = document.querySelector('.fixed-top-banner');
-            const appHeader = document.querySelector('.app-header');
-            const bottomNav = document.querySelector('.mobile-bottom-nav');
-
-            let topOffset = header ? header.getBoundingClientRect().bottom : 0;
-            if (appHeader) {
-                const r = appHeader.getBoundingClientRect();
-                if (r.bottom > topOffset) topOffset = r.bottom;
-            }
-
-            let bottomOffset = 0;
-            if (bottomNav && !bottomNav.classList.contains('d-none')) {
-                bottomOffset = window.innerHeight - bottomNav.getBoundingClientRect().top;
-            }
-
-            stage.style.top = topOffset + 'px';
-            stage.style.height = Math.max(0, window.innerHeight - topOffset - bottomOffset) + 'px';
-        }
-
         function clearLayerState() {
             [outgoing, incoming].forEach(function (el) {
                 el.classList.remove('swipe-top', 'swipe-back');
@@ -246,18 +230,27 @@
         }
 
         function resetStage() {
+            // STRICT CLEANUP: Kill all pending background timers to prevent race conditions
             if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
+            if (snapTimer) { clearTimeout(snapTimer); snapTimer = null; }
+            if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+            if (opacityTimer) { clearTimeout(opacityTimer); opacityTimer = null; }
+
             document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
 
             stage.classList.remove('active', 'snapping');
             clearLayerState();
             outgoing.innerHTML = '';
-            outgoing.className = '';
             incoming.innerHTML = '';
-            incoming.className = '';
+            incoming.style.display = '';
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
+            currentX = 0;
+
+            // Unlock the UI so the user can swipe again
+            isNavigating = false;
+
             if (prefetchXHR) { try { prefetchXHR.abort(); } catch (e) {} prefetchXHR = null; }
         }
 
@@ -276,27 +269,47 @@
             xhr.send();
         }
 
-        function extractAppContent(html) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const el = doc.getElementById('app-content');
-            return el
-                ? { html: el.innerHTML, className: el.className }
-                : { html: html, className: '' };
+        function buildGhost(htmlContent) {
+            if (!currentGhostRect || !currentGhostStyle) return htmlContent;
+
+            return `
+            <div style="
+                position: absolute;
+                top: ${currentGhostRect.top}px;
+                left: ${currentGhostRect.left}px;
+                width: ${currentGhostRect.width}px;
+                padding-top: ${currentGhostStyle.paddingTop};
+                padding-right: ${currentGhostStyle.paddingRight};
+                padding-bottom: ${currentGhostStyle.paddingBottom};
+                padding-left: ${currentGhostStyle.paddingLeft};
+                box-sizing: border-box;
+            ">
+                ${htmlContent}
+            </div>
+        `;
         }
 
         function renderIncoming() {
             incoming.dataset.waiting = '0';
             if (prefetchedHTML) {
-                const extracted = extractAppContent(prefetchedHTML);
-                incoming.className = extracted.className;
-                incoming.innerHTML = extracted.html;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(prefetchedHTML, 'text/html');
+                const el = doc.getElementById('app-content');
+
+                if (el) {
+                    el.querySelectorAll('.skeleton-wrapper').forEach(s => s.classList.remove('d-none'));
+                    el.querySelectorAll('.real-wrapper').forEach(r => r.classList.add('d-none'));
+
+                    const rawHTML = el.innerHTML;
+                    incoming.innerHTML = buildGhost(rawHTML);
+                } else {
+                    incoming.innerHTML = buildGhost(prefetchedHTML);
+                }
             }
         }
 
         function onRealSwapSettled() {
             document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
-            if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
             resetStage();
         }
 
@@ -311,8 +324,14 @@
             }
         }
 
+        // --- TOUCH EVENT LISTENERS ---
+
         document.addEventListener('touchstart', function (e) {
             if (window.innerWidth >= 992) return;
+
+            // Block new touches if the previous animation or HTMX request is still resolving
+            if (isNavigating) return;
+
             if (e.target.closest(IGNORE_SELECTORS)) return;
             if (!e.target.closest('#app-content')) return;
 
@@ -329,14 +348,29 @@
 
             startX = touch.clientX;
             startY = touch.clientY;
-            currentX = startX;
+            currentX = 0;
             isHorizontal = null;
             dragging = true;
-            stageWidth = window.innerWidth;
 
-            positionStage();
-            outgoing.className = appContent.className;
-            outgoing.innerHTML = appContent.innerHTML;
+            originalActiveLink = items[currentIndex];
+
+            currentGhostRect = appContent.getBoundingClientRect();
+            currentGhostStyle = window.getComputedStyle(appContent);
+
+            let realBgColor = currentGhostStyle.backgroundColor;
+            if (realBgColor === 'rgba(0, 0, 0, 0)' || realBgColor === 'transparent') {
+                realBgColor = window.getComputedStyle(document.body).backgroundColor;
+            }
+            outgoing.style.backgroundColor = realBgColor;
+            incoming.style.backgroundColor = realBgColor;
+
+            stageWidth = window.innerWidth;
+            stage.style.top = '0px';
+            stage.style.left = '0px';
+            stage.style.width = '100%';
+            stage.style.height = '100dvh';
+
+            outgoing.innerHTML = buildGhost(appContent.innerHTML);
             incoming.dataset.waiting = '1';
 
             const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
@@ -358,16 +392,34 @@
             if (isHorizontal === null) {
                 if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
                 isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+
                 if (isHorizontal) {
+                    const wantDir = deltaX < 0 ? 'next' : 'prev';
+                    const intended = wantDir === 'next' ? this._nextItem : this._prevItem;
+
+                    if (!intended) {
+                        dragging = false;
+                        resetStage();
+                        return;
+                    }
+
                     stage.classList.add('active');
                     stage.classList.remove('snapping');
                 }
             }
 
             if (!isHorizontal) return;
-            e.preventDefault();
+
+            if (e.cancelable) {
+                e.preventDefault();
+            } else {
+                dragging = false;
+                resetStage();
+                return;
+            }
 
             const wantDirection = deltaX < 0 ? 'next' : 'prev';
+            const intendedLink = wantDirection === 'next' ? this._nextItem : this._prevItem;
 
             if (direction !== wantDirection) {
                 direction = wantDirection;
@@ -375,43 +427,42 @@
                 prefetchedHTML = null;
                 if (prefetchXHR) { try { prefetchXHR.abort(); } catch (err) {} }
 
-                if (direction === 'next' && this._nextItem) {
-                    targetLink = this._nextItem;
-                    startPrefetch(targetLink.getAttribute('href'));
-                } else if (direction === 'prev' && this._prevItem) {
-                    targetLink = this._prevItem;
-                    startPrefetch(targetLink.getAttribute('href'));
-                } else {
-                    targetLink = null;
-                }
-
+                targetLink = intendedLink;
                 if (targetLink) {
+                    incoming.style.display = '';
+                    startPrefetch(targetLink.getAttribute('href'));
                     assignLayerRoles(direction);
                     if (prefetchedHTML) renderIncoming();
                     else incoming.dataset.waiting = '1';
+
+                    const navItems = getNavItems();
+                    if (navItems) {
+                        navItems.forEach(item => item.classList.remove('active'));
+                        targetLink.classList.add('active');
+                    }
                 } else {
                     clearLayerState();
+                    incoming.style.display = 'none';
                 }
             }
 
             if (!targetLink) {
-                const dragX = deltaX * RESISTANCE;
-                currentX = dragX;
-                outgoing.style.transform = `translateX(${dragX}px)`;
+                currentX = 0;
+                outgoing.style.transform = `translateX(0px)`;
+                incoming.style.transform = `translateX(0px)`;
                 return;
             }
 
-            const progress = Math.min(1, Math.abs(deltaX) / stageWidth);
             currentX = deltaX;
 
             if (direction === 'next') {
                 incoming.style.transform = `translateX(${stageWidth + deltaX}px)`;
-                outgoing.style.transform = `translateX(${deltaX * PARALLAX}px)`;
-                outgoing.style.setProperty('--dim-opacity', (progress * 0.22).toFixed(3));
+                outgoing.style.transform = `translateX(${deltaX}px)`;
+                outgoing.style.setProperty('--dim-opacity', '0');
             } else {
                 outgoing.style.transform = `translateX(${deltaX}px)`;
-                incoming.style.transform = `translateX(${-stageWidth * PARALLAX * (1 - progress)}px)`;
-                incoming.style.setProperty('--dim-opacity', ((1 - progress) * 0.22).toFixed(3));
+                incoming.style.transform = `translateX(${-stageWidth + deltaX}px)`;
+                incoming.style.setProperty('--dim-opacity', '0');
             }
         }, { passive: false });
 
@@ -421,6 +472,9 @@
 
             if (!isHorizontal) { resetStage(); return; }
 
+            // Lock the UI the millisecond the finger lifts, regardless of success or cancel
+            isNavigating = true;
+
             const deltaX = currentX;
             const clearedThreshold = Math.abs(deltaX) >= SWIPE_MIN_DISTANCE;
 
@@ -429,49 +483,57 @@
 
                 if (direction === 'next') {
                     incoming.style.transform = 'translateX(0px)';
-                    outgoing.style.transform = `translateX(${-stageWidth * PARALLAX}px)`;
-                    outgoing.style.setProperty('--dim-opacity', '0.22');
+                    outgoing.style.transform = `translateX(${-stageWidth}px)`;
                 } else {
                     outgoing.style.transform = `translateX(${stageWidth}px)`;
                     incoming.style.transform = 'translateX(0px)';
-                    incoming.style.setProperty('--dim-opacity', '0');
                 }
 
                 const linkToClick = targetLink;
                 const container = document.querySelector('#app-content .page-transition-container');
                 if (container) container.style.opacity = '0';
 
-                setTimeout(function () {
-                    linkToClick.click(); // real hx-boost navigation
+                clickTimer = setTimeout(function () {
+                    linkToClick.click();
 
-                    settleFallbackTimer = setTimeout(resetStage, 1200); // safety net
+                    // Reduced from 1200ms to 800ms for snappier recovery
+                    settleFallbackTimer = setTimeout(resetStage, 800);
                     document.addEventListener('htmx:afterSettle', onRealSwapSettled);
 
-                    setTimeout(function () {
+                    opacityTimer = setTimeout(function () {
                         if (container) container.style.opacity = '';
                     }, 350);
                 }, 320);
             } else {
                 stage.classList.add('snapping');
 
-                if (direction === 'next') {
+                const navItems = getNavItems();
+                if (navItems && originalActiveLink) {
+                    navItems.forEach(item => item.classList.remove('active'));
+                    originalActiveLink.classList.add('active');
+                }
+
+                if (direction === 'next' && targetLink) {
                     incoming.style.transform = `translateX(${stageWidth}px)`;
                     outgoing.style.transform = 'translateX(0px)';
-                    outgoing.style.setProperty('--dim-opacity', '0');
-                } else if (direction === 'prev') {
+                } else if (direction === 'prev' && targetLink) {
                     outgoing.style.transform = 'translateX(0px)';
-                    incoming.style.transform = `translateX(${-stageWidth * PARALLAX}px)`;
-                    incoming.style.setProperty('--dim-opacity', '0.22');
+                    incoming.style.transform = `translateX(${-stageWidth}px)`;
                 } else {
                     outgoing.style.transform = 'translateX(0px)';
                 }
 
-                setTimeout(resetStage, 340);
+                snapTimer = setTimeout(resetStage, 340);
             }
         }, { passive: true });
 
         document.addEventListener('touchcancel', function () {
             dragging = false;
+            const navItems = getNavItems();
+            if (navItems && originalActiveLink) {
+                navItems.forEach(item => item.classList.remove('active'));
+                originalActiveLink.classList.add('active');
+            }
             resetStage();
         }, { passive: true });
     })();
