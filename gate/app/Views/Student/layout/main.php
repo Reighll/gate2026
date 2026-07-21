@@ -177,12 +177,10 @@
 <script>
     /**
      * Inline Swipe Gesture Logic
-     * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Features: Ghost Wrapper, True Boundaries, Instant Nav Sync, and Color Cloning.
+     * Features: iOS-Style 1:1 Swipe, Ghost Wrapper, True Boundaries, Instant Nav Sync, Color Cloning.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
-        const PARALLAX = 0.3;
         const EDGE_GUARD = 24;
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
 
@@ -339,7 +337,6 @@
             currentGhostRect = appContent.getBoundingClientRect();
             currentGhostStyle = window.getComputedStyle(appContent);
 
-            // NEW FIX: Measure the real background color and apply it to the swipe layers
             let realBgColor = currentGhostStyle.backgroundColor;
             if (realBgColor === 'rgba(0, 0, 0, 0)' || realBgColor === 'transparent') {
                 realBgColor = window.getComputedStyle(document.body).backgroundColor;
@@ -424,17 +421,17 @@
                 return;
             }
 
-            const progress = Math.min(1, Math.abs(deltaX) / stageWidth);
             currentX = deltaX;
 
+            // CHANGED: iOS 1:1 Side-by-side math (no parallax, no dimming)
             if (direction === 'next') {
                 incoming.style.transform = `translateX(${stageWidth + deltaX}px)`;
-                outgoing.style.transform = `translateX(${deltaX * PARALLAX}px)`;
-                outgoing.style.setProperty('--dim-opacity', (progress * 0.22).toFixed(3));
+                outgoing.style.transform = `translateX(${deltaX}px)`;
+                outgoing.style.setProperty('--dim-opacity', '0');
             } else {
                 outgoing.style.transform = `translateX(${deltaX}px)`;
-                incoming.style.transform = `translateX(${-stageWidth * PARALLAX * (1 - progress)}px)`;
-                incoming.style.setProperty('--dim-opacity', ((1 - progress) * 0.22).toFixed(3));
+                incoming.style.transform = `translateX(${-stageWidth + deltaX}px)`;
+                incoming.style.setProperty('--dim-opacity', '0');
             }
         }, { passive: false });
 
@@ -450,14 +447,13 @@
             if (clearedThreshold && targetLink) {
                 stage.classList.add('snapping');
 
+                // CHANGED: Snap off-screen at full 1:1 width
                 if (direction === 'next') {
                     incoming.style.transform = 'translateX(0px)';
-                    outgoing.style.transform = `translateX(${-stageWidth * PARALLAX}px)`;
-                    outgoing.style.setProperty('--dim-opacity', '0.22');
+                    outgoing.style.transform = `translateX(${-stageWidth}px)`;
                 } else {
                     outgoing.style.transform = `translateX(${stageWidth}px)`;
                     incoming.style.transform = 'translateX(0px)';
-                    incoming.style.setProperty('--dim-opacity', '0');
                 }
 
                 const linkToClick = targetLink;
@@ -483,14 +479,13 @@
                     originalActiveLink.classList.add('active');
                 }
 
+                // CHANGED: Rebound snap at full 1:1 width
                 if (direction === 'next' && targetLink) {
                     incoming.style.transform = `translateX(${stageWidth}px)`;
                     outgoing.style.transform = 'translateX(0px)';
-                    outgoing.style.setProperty('--dim-opacity', '0');
                 } else if (direction === 'prev' && targetLink) {
                     outgoing.style.transform = 'translateX(0px)';
-                    incoming.style.transform = `translateX(${-stageWidth * PARALLAX}px)`;
-                    incoming.style.setProperty('--dim-opacity', '0.22');
+                    incoming.style.transform = `translateX(${-stageWidth}px)`;
                 } else {
                     outgoing.style.transform = 'translateX(0px)';
                 }
