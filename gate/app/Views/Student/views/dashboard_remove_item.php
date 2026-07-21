@@ -64,7 +64,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                             <form action="<?= base_url('student/items/request-unregister/' . $item['id']) ?>" method="POST">
                                                 <?= csrf_field() ?>
 
-                                                <div class="modal-header bg-warning-subtle border-0 rounded-top-4">
+                                                <div class="modal-header bg-warning-subtle border-0 rounded-top-4 sticky-top z-3 pt-3 pb-3">
                                                     <h5 class="modal-title fw-bold text-warning-emphasis" id="unregisterModalLabel<?= $item['id'] ?>">
                                                         <i class="ti ti-alert-triangle me-1"></i> Confirm Unregistration
                                                     </h5>

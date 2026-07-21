@@ -118,22 +118,31 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                             <div class="modal fade" id="itemModal<?= $item['id'] ?>" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-lg">
                                     <div class="modal-content border-0 rounded-4 shadow">
-                                        <div class="modal-body p-4">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <h5 class="fw-bold mb-0">
-                                                    <?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?>
-                                                </h5>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <button type="button" id="editBtn<?= $item['id'] ?>" class="btn btn-sm btn-light border rounded-pill px-3" onclick="toggleEditMode(<?= $item['id'] ?>)">
-                                                        <i class="ti ti-pencil me-1"></i> Edit
-                                                    </button>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
-                                                        <i class="ti ti-x"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
 
+                                        <!-- NEW: Sticky Header with Edit and Cancel buttons -->
+                                        <div class="modal-header sticky-top bg-body px-4 pt-4 pb-2 border-0 z-3" style="border-radius: 24px 24px 0 0;">
+                                            <h5 class="fw-bold mb-0">
+                                                <?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?>
+                                            </h5>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <!-- Edit Button -->
+                                                <button type="button" id="editBtn<?= $item['id'] ?>" class="btn btn-sm btn-light border rounded-pill px-3" onclick="toggleEditMode(<?= $item['id'] ?>)">
+                                                    <i class="ti ti-pencil me-1"></i> Edit
+                                                </button>
+
+                                                <!-- NEW: Cancel Button (Hidden by default) -->
+                                                <button type="button" id="cancelBtn<?= $item['id'] ?>" class="btn btn-sm btn-light border rounded-pill px-3 d-none" onclick="toggleEditMode(<?= $item['id'] ?>)">
+                                                    Cancel
+                                                </button>
+
+                                                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
+                                                    <i class="ti ti-x"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-body px-4 pb-4 pt-2">
                                             <div id="modeContainer<?= $item['id'] ?>" class="item-mode-container">
                                                 <!-- VIEW MODE -->
                                                 <div id="viewMode<?= $item['id'] ?>" class="item-mode-panel">
@@ -159,8 +168,8 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                             if ($item['status'] === 'archived') $badge2 = 'bg-dark';
                                                             ?>
                                                             <span class="badge <?= $badge2 ?> px-2 py-1 text-uppercase mb-3 d-inline-block" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                                                            <?= esc($item['status']) ?>
-                                                        </span>
+                        <?= esc($item['status']) ?>
+                    </span>
 
                                                             <p class="text-muted fw-semibold mb-2">Serial Number: <span class="fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
                                                             <p class="text-muted fw-semibold mb-2">Category: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
@@ -175,8 +184,8 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                             <p class="text-muted fw-semibold mb-3">
                                                                 Campus Status:
                                                                 <span class="fw-normal text-dark">
-                                                                <?= (isset($item['in_campus']) && $item['in_campus'] == 1 && $item['status'] === 'approved') ? 'Inside Campus' : 'Outside Campus' ?>
-                                                            </span>
+                            <?= (isset($item['in_campus']) && $item['in_campus'] == 1 && $item['status'] === 'approved') ? 'Inside Campus' : 'Outside Campus' ?>
+                        </span>
                                                             </p>
 
                                                             <?php if (!empty($item['notes'])): ?>
@@ -217,14 +226,13 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                             </div>
                                                         </div>
 
-                                                        <div class="d-flex justify-content-end gap-2 mt-4 modal-actions-mobile">
-                                                            <button type="button" class="btn btn-light border rounded-pill px-4" onclick="toggleEditMode(<?= $item['id'] ?>)">Cancel</button>
-                                                            <button type="submit" class="btn btn-primary rounded-pill px-4">Save Changes</button>
+                                                        <!-- UPDATED: Removed Cancel button, Save button is now full width on mobile -->
+                                                        <div class="d-flex justify-content-end mt-4 modal-actions-mobile">
+                                                            <button type="submit" class="btn btn-primary rounded-pill px-4 w-100">Save Changes</button>
                                                         </div>
                                                     </form>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -355,6 +363,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 const viewPanel = document.getElementById('viewMode' + id);
                 const editPanel = document.getElementById('editMode' + id);
                 const editBtn = document.getElementById('editBtn' + id);
+                const cancelBtn = document.getElementById('cancelBtn' + id); // NEW: Get Cancel button
 
                 const showingView = !viewPanel.classList.contains('d-none');
                 const outgoing = showingView ? viewPanel : editPanel;
@@ -372,8 +381,12 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     incoming.classList.remove('d-none');
                     incoming.classList.add('item-mode-panel-in');
 
+                    // NEW: Toggle Edit and Cancel button visibility
                     if (editBtn) {
                         editBtn.classList.toggle('d-none', showingView);
+                    }
+                    if (cancelBtn) {
+                        cancelBtn.classList.toggle('d-none', !showingView);
                     }
 
                     // Measure the incoming panel's natural height, then animate the container to it
@@ -385,7 +398,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     setTimeout(() => {
                         incoming.classList.remove('item-mode-panel-in');
                         // Release the fixed height so the modal can respond naturally afterward
-                        // (e.g. file input preview changes, window resizes)
                         container.style.height = 'auto';
                     }, 280);
                 }, 180);
