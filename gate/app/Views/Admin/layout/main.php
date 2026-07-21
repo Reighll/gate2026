@@ -196,7 +196,7 @@
 <script>
     /**
      * Inline Swipe Gesture Logic
-     * Features: iOS-Style 1:1 Swipe, Ghost Wrapper, True Boundaries, Instant Nav Sync, Color Cloning, Forced Skeletons, and Smart Abort.
+     * Features: iOS-Style Swipe, True Boundaries, Instant Nav Sync, Color Cloning, Forced Skeletons, Smart Abort, and Rapid-Swipe Lock.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -216,6 +216,9 @@
         let currentGhostRect = null;
         let currentGhostStyle = null;
         let originalActiveLink = null;
+
+        // FIX: State lock to prevent rapid swiping bugs
+        let isNavigating = false;
 
         const stage = document.getElementById('swipe-stage');
         const outgoing = document.getElementById('swipe-outgoing');
@@ -249,11 +252,15 @@
             clearLayerState();
             outgoing.innerHTML = '';
             incoming.innerHTML = '';
-            incoming.style.display = ''; // Reset display state
+            incoming.style.display = '';
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
             currentX = 0;
+
+            // FIX: Unlock the UI so the user can swipe again
+            isNavigating = false;
+
             if (prefetchXHR) { try { prefetchXHR.abort(); } catch (e) {} prefetchXHR = null; }
         }
 
@@ -300,9 +307,7 @@
                 const el = doc.getElementById('app-content');
 
                 if (el) {
-                    // Force skeletons to SHOW during the swipe
                     el.querySelectorAll('.skeleton-wrapper').forEach(s => s.classList.remove('d-none'));
-                    // Force real content to HIDE during the swipe
                     el.querySelectorAll('.real-wrapper').forEach(r => r.classList.add('d-none'));
 
                     const rawHTML = el.innerHTML;
@@ -334,6 +339,10 @@
 
         document.addEventListener('touchstart', function (e) {
             if (window.innerWidth >= 992) return;
+
+            // FIX: Ignore new touches if a swipe transition is currently resolving
+            if (isNavigating) return;
+
             if (e.target.closest(IGNORE_SELECTORS)) return;
             if (!e.target.closest('#app-content')) return;
 
@@ -396,14 +405,13 @@
                 isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
 
                 if (isHorizontal) {
-                    // FIX 1: Smart Abort. Check if swiping into a wall before turning on the stage.
                     const wantDir = deltaX < 0 ? 'next' : 'prev';
                     const intended = wantDir === 'next' ? this._nextItem : this._prevItem;
 
                     if (!intended) {
                         dragging = false;
                         resetStage();
-                        return; // Completely aborts the gesture!
+                        return;
                     }
 
                     stage.classList.add('active');
@@ -432,7 +440,7 @@
 
                 targetLink = intendedLink;
                 if (targetLink) {
-                    incoming.style.display = ''; // Ensure layer is visible
+                    incoming.style.display = '';
                     startPrefetch(targetLink.getAttribute('href'));
                     assignLayerRoles(direction);
                     if (prefetchedHTML) renderIncoming();
@@ -445,7 +453,6 @@
                     }
                 } else {
                     clearLayerState();
-                    // FIX 2: Hide the empty incoming layer mid-drag so it doesn't cause a white flash
                     incoming.style.display = 'none';
                 }
             }
@@ -481,6 +488,9 @@
 
             if (clearedThreshold && targetLink) {
                 stage.classList.add('snapping');
+
+                // FIX: Lock the UI as the final snap animation and HTMX request begins
+                isNavigating = true;
 
                 if (direction === 'next') {
                     incoming.style.transform = 'translateX(0px)';
