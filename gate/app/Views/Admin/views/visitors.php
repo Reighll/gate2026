@@ -324,5 +324,4 @@
         // Run on HTMX navigation
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
-    <script src="<?= base_url('assets/js/admin/admin-visitors.js') ?>"></script>
 <?= $this->endSection() ?>

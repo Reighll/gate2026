@@ -436,6 +436,4 @@
         .status-filter-card.status-filter-active { box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.18) !important; outline: 2px solid rgba(0,0,0,0.08); }
     </style>
 
-    <script src="<?= base_url('assets/js/admin/admin-items.js') ?>"></script>
-
 <?= $this->endSection() ?>
