@@ -186,7 +186,7 @@
     /**
      * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Features: True hard-wall boundaries and computed-padding dimension locks.
+     * Features: 1:1 DOM Cloning, True Hard Boundaries, Scroll Conflict Resolution
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -251,11 +251,10 @@
             clearLayerState();
             outgoing.innerHTML = '';
             incoming.innerHTML = '';
-            outgoing.style.cssText = '';
-            incoming.style.cssText = '';
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
+            currentX = 0;
             if (prefetchXHR) { try { prefetchXHR.abort(); } catch (e) {} prefetchXHR = null; }
         }
 
@@ -274,12 +273,16 @@
             xhr.send();
         }
 
-        // FIX 2: Only extract the raw inner HTML to prevent double-class padding conflicts
+        // FIX 1: Extract the ENTIRE wrapper (outerHTML) to preserve exact top padding and margins
         function extractAppContent(html) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const el = doc.getElementById('app-content');
-            return el ? el.innerHTML : html;
+            if (el) {
+                el.removeAttribute('id'); // Prevent ID collision
+                return el.outerHTML;
+            }
+            return html;
         }
 
         function renderIncoming() {
@@ -326,25 +329,18 @@
 
             startX = touch.clientX;
             startY = touch.clientY;
-            currentX = startX;
+            currentX = 0;
             isHorizontal = null;
             dragging = true;
 
             positionStage();
 
-            // FIX 2: Copy the exact computed padding pixels, not the CSS classes, to prevent shrinking
-            const computed = window.getComputedStyle(appContent);
-            const paddingStyles = `
-            padding-top: ${computed.paddingTop};
-            padding-right: ${computed.paddingRight};
-            padding-bottom: ${computed.paddingBottom};
-            padding-left: ${computed.paddingLeft};
-        `;
+            // FIX 1: Clone the node entirely so Bootstrap classes apply 1:1 inside the swipe stage
+            outgoing.innerHTML = '';
+            const clone = appContent.cloneNode(true);
+            clone.removeAttribute('id');
+            outgoing.appendChild(clone);
 
-            outgoing.style.cssText = paddingStyles;
-            incoming.style.cssText = paddingStyles;
-
-            outgoing.innerHTML = appContent.innerHTML;
             incoming.dataset.waiting = '1';
 
             const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
@@ -372,17 +368,25 @@
                 }
             }
 
-            if (!isHorizontal) {
-                if (!e.cancelable) {
-                    dragging = false;
-                    resetStage();
-                }
+            if (!isHorizontal) return;
+
+            const wantDirection = deltaX < 0 ? 'next' : 'prev';
+            const intendedLink = wantDirection === 'next' ? this._nextItem : this._prevItem;
+
+            // FIX 2: True Hard Wall. If there is no page to swipe to, completely ignore the movement.
+            if (!intendedLink) {
                 return;
             }
 
-            e.preventDefault();
-
-            const wantDirection = deltaX < 0 ? 'next' : 'prev';
+            // FIX 3: Scroll Conflict Resolution. Silences the red console error.
+            if (e.cancelable) {
+                e.preventDefault();
+            } else {
+                // Browser locked the scroll natively; abort the custom swipe
+                dragging = false;
+                resetStage();
+                return;
+            }
 
             if (direction !== wantDirection) {
                 direction = wantDirection;
@@ -390,31 +394,15 @@
                 prefetchedHTML = null;
                 if (prefetchXHR) { try { prefetchXHR.abort(); } catch (err) {} }
 
-                if (direction === 'next' && this._nextItem) {
-                    targetLink = this._nextItem;
-                    startPrefetch(targetLink.getAttribute('href'));
-                } else if (direction === 'prev' && this._prevItem) {
-                    targetLink = this._prevItem;
-                    startPrefetch(targetLink.getAttribute('href'));
-                } else {
-                    targetLink = null;
-                }
-
+                targetLink = intendedLink;
                 if (targetLink) {
+                    startPrefetch(targetLink.getAttribute('href'));
                     assignLayerRoles(direction);
                     if (prefetchedHTML) renderIncoming();
                     else incoming.dataset.waiting = '1';
                 } else {
                     clearLayerState();
                 }
-            }
-
-            // FIX 1: Hard wall boundary restriction
-            // If there is no page to swipe to, we abort the movement completely.
-            if (!targetLink) {
-                currentX = 0;
-                outgoing.style.transform = `translateX(0px)`;
-                return;
             }
 
             const progress = Math.min(1, Math.abs(deltaX) / stageWidth);
