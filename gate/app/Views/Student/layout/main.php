@@ -178,7 +178,7 @@
     /**
      * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Features: "Ghost Wrapper" Pixel Mapping, True Hard Boundaries, Scroll Conflict Resolution.
+     * Features: Ghost Wrapper, True Boundaries, Instant Nav Sync, and Skeleton Stripping.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -196,7 +196,6 @@
         let prefetchXHR = null;
         let settleFallbackTimer = null;
 
-        // Variables to store the exact coordinates of the content before swiping
         let currentGhostRect = null;
         let currentGhostStyle = null;
 
@@ -254,10 +253,6 @@
             xhr.send();
         }
 
-        /**
-         * Creates an invisible wrapper that forces the inner HTML to sit exactly
-         * where it was on the screen, matching all coordinates and paddings.
-         */
         function buildGhost(htmlContent) {
             if (!currentGhostRect || !currentGhostStyle) return htmlContent;
 
@@ -285,9 +280,16 @@
                 const doc = parser.parseFromString(prefetchedHTML, 'text/html');
                 const el = doc.getElementById('app-content');
 
-                // Extract the raw innerHTML, then wrap it in our Ghost coordinates
-                const rawHTML = el ? el.innerHTML : prefetchedHTML;
-                incoming.innerHTML = buildGhost(rawHTML);
+                if (el) {
+                    // FIX: Instantly strip skeleton loaders from the pre-fetched swipe content
+                    el.querySelectorAll('.skeleton-wrapper').forEach(s => s.classList.add('d-none'));
+                    el.querySelectorAll('.real-wrapper').forEach(r => r.classList.remove('d-none'));
+
+                    const rawHTML = el.innerHTML;
+                    incoming.innerHTML = buildGhost(rawHTML);
+                } else {
+                    incoming.innerHTML = buildGhost(prefetchedHTML);
+                }
             }
         }
 
@@ -332,18 +334,15 @@
             isHorizontal = null;
             dragging = true;
 
-            // 1. Snapshot the exact screen coordinates and padding of the content
             currentGhostRect = appContent.getBoundingClientRect();
             currentGhostStyle = window.getComputedStyle(appContent);
 
-            // 2. Lock the stage to cover the full screen (0,0)
             stageWidth = window.innerWidth;
             stage.style.top = '0px';
             stage.style.left = '0px';
             stage.style.width = '100%';
             stage.style.height = '100dvh';
 
-            // 3. Build the Ghost Wrapper for the outgoing layer
             outgoing.innerHTML = buildGhost(appContent.innerHTML);
             incoming.dataset.waiting = '1';
 
@@ -374,7 +373,6 @@
 
             if (!isHorizontal) return;
 
-            // Scroll conflict resolution
             if (e.cancelable) {
                 e.preventDefault();
             } else {
@@ -403,7 +401,6 @@
                 }
             }
 
-            // TRUE HARD WALL: Completely freezes movement if no page exists
             if (!targetLink) {
                 currentX = 0;
                 outgoing.style.transform = `translateX(0px)`;
@@ -436,6 +433,13 @@
 
             if (clearedThreshold && targetLink) {
                 stage.classList.add('snapping');
+
+                // FIX: Instantly trigger the nav pill animation on swipe release
+                const navItems = getNavItems();
+                if (navItems) {
+                    navItems.forEach(item => item.classList.remove('active'));
+                    targetLink.classList.add('active');
+                }
 
                 if (direction === 'next') {
                     incoming.style.transform = 'translateX(0px)';
