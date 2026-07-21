@@ -191,11 +191,14 @@
      */
     (function () {
         // Configuration Constants
-        const SWIPE_MIN_DISTANCE = 60; // Minimum drag required to trigger navigation
-        const SWIPE_MAX_VERTICAL = 60; // Max vertical drift allowed before canceling
-        const RESISTANCE = 0.35;       // Drag resistance before a valid target is found
-        const PARALLAX = 0.3;          // Speed multiplier for the background layer
-        const EDGE_GUARD = 24;         // Pixels from screen edge to ignore (prevents native iOS back swipe conflicts)
+        const SWIPE_MIN_DISTANCE = 60;
+        const SWIPE_MAX_VERTICAL = 60;
+
+        // NEW: Tighter resistance for boundary restriction (first/last pages)
+        const RESISTANCE = 0.15;
+
+        const PARALLAX = 0.3;
+        const EDGE_GUARD = 24;
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
 
         let startX = 0, startY = 0, currentX = 0;
@@ -212,7 +215,6 @@
         const outgoing = document.getElementById('swipe-outgoing');
         const incoming = document.getElementById('swipe-incoming');
 
-        // Retrieve active and available bottom navigation items
         function getNavItems() {
             const nav = document.querySelector('.mobile-bottom-nav');
             if (!nav || nav.classList.contains('d-none')) return null;
@@ -225,8 +227,7 @@
             return items.findIndex(item => item.classList.contains('active'));
         }
 
-        // Positions the swipe layers directly under the header and prevents the "shrinking" viewport bug via 100dvh
-        function positionStage() {
+        function positionStage(appContent) {
             const header = document.querySelector('.fixed-top-banner');
             const appHeader = document.querySelector('.app-header');
 
@@ -235,8 +236,16 @@
                 const r = appHeader.getBoundingClientRect();
                 if (r.bottom > topOffset) topOffset = r.bottom;
             }
+
+            // FIX: Lock the exact dimensions to prevent the "shrinking" layout shift
+            stageWidth = appContent.getBoundingClientRect().width;
+
             stage.style.top = topOffset + 'px';
             stage.style.height = `calc(100dvh - ${topOffset}px)`;
+            stage.style.width = stageWidth + 'px';
+
+            outgoing.style.width = stageWidth + 'px';
+            incoming.style.width = stageWidth + 'px';
         }
 
         function clearLayerState() {
@@ -247,7 +256,6 @@
             });
         }
 
-        // Cleans up the DOM and cancels any active fetch requests after a swipe finishes
         function resetStage() {
             if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
             document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
@@ -264,7 +272,6 @@
             if (prefetchXHR) { try { prefetchXHR.abort(); } catch (e) {} prefetchXHR = null; }
         }
 
-        // Background XHR request to grab the next page's HTML before the user finishes swiping
         function startPrefetch(url) {
             prefetchedHTML = null;
             const xhr = new XMLHttpRequest();
@@ -331,8 +338,6 @@
             if (!appContent) return;
 
             const touch = e.touches[0];
-
-            // Edge guard to prevent conflict with native browser swipe-back
             if (touch.clientX < EDGE_GUARD || touch.clientX > window.innerWidth - EDGE_GUARD) return;
 
             startX = touch.clientX;
@@ -340,9 +345,10 @@
             currentX = startX;
             isHorizontal = null;
             dragging = true;
-            stageWidth = window.innerWidth;
 
-            positionStage();
+            // Pass appContent to lock dimensions
+            positionStage(appContent);
+
             outgoing.className = appContent.className;
             outgoing.innerHTML = appContent.innerHTML;
             incoming.dataset.waiting = '1';
@@ -363,7 +369,6 @@
             const deltaX = touch.clientX - startX;
             const deltaY = touch.clientY - startY;
 
-            // Determine if the user is scrolling vertically or swiping horizontally
             if (isHorizontal === null) {
                 if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
                 isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
@@ -403,10 +408,11 @@
                 }
             }
 
-            // Apply resistance if swiping at the end of the navigation list
+            // BOUNDARY RESTRICTION: Apply stiff resistance if there is no next/prev page
             if (!targetLink) {
                 const dragX = deltaX * RESISTANCE;
                 currentX = dragX;
+                // Only move the outgoing layer slightly to simulate a rubber-band wall
                 outgoing.style.transform = `translateX(${dragX}px)`;
                 return;
             }
@@ -414,7 +420,6 @@
             const progress = Math.min(1, Math.abs(deltaX) / stageWidth);
             currentX = deltaX;
 
-            // Apply Parallax translation
             if (direction === 'next') {
                 incoming.style.transform = `translateX(${stageWidth + deltaX}px)`;
                 outgoing.style.transform = `translateX(${deltaX * PARALLAX}px)`;
@@ -435,7 +440,6 @@
             const deltaX = currentX;
             const clearedThreshold = Math.abs(deltaX) >= SWIPE_MIN_DISTANCE;
 
-            // If threshold met, snap to new page and trigger HTMX
             if (clearedThreshold && targetLink) {
                 stage.classList.add('snapping');
 
@@ -454,9 +458,9 @@
                 if (container) container.style.opacity = '0';
 
                 setTimeout(function () {
-                    linkToClick.click(); // Trigger real hx-boost navigation
+                    linkToClick.click();
 
-                    settleFallbackTimer = setTimeout(resetStage, 1200); // Safety net timer
+                    settleFallbackTimer = setTimeout(resetStage, 1200);
                     document.addEventListener('htmx:afterSettle', onRealSwapSettled);
 
                     setTimeout(function () {
@@ -464,14 +468,14 @@
                     }, 350);
                 }, 320);
             } else {
-                // Cancel swipe and snap back
+                // BOUNDARY SNAP: If there was no target link, it snaps securely back to 0 here
                 stage.classList.add('snapping');
 
-                if (direction === 'next') {
+                if (direction === 'next' && targetLink) {
                     incoming.style.transform = `translateX(${stageWidth}px)`;
                     outgoing.style.transform = 'translateX(0px)';
                     outgoing.style.setProperty('--dim-opacity', '0');
-                } else if (direction === 'prev') {
+                } else if (direction === 'prev' && targetLink) {
                     outgoing.style.transform = 'translateX(0px)';
                     incoming.style.transform = `translateX(${-stageWidth * PARALLAX}px)`;
                     incoming.style.setProperty('--dim-opacity', '0.22');
