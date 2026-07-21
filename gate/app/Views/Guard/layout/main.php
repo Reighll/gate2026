@@ -95,12 +95,6 @@
 <script src="<?= base_url('assets/js/initial-loader.js') ?>"></script>
 
 <script>
-    document.body.addEventListener('htmx:configRequest', function(evt) {
-        evt.detail.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-        evt.detail.headers['Pragma'] = 'no-cache';
-        evt.detail.headers['Expires'] = '0';
-    });
-
     function updateNavProfileVisibility() {
         const navProfileItem = document.getElementById('navProfileItem');
         if (!navProfileItem) return;
@@ -109,24 +103,35 @@
         navProfileItem.classList.toggle('d-flex', !onProfilePage);
     }
 
+    let isInitialAppLoad = true;
+
     function hideMySkeletons() {
-        setTimeout(() => {
+        if (isInitialAppLoad) {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+                isInitialAppLoad = false;
+            }, 600);
+        } else {
             document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
             document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-        }, 600);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', updateNavProfileVisibility);
-    document.addEventListener('DOMContentLoaded', hideMySkeletons);
+
+    window.addEventListener('load', hideMySkeletons);
+
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        hideMySkeletons();
+    });
 
     document.body.addEventListener('htmx:afterSettle', function(evt) {
-
-        // --- 1. DYNAMIC NAVBAR VISIBILITY ---
         const currentPath = window.location.pathname;
         const bottomNav = document.querySelector('.mobile-bottom-nav');
+        const mobileFab = document.querySelector('.mobile-fab');
 
-        // Guard only needs to hide the bar on Profile
-        const shouldHideNav = currentPath.includes('profile');
+        const shouldHideNav = currentPath.includes('item-registration') || currentPath.includes('profile');
 
         updateNavProfileVisibility();
 
@@ -134,8 +139,10 @@
             bottomNav.classList.toggle('d-none', shouldHideNav);
             bottomNav.classList.toggle('d-flex', !shouldHideNav);
         }
-
-        // --- 2. MOVE THE BLUE ACTIVE PILL (Foolproof URL Check) ---
+        if (mobileFab) {
+            mobileFab.classList.toggle('d-none', shouldHideNav);
+            mobileFab.classList.toggle('d-flex', !shouldHideNav);
+        }
         const activePath = window.location.pathname;
         const allNavLinks = document.querySelectorAll('.mobile-bottom-item, .sidebar-link');
 
@@ -146,29 +153,15 @@
                 link.classList.add('active');
             }
         });
-
-        // --- 3. HIDE STUCK PRELOADERS/SKELETONS ---
         const preloader = document.querySelector('.preloader');
         if (preloader) {
             preloader.style.display = 'none';
-        } hideMySkeletons();
-
-        // --- 4. RE-INITIALIZE JAVASCRIPT ---
+        }
         window.dispatchEvent(new Event('load'));
         if (typeof jQuery !== 'undefined') {
             $(window).trigger('load');
         }
     });
-        if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/guard/sw.js', {
-                scope: '/guard/'
-            })
-                .then(reg => console.log('Guard SW registered', reg))
-                .catch(err => console.error('Guard SW failed', err));
-        });
-    }
 </script>
 </body>
-
 </html>

@@ -101,8 +101,6 @@
 <?= $this->include('Admin/modals/delete_confirm') ?>
 
 <script>
-    // Keep your existing service worker and htmx:configRequest logic up here...
-
     function updateNavProfileVisibility() {
         const navProfileItem = document.getElementById('navProfileItem');
         if (!navProfileItem) return;
@@ -111,19 +109,16 @@
         navProfileItem.classList.toggle('d-flex', !onProfilePage);
     }
 
-    // --- SMART SKELETON LOADER LOGIC ---
     let isInitialAppLoad = true;
 
     function hideMySkeletons() {
         if (isInitialAppLoad) {
-            // First load/Hard refresh: Show skeleton for 600ms
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-                isInitialAppLoad = false; // Mark initial load as complete
+                isInitialAppLoad = false;
             }, 600);
         } else {
-            // Swipe/HTMX load: Instantly strip skeletons (0ms delay)
             document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
             document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
         }
@@ -131,22 +126,15 @@
 
     document.addEventListener('DOMContentLoaded', updateNavProfileVisibility);
 
-    // Trigger the initial 600ms load
     window.addEventListener('load', hideMySkeletons);
 
-    // Run the instant strip the exact millisecond HTMX injects the new DOM
     document.body.addEventListener('htmx:afterSwap', function(evt) {
         hideMySkeletons();
     });
-
-    // --- HTMX AFTER SETTLE ---
     document.body.addEventListener('htmx:afterSettle', function(evt) {
-        // 1. DYNAMIC NAVBAR VISIBILITY
         const currentPath = window.location.pathname;
         const bottomNav = document.querySelector('.mobile-bottom-nav');
         const mobileFab = document.querySelector('.mobile-fab');
-
-        // (Adjust this check based on your Admin vs Student portal needs)
         const shouldHideNav = currentPath.includes('item-registration') || currentPath.includes('profile');
 
         updateNavProfileVisibility();
@@ -159,8 +147,6 @@
             mobileFab.classList.toggle('d-none', shouldHideNav);
             mobileFab.classList.toggle('d-flex', !shouldHideNav);
         }
-
-        // 2. MOVE THE BLUE ACTIVE PILL
         const activePath = window.location.pathname;
         const allNavLinks = document.querySelectorAll('.mobile-bottom-item, .sidebar-link');
 
@@ -171,16 +157,10 @@
                 link.classList.add('active');
             }
         });
-
-        // 3. HIDE STUCK PRELOADERS
         const preloader = document.querySelector('.preloader');
         if (preloader) {
             preloader.style.display = 'none';
         }
-
-        // Note: hideMySkeletons() was removed from here because it is now handled by htmx:afterSwap!
-
-        // 4. RE-INITIALIZE JAVASCRIPT
         window.dispatchEvent(new Event('load'));
         if (typeof jQuery !== 'undefined') {
             $(window).trigger('load');
