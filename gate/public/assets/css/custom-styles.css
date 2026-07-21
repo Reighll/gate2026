@@ -364,15 +364,16 @@ html, body {
     .modal-content {
         border-radius: 24px 24px 0 0 !important;
 
-        /* FIX: Cap the height to 75% of screen height so it never overlaps the header */
-        max-height: 75dvh;
+        /* FIX: Lowered from 92vh to 80dvh to leave a gap at the top */
+        max-height: 80dvh;
 
-        /* FIX: Allow internal scrolling if content is too long */
+        /* Ensures the content inside can scroll if it's too long */
         overflow-y: auto;
 
+        /* Adds a subtle shadow for depth */
         box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
 
-        /* FIX: Add padding at the bottom so buttons avoid phone system bars */
+        /* Pushes bottom content up slightly on phones with gesture bars */
         padding-bottom: env(safe-area-inset-bottom, 16px);
     }
     .modal-content::before {
