@@ -186,11 +186,10 @@
     /**
      * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Includes clean DOM nesting and strict scroll-conflict resolution.
+     * Features: True hard-wall boundaries and computed-padding dimension locks.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
-        const RESISTANCE = 0.15; // Tight boundary resistance for first/last pages
         const PARALLAX = 0.3;
         const EDGE_GUARD = 24;
         const IGNORE_SELECTORS = '.modal, .table-responsive, .cropper-container, input[type="range"], [data-no-swipe]';
@@ -232,7 +231,6 @@
             }
 
             stageWidth = window.innerWidth;
-
             stage.style.top = topOffset + 'px';
             stage.style.height = `calc(100dvh - ${topOffset}px)`;
         }
@@ -253,6 +251,8 @@
             clearLayerState();
             outgoing.innerHTML = '';
             incoming.innerHTML = '';
+            outgoing.style.cssText = '';
+            incoming.style.cssText = '';
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
@@ -274,14 +274,12 @@
             xhr.send();
         }
 
-        // FIX 1: Cleanly wrap incoming HTML so it doesn't conflict with absolute positioning
+        // FIX 2: Only extract the raw inner HTML to prevent double-class padding conflicts
         function extractAppContent(html) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const el = doc.getElementById('app-content');
-            return el
-                ? `<div class="${el.className}" style="height: 100%;">${el.innerHTML}</div>`
-                : html;
+            return el ? el.innerHTML : html;
         }
 
         function renderIncoming() {
@@ -334,8 +332,19 @@
 
             positionStage();
 
-            // FIX 1: Cleanly wrap the outgoing content to prevent "squishing" from Bootstrap containers
-            outgoing.innerHTML = `<div class="${appContent.className}" style="height: 100%;">${appContent.innerHTML}</div>`;
+            // FIX 2: Copy the exact computed padding pixels, not the CSS classes, to prevent shrinking
+            const computed = window.getComputedStyle(appContent);
+            const paddingStyles = `
+            padding-top: ${computed.paddingTop};
+            padding-right: ${computed.paddingRight};
+            padding-bottom: ${computed.paddingBottom};
+            padding-left: ${computed.paddingLeft};
+        `;
+
+            outgoing.style.cssText = paddingStyles;
+            incoming.style.cssText = paddingStyles;
+
+            outgoing.innerHTML = appContent.innerHTML;
             incoming.dataset.waiting = '1';
 
             const nextItem = currentIndex < items.length - 1 ? items[currentIndex + 1] : null;
@@ -363,17 +372,15 @@
                 }
             }
 
-            if (!isHorizontal) return;
-
-            // FIX 2: Check if the browser has already forced a vertical scroll.
-            // If yes, abort our custom swipe cleanly without throwing a console error.
-            if (!e.cancelable) {
-                dragging = false;
-                resetStage();
+            if (!isHorizontal) {
+                if (!e.cancelable) {
+                    dragging = false;
+                    resetStage();
+                }
                 return;
             }
 
-            e.preventDefault(); // Now safe to prevent default behavior
+            e.preventDefault();
 
             const wantDirection = deltaX < 0 ? 'next' : 'prev';
 
@@ -402,10 +409,11 @@
                 }
             }
 
+            // FIX 1: Hard wall boundary restriction
+            // If there is no page to swipe to, we abort the movement completely.
             if (!targetLink) {
-                const dragX = deltaX * RESISTANCE;
-                currentX = dragX;
-                outgoing.style.transform = `translateX(${dragX}px)`;
+                currentX = 0;
+                outgoing.style.transform = `translateX(0px)`;
                 return;
             }
 
