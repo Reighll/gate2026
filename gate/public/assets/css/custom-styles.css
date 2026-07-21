@@ -364,18 +364,16 @@ html, body {
     .modal-content {
         border-radius: 24px 24px 0 0 !important;
 
-        /* FIX: Lowered from 92vh to 80dvh to leave a gap at the top */
-        max-height: 80dvh;
+        /* FIX: Strictly force a maximum height of 70% of the screen */
+        max-height: 70vh !important;
 
-        /* Ensures the content inside can scroll if it's too long */
-        overflow-y: auto;
+        /* FIX: Strictly enforce scrolling for overflow content */
+        overflow-y: auto !important;
 
-        /* Adds a subtle shadow for depth */
         box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
-
-        /* Pushes bottom content up slightly on phones with gesture bars */
         padding-bottom: env(safe-area-inset-bottom, 16px);
     }
+
     .modal-content::before {
         content: '';
         display: block;
