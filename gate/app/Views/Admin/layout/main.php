@@ -196,7 +196,7 @@
 <script>
     /**
      * Inline Swipe Gesture Logic
-     * Features: iOS-Style 1:1 Swipe, Ghost Wrapper, True Boundaries, Instant Nav Sync, Color Cloning, and Forced Skeletons during drag.
+     * Features: iOS-Style 1:1 Swipe, Ghost Wrapper, True Boundaries, Instant Nav Sync, Color Cloning, Forced Skeletons, and Smart Abort.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -249,6 +249,7 @@
             clearLayerState();
             outgoing.innerHTML = '';
             incoming.innerHTML = '';
+            incoming.style.display = ''; // Reset display state
             direction = null;
             targetLink = null;
             prefetchedHTML = null;
@@ -299,9 +300,9 @@
                 const el = doc.getElementById('app-content');
 
                 if (el) {
-                    // CHANGED: Force skeletons to SHOW during the swipe
+                    // Force skeletons to SHOW during the swipe
                     el.querySelectorAll('.skeleton-wrapper').forEach(s => s.classList.remove('d-none'));
-                    // CHANGED: Force real content to HIDE during the swipe
+                    // Force real content to HIDE during the swipe
                     el.querySelectorAll('.real-wrapper').forEach(r => r.classList.add('d-none'));
 
                     const rawHTML = el.innerHTML;
@@ -393,7 +394,18 @@
             if (isHorizontal === null) {
                 if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
                 isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+
                 if (isHorizontal) {
+                    // FIX 1: Smart Abort. Check if swiping into a wall before turning on the stage.
+                    const wantDir = deltaX < 0 ? 'next' : 'prev';
+                    const intended = wantDir === 'next' ? this._nextItem : this._prevItem;
+
+                    if (!intended) {
+                        dragging = false;
+                        resetStage();
+                        return; // Completely aborts the gesture!
+                    }
+
                     stage.classList.add('active');
                     stage.classList.remove('snapping');
                 }
@@ -420,6 +432,7 @@
 
                 targetLink = intendedLink;
                 if (targetLink) {
+                    incoming.style.display = ''; // Ensure layer is visible
                     startPrefetch(targetLink.getAttribute('href'));
                     assignLayerRoles(direction);
                     if (prefetchedHTML) renderIncoming();
@@ -432,6 +445,8 @@
                     }
                 } else {
                     clearLayerState();
+                    // FIX 2: Hide the empty incoming layer mid-drag so it doesn't cause a white flash
+                    incoming.style.display = 'none';
                 }
             }
 
@@ -524,7 +539,6 @@
             resetStage();
         }, { passive: true });
     })();
-</script>
 </script>
 </body>
 </html>
