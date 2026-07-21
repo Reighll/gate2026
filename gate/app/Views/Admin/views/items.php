@@ -434,6 +434,12 @@
         .status-filter-card { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
         .status-filter-card:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1) !important; }
         .status-filter-card.status-filter-active { box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.18) !important; outline: 2px solid rgba(0,0,0,0.08); }
+        #itemsTable thead th {
+            position: sticky;
+            top: 70px; /* adjust this to match your admin navbar's height in px */
+            background: #fff;
+            z-index: 10;
+        }
     </style>
 
 <?= $this->endSection() ?>
