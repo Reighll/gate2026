@@ -19,21 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // --- 3. DASHBOARD: Toggle Custom Date Fields ---
-    const dateFilter = document.getElementById('dateFilter');
-    const customContainer = document.getElementById('customDateContainer');
-
-    if (dateFilter) {
-        dateFilter.addEventListener('change', function() {
-            if (this.value === 'custom') {
-                customContainer.classList.remove('d-none');
-                // Custom still needs both dates picked, so wait for the Filter button
-            } else {
-                customContainer.classList.add('d-none');
-                // Preset ranges (Today / 7 Days / Month / Year) apply instantly
-                this.form.submit();
-            }
-        });
-    }
+    // Moved below to a delegated listener so it survives htmx page swaps
+    // (this DOMContentLoaded block only ever fires once per hard load).
 
     // --- 4. ITEMS: Real-time Search Filter ---
     // Moved to admin-items.js (handles dash-insensitive matching + status
@@ -97,3 +84,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// ==========================================================================
+// DASHBOARD: Date Filter — event-delegated on document.body so it survives
+// htmx page swaps. Direct-binding to #dateFilter breaks after the first
+// navigation because htmx replaces that element with a new node that never
+// gets a listener attached. Delegation avoids that entirely: document.body
+// itself isn't replaced by htmx, only the content inside it.
+// ==========================================================================
+if (!window.__dashboardFilterDelegated) {
+    window.__dashboardFilterDelegated = true;
+
+    document.body.addEventListener('change', function (e) {
+        if (!e.target || e.target.id !== 'dateFilter') return;
+
+        const customContainer = document.getElementById('customDateContainer');
+        if (e.target.value === 'custom') {
+            if (customContainer) customContainer.classList.remove('d-none');
+            // Custom still needs both dates picked, so wait for the Filter button
+        } else {
+            if (customContainer) customContainer.classList.add('d-none');
+            // Preset ranges (Today / 7 Days / Month / Year) apply instantly
+            e.target.form.submit();
+        }
+    });
+}

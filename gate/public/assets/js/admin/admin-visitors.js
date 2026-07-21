@@ -111,32 +111,36 @@ function showId(url, idText) {
     }
 }
 
-// 7. History Logs date filter (same behavior as the Admin Dashboard filter)
-const visitorDateFilter = document.getElementById('visitorDateFilter');
-const visitorCustomDateContainer = document.getElementById('visitorCustomDateContainer');
+// 7. History Logs date filter + tab visibility — event-delegated on
+// document.body so both survive htmx page swaps. Direct-binding to
+// #visitorDateFilter / the tab buttons breaks after the first navigation,
+// same issue as the dashboard filter.
+if (!window.__visitorFilterDelegated) {
+    window.__visitorFilterDelegated = true;
 
-if (visitorDateFilter) {
-    visitorDateFilter.addEventListener('change', function () {
-        if (this.value === 'custom') {
-            visitorCustomDateContainer.classList.remove('d-none');
+    document.body.addEventListener('change', function (e) {
+        if (!e.target || e.target.id !== 'visitorDateFilter') return;
+
+        const container = document.getElementById('visitorCustomDateContainer');
+        if (e.target.value === 'custom') {
+            if (container) container.classList.remove('d-none');
             // Custom still needs both dates picked, so wait for the Filter button
         } else {
-            visitorCustomDateContainer.classList.add('d-none');
+            if (container) container.classList.add('d-none');
             // Preset ranges (Today / 7 Days / Month / Year) apply instantly
-            this.form.submit();
+            e.target.form.submit();
         }
     });
-}
 
-// The date filter only applies to History Logs, so hide it on the Passes tab
-const visitorTabs = document.getElementById('visitorTabs');
-const visitorFilterTabItem = document.getElementById('visitorFilterTabItem');
+    // The date filter only applies to History Logs, so hide it on the Passes tab
+    document.body.addEventListener('shown.bs.tab', function (e) {
+        const target = e.target;
+        if (!target || !target.matches('#visitorTabs button[data-bs-toggle="tab"]')) return;
 
-if (visitorTabs && visitorFilterTabItem) {
-    visitorTabs.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tabButton => {
-        tabButton.addEventListener('shown.bs.tab', function () {
-            const isLogsTab = this.getAttribute('data-bs-target') === '#logs';
-            visitorFilterTabItem.classList.toggle('d-none', !isLogsTab);
-        });
+        const filterTabItem = document.getElementById('visitorFilterTabItem');
+        if (!filterTabItem) return;
+
+        const isLogsTab = target.getAttribute('data-bs-target') === '#logs';
+        filterTabItem.classList.toggle('d-none', !isLogsTab);
     });
 }

@@ -141,45 +141,51 @@ function applyItemsFilters() {
 }
 
 function initAdminItemsUI() {
-    // --- Search bar ---
-    const searchInput = document.getElementById('itemSearch');
-    if (searchInput) {
-        // Clone/replace to strip old listeners before re-binding (safe across htmx re-renders)
-        searchInput.replaceWith(searchInput.cloneNode(true));
-        const newSearchInput = document.getElementById('itemSearch');
-        newSearchInput.addEventListener('input', applyItemsFilters);
+    if (document.getElementById('itemsTable')) {
+        applyItemsFilters(); // re-apply whatever filter/search state is active
     }
+}
 
-    // --- Status filter cards (Pending / Approved / Declined / Archived) ---
-    document.querySelectorAll('.status-filter-card').forEach(card => {
-        const freshCard = card.cloneNode(true);
-        card.parentNode.replaceChild(freshCard, card);
-    });
+// Delegated listeners: bound once to document.body, which htmx never
+// replaces (it only swaps the content inside it). This means the search
+// bar and status cards keep working after any number of htmx page swaps,
+// with no rebinding needed — the previous clone/replace approach only
+// worked if 'htmx:afterSettle' actually fired and re-ran init, which
+// wasn't happening reliably.
+if (!window.__itemsFiltersDelegated) {
+    window.__itemsFiltersDelegated = true;
 
-    document.querySelectorAll('.status-filter-card').forEach(card => {
-        card.addEventListener('click', function () {
-            const status = this.dataset.statusFilter;
-            // Clicking the already-active card clears the filter
-            activeStatusFilter = (activeStatusFilter === status) ? null : status;
-
-            document.querySelectorAll('.status-filter-card').forEach(c => {
-                c.classList.toggle('status-filter-active', c.dataset.statusFilter === activeStatusFilter);
-            });
-
+    // --- Search bar ---
+    document.body.addEventListener('input', function (e) {
+        if (e.target && e.target.id === 'itemSearch') {
             applyItemsFilters();
-        });
-
-        // Keyboard accessibility since cards use role="button"
-        card.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.click();
-            }
-        });
+        }
     });
 
-    // Re-apply whatever filter/search state is active (covers htmx refresh)
-    applyItemsFilters();
+    // --- Status filter cards: click ---
+    document.body.addEventListener('click', function (e) {
+        const card = e.target.closest('.status-filter-card');
+        if (!card) return;
+
+        const status = card.dataset.statusFilter;
+        // Clicking the already-active card clears the filter
+        activeStatusFilter = (activeStatusFilter === status) ? null : status;
+
+        document.querySelectorAll('.status-filter-card').forEach(c => {
+            c.classList.toggle('status-filter-active', c.dataset.statusFilter === activeStatusFilter);
+        });
+
+        applyItemsFilters();
+    });
+
+    // --- Status filter cards: keyboard accessibility ---
+    document.body.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const card = e.target.closest ? e.target.closest('.status-filter-card') : null;
+        if (!card) return;
+        e.preventDefault();
+        card.click();
+    });
 }
 
 document.addEventListener('DOMContentLoaded', initAdminItemsUI);
