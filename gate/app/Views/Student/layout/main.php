@@ -76,10 +76,6 @@
         <div class="container-fluid" id="app-content">
             <?= $this->renderSection('content') ?>
         </div>
-
-        <div class="py-6 px-6 text-center">
-            <p class="mb-0 fs-4">Student GATE System</p>
-        </div>
     </div>
 </div>
 
