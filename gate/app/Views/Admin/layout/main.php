@@ -220,7 +220,6 @@
         function positionStage() {
             const header = document.querySelector('.fixed-top-banner');
             const appHeader = document.querySelector('.app-header');
-            const bottomNav = document.querySelector('.mobile-bottom-nav');
 
             let topOffset = header ? header.getBoundingClientRect().bottom : 0;
             if (appHeader) {
@@ -228,9 +227,15 @@
                 if (r.bottom > topOffset) topOffset = r.bottom;
             }
 
+            // Match the real content boundary (body's own padding-bottom, which reserves
+            // space for the floating pill) instead of stopping flush at the pill's edge.
+            const bottomNav = document.querySelector('.mobile-bottom-nav');
             let bottomOffset = 0;
             if (bottomNav && !bottomNav.classList.contains('d-none')) {
-                bottomOffset = window.innerHeight - bottomNav.getBoundingClientRect().top;
+                const style = window.getComputedStyle(bottomNav);
+                if (style.display !== 'none' && style.visibility !== 'hidden') {
+                    bottomOffset = parseFloat(window.getComputedStyle(document.body).paddingBottom) || 0;
+                }
             }
 
             stage.style.top = topOffset + 'px';
