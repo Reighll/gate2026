@@ -128,98 +128,101 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                         <i class="ti ti-pencil me-1"></i> Edit
                                                     </button>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
+                                                        <i class="ti ti-x"></i>
+                                                    </button>
                                                 </div>
                                             </div>
 
                                             <div id="modeContainer<?= $item['id'] ?>" class="item-mode-container">
                                                 <!-- VIEW MODE -->
                                                 <div id="viewMode<?= $item['id'] ?>" class="item-mode-panel">
-                                                <div class="row align-items-center">
-                                                    <div class="col-md-5 text-center mb-4 mb-md-0">
-                                                        <?php if (!empty($item['photo'])): ?>
-                                                            <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm" alt="Item Photo" style="max-height: 220px; object-fit: contain;">
-                                                        <?php else: ?>
-                                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height:180px;">
-                                                                <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
-                                                            </div>
-                                                        <?php endif; ?>
-                                                    </div>
-
-                                                    <div class="col-md-7">
-                                                        <?php
-                                                        $badge2 = 'bg-secondary';
-                                                        if ($item['status'] === 'approved') $badge2 = 'bg-success';
-                                                        if ($item['status'] === 'missing') $badge2 = 'bg-danger';
-                                                        if ($item['status'] === 'pending') $badge2 = 'bg-warning text-dark';
-                                                        if ($item['status'] === 'rejected') $badge2 = 'bg-danger';
-                                                        if ($item['status'] === 'staged') $badge2 = 'bg-warning text-dark';
-                                                        if ($item['status'] === 'archived') $badge2 = 'bg-dark';
-                                                        ?>
-                                                        <span class="badge <?= $badge2 ?> px-2 py-1 text-uppercase mb-3 d-inline-block" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                                                            <?= esc($item['status']) ?>
-                                                        </span>
-
-                                                        <p class="text-muted fw-semibold mb-2">Serial Number: <span class="fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
-                                                        <p class="text-muted fw-semibold mb-2">Category: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
-                                                        <p class="text-muted fw-semibold mb-2">
-                                                            RFID Tag:
-                                                            <?php if ($item['status'] === 'approved' && !empty($item['rfid'])): ?>
-                                                                <span class="fw-normal text-dark"><?= esc($item['rfid']) ?></span>
-                                                            <?php else: ?>
-                                                                <span class="fw-normal text-muted">Unassigned</span>
-                                                            <?php endif; ?>
-                                                        </p>
-                                                        <p class="text-muted fw-semibold mb-3">
-                                                            Campus Status:
-                                                            <span class="fw-normal text-dark">
-                                                                <?= (isset($item['in_campus']) && $item['in_campus'] == 1 && $item['status'] === 'approved') ? 'Inside Campus' : 'Outside Campus' ?>
-                                                            </span>
-                                                        </p>
-
-                                                        <?php if (!empty($item['notes'])): ?>
-                                                            <h6 class="fw-bold">Notes:</h6>
-                                                            <div class="bg-light rounded-3 p-3 text-muted fst-italic">
-                                                                <?= esc($item['notes']) ?>
-                                                            </div>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- EDIT MODE -->
-                                            <div id="editMode<?= $item['id'] ?>" class="item-mode-panel d-none">
-                                                <form action="<?= base_url('student/items/update/' . $item['id']) ?>" method="POST" enctype="multipart/form-data">
-                                                    <?= csrf_field() ?>
-                                                    <div class="row">
+                                                    <div class="row align-items-center">
                                                         <div class="col-md-5 text-center mb-4 mb-md-0">
                                                             <?php if (!empty($item['photo'])): ?>
-                                                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm mb-3" alt="Current Photo" style="max-height: 180px; object-fit: contain;">
+                                                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm" alt="Item Photo" style="max-height: 220px; object-fit: contain;">
                                                             <?php else: ?>
-                                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3" style="height:150px;">
+                                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height:180px;">
                                                                     <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
                                                                 </div>
                                                             <?php endif; ?>
-                                                            <label class="form-label small fw-bold text-muted mb-1">Replace Photo</label>
-                                                            <input type="file" class="form-control" name="photo" accept="image/*">
-                                                            <div class="form-text">Max file size: 50MB. Leave blank to keep the current photo.</div>
                                                         </div>
 
                                                         <div class="col-md-7">
-                                                            <label class="form-label small fw-bold text-muted mb-1">Serial Number / Unique Identifier</label>
-                                                            <input type="text" class="form-control mb-3" name="serial_number" value="<?= esc($item['serial_number'] ?? '') ?>" required>
+                                                            <?php
+                                                            $badge2 = 'bg-secondary';
+                                                            if ($item['status'] === 'approved') $badge2 = 'bg-success';
+                                                            if ($item['status'] === 'missing') $badge2 = 'bg-danger';
+                                                            if ($item['status'] === 'pending') $badge2 = 'bg-warning text-dark';
+                                                            if ($item['status'] === 'rejected') $badge2 = 'bg-danger';
+                                                            if ($item['status'] === 'staged') $badge2 = 'bg-warning text-dark';
+                                                            if ($item['status'] === 'archived') $badge2 = 'bg-dark';
+                                                            ?>
+                                                            <span class="badge <?= $badge2 ?> px-2 py-1 text-uppercase mb-3 d-inline-block" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                                                            <?= esc($item['status']) ?>
+                                                        </span>
 
-                                                            <p class="text-muted small mb-0">
-                                                                <i class="ti ti-info-circle me-1"></i> Only the serial number and photo can be edited. Other fields require re-registration.
+                                                            <p class="text-muted fw-semibold mb-2">Serial Number: <span class="fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
+                                                            <p class="text-muted fw-semibold mb-2">Category: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
+                                                            <p class="text-muted fw-semibold mb-2">
+                                                                RFID Tag:
+                                                                <?php if ($item['status'] === 'approved' && !empty($item['rfid'])): ?>
+                                                                    <span class="fw-normal text-dark"><?= esc($item['rfid']) ?></span>
+                                                                <?php else: ?>
+                                                                    <span class="fw-normal text-muted">Unassigned</span>
+                                                                <?php endif; ?>
                                                             </p>
+                                                            <p class="text-muted fw-semibold mb-3">
+                                                                Campus Status:
+                                                                <span class="fw-normal text-dark">
+                                                                <?= (isset($item['in_campus']) && $item['in_campus'] == 1 && $item['status'] === 'approved') ? 'Inside Campus' : 'Outside Campus' ?>
+                                                            </span>
+                                                            </p>
+
+                                                            <?php if (!empty($item['notes'])): ?>
+                                                                <h6 class="fw-bold">Notes:</h6>
+                                                                <div class="bg-light rounded-3 p-3 text-muted fst-italic">
+                                                                    <?= esc($item['notes']) ?>
+                                                                </div>
+                                                            <?php endif; ?>
                                                         </div>
                                                     </div>
+                                                </div>
 
-                                                    <div class="d-flex justify-content-end gap-2 mt-4">
-                                                        <button type="button" class="btn btn-light border rounded-pill px-4" onclick="toggleEditMode(<?= $item['id'] ?>)">Cancel</button>
-                                                        <button type="submit" class="btn btn-primary rounded-pill px-4">Save Changes</button>
-                                                    </div>
-                                                </form>
-                                            </div>
+                                                <!-- EDIT MODE -->
+                                                <div id="editMode<?= $item['id'] ?>" class="item-mode-panel d-none">
+                                                    <form action="<?= base_url('student/items/update/' . $item['id']) ?>" method="POST" enctype="multipart/form-data">
+                                                        <?= csrf_field() ?>
+                                                        <div class="row">
+                                                            <div class="col-md-5 text-center mb-4 mb-md-0">
+                                                                <?php if (!empty($item['photo'])): ?>
+                                                                    <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm mb-3" alt="Current Photo" style="max-height: 180px; object-fit: contain;">
+                                                                <?php else: ?>
+                                                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-3" style="height:150px;">
+                                                                        <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                                <label class="form-label small fw-bold text-muted mb-1">Replace Photo</label>
+                                                                <input type="file" class="form-control" name="photo" accept="image/*">
+                                                                <div class="form-text">Max file size: 50MB. Leave blank to keep the current photo.</div>
+                                                            </div>
+
+                                                            <div class="col-md-7">
+                                                                <label class="form-label small fw-bold text-muted mb-1">Serial Number / Unique Identifier</label>
+                                                                <input type="text" class="form-control mb-3" name="serial_number" value="<?= esc($item['serial_number'] ?? '') ?>" required>
+
+                                                                <p class="text-muted small mb-0">
+                                                                    <i class="ti ti-info-circle me-1"></i> Only the serial number and photo can be edited. Other fields require re-registration.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="d-flex justify-content-end gap-2 mt-4 modal-actions-mobile">
+                                                            <button type="button" class="btn btn-light border rounded-pill px-4" onclick="toggleEditMode(<?= $item['id'] ?>)">Cancel</button>
+                                                            <button type="submit" class="btn btn-primary rounded-pill px-4">Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
 
                                         </div>
@@ -244,6 +247,96 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             @keyframes itemModeFadeIn {
                 from { opacity: 0; transform: translateY(-6px); }
                 to   { opacity: 1; transform: translateY(0); }
+            }
+
+            /* Custom circular close button — only shown on mobile/tablet, see media query below */
+            .mobile-sheet-close {
+                display: none;
+                align-items: center;
+                justify-content: center;
+                width: 34px;
+                height: 34px;
+                min-width: 34px;
+                border-radius: 50%;
+                background: #f1f3f5;
+                border: none;
+                color: #495057;
+                font-size: 1.05rem;
+                padding: 0;
+            }
+            .mobile-sheet-close:active { background: #e9ecef; }
+
+            /* ===================================================================
+               MOBILE / TABLET ONLY — Bottom sheet modal styling
+               Matches breakpoints up to Bootstrap's lg (992px), i.e. phones + tablets.
+               Desktop (>=992px) keeps the original centered dialog untouched.
+               =================================================================== */
+            @media (max-width: 991.98px) {
+                .modal .modal-dialog {
+                    position: fixed;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    top: auto !important;
+                    margin: 0;
+                    width: 100%;
+                    max-width: 100%;
+                }
+                .modal .modal-dialog.modal-dialog-centered {
+                    display: block !important;
+                    align-items: initial !important;
+                    min-height: 0 !important;
+                }
+                .modal.fade .modal-dialog {
+                    transform: translateY(100%);
+                    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+                }
+                .modal.show .modal-dialog {
+                    transform: translateY(0);
+                }
+
+                .modal-content {
+                    border-radius: 24px 24px 0 0 !important;
+                    max-height: 92vh;
+                    overflow-y: auto;
+                }
+                .modal-content::before {
+                    content: '';
+                    display: block;
+                    width: 40px;
+                    height: 4px;
+                    border-radius: 999px;
+                    background: #dbe0e6;
+                    margin: 10px auto 6px;
+                }
+
+                .mobile-sheet-close {
+                    display: inline-flex;
+                }
+                .modal-body .btn-close {
+                    display: none;
+                }
+                .modal-body h5.fw-bold {
+                    font-size: 1.1rem;
+                }
+
+                .modal-actions-mobile {
+                    flex-direction: column-reverse !important;
+                    align-items: stretch !important;
+                }
+                .modal-actions-mobile .btn {
+                    width: 100%;
+                }
+                .modal-actions-mobile .btn-light {
+                    background: transparent !important;
+                    border: none !important;
+                    color: #6c757d;
+                }
+                .modal-actions-mobile .btn-primary {
+                    padding-top: 0.75rem;
+                    padding-bottom: 0.75rem;
+                    font-weight: 700;
+                }
             }
         </style>
         <script>

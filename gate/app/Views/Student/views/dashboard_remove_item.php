@@ -69,6 +69,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                         <i class="ti ti-alert-triangle me-1"></i> Confirm Unregistration
                                                     </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
+                                                        <i class="ti ti-x"></i>
+                                                    </button>
                                                 </div>
 
                                                 <div class="modal-body p-4 text-center">
@@ -102,7 +105,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                                                 </div>
 
-                                                <div class="modal-footer border-0 bg-light rounded-bottom-4 d-flex justify-content-center gap-2 pb-4">
+                                                <div class="modal-footer border-0 bg-light rounded-bottom-4 d-flex justify-content-center gap-2 pb-4 modal-actions-mobile">
                                                     <button type="button" class="btn btn-light border fw-medium px-4" data-bs-dismiss="modal">Cancel</button>
 
                                                     <button type="submit" class="btn btn-warning fw-bold px-4 shadow-sm">
@@ -128,6 +131,102 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             </div>
         </div>
     </div>
+
+    <style>
+        /* Custom circular close button — only shown on mobile/tablet, see media query below */
+        .mobile-sheet-close {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            border: none;
+            color: #6c4a03;
+            font-size: 1.05rem;
+            padding: 0;
+        }
+        .mobile-sheet-close:active { background: rgba(255, 255, 255, 0.9); }
+
+        /* ===================================================================
+           MOBILE / TABLET ONLY — Bottom sheet modal styling
+           Matches breakpoints up to Bootstrap's lg (992px), i.e. phones + tablets.
+           Desktop (>=992px) keeps the original centered dialog untouched.
+           =================================================================== */
+        @media (max-width: 991.98px) {
+            .modal .modal-dialog {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: auto !important;
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                padding: 0 !important;
+            }
+            .modal .modal-dialog.modal-dialog-centered {
+                display: block !important;
+                align-items: initial !important;
+                min-height: 0 !important;
+            }
+            .modal.fade .modal-dialog {
+                transform: translateY(100%);
+                transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+            }
+            .modal.show .modal-dialog {
+                transform: translateY(0);
+            }
+
+            .modal-content {
+                border-radius: 24px 24px 0 0 !important;
+                max-height: 92vh;
+                overflow-y: auto;
+            }
+            .modal-content::before {
+                content: '';
+                display: block;
+                width: 40px;
+                height: 4px;
+                border-radius: 999px;
+                background: #dbe0e6;
+                margin: 10px auto 0;
+            }
+            .modal-header {
+                border-radius: 0 !important;
+                padding-top: 6px;
+            }
+
+            .mobile-sheet-close {
+                display: inline-flex;
+            }
+            .modal-header .btn-close {
+                display: none;
+            }
+            .modal-title {
+                font-size: 1.05rem;
+            }
+
+            .modal-actions-mobile {
+                flex-direction: column-reverse !important;
+                align-items: stretch !important;
+            }
+            .modal-actions-mobile .btn {
+                width: 100%;
+            }
+            .modal-actions-mobile .btn-light {
+                background: transparent !important;
+                border: none !important;
+                color: #6c757d;
+            }
+            .modal-actions-mobile .btn-warning {
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+        }
+    </style>
 
     <script>
         function hideMySkeletons() {
