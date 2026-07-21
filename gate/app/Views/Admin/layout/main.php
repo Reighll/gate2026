@@ -196,7 +196,7 @@
 <script>
     /**
      * Inline Swipe Gesture Logic
-     * Features: iOS-Style Swipe, True Boundaries, Instant Nav Sync, Color Cloning, Forced Skeletons, Smart Abort, and Rapid-Swipe Lock.
+     * Features: iOS-Style Swipe, True Boundaries, Nav Sync, Forced Skeletons, Smart Abort, and Strict Animation Locks.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -211,13 +211,18 @@
         let targetLink = null;
         let prefetchedHTML = null;
         let prefetchXHR = null;
+
+        // Timer Tracking Variables for Strict Cleanup
         let settleFallbackTimer = null;
+        let snapTimer = null;
+        let clickTimer = null;
+        let opacityTimer = null;
 
         let currentGhostRect = null;
         let currentGhostStyle = null;
         let originalActiveLink = null;
 
-        // FIX: State lock to prevent rapid swiping bugs
+        // UI State Lock
         let isNavigating = false;
 
         const stage = document.getElementById('swipe-stage');
@@ -245,7 +250,12 @@
         }
 
         function resetStage() {
+            // STRICT CLEANUP: Kill all pending background timers to prevent race conditions
             if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
+            if (snapTimer) { clearTimeout(snapTimer); snapTimer = null; }
+            if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
+            if (opacityTimer) { clearTimeout(opacityTimer); opacityTimer = null; }
+
             document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
 
             stage.classList.remove('active', 'snapping');
@@ -258,7 +268,7 @@
             prefetchedHTML = null;
             currentX = 0;
 
-            // FIX: Unlock the UI so the user can swipe again
+            // Unlock the UI so the user can swipe again
             isNavigating = false;
 
             if (prefetchXHR) { try { prefetchXHR.abort(); } catch (e) {} prefetchXHR = null; }
@@ -320,7 +330,6 @@
 
         function onRealSwapSettled() {
             document.removeEventListener('htmx:afterSettle', onRealSwapSettled);
-            if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
             resetStage();
         }
 
@@ -340,7 +349,7 @@
         document.addEventListener('touchstart', function (e) {
             if (window.innerWidth >= 992) return;
 
-            // FIX: Ignore new touches if a swipe transition is currently resolving
+            // Block new touches if the previous animation or HTMX request is still resolving
             if (isNavigating) return;
 
             if (e.target.closest(IGNORE_SELECTORS)) return;
@@ -483,14 +492,14 @@
 
             if (!isHorizontal) { resetStage(); return; }
 
+            // Lock the UI the millisecond the finger lifts, regardless of success or cancel
+            isNavigating = true;
+
             const deltaX = currentX;
             const clearedThreshold = Math.abs(deltaX) >= SWIPE_MIN_DISTANCE;
 
             if (clearedThreshold && targetLink) {
                 stage.classList.add('snapping');
-
-                // FIX: Lock the UI as the final snap animation and HTMX request begins
-                isNavigating = true;
 
                 if (direction === 'next') {
                     incoming.style.transform = 'translateX(0px)';
@@ -504,13 +513,14 @@
                 const container = document.querySelector('#app-content .page-transition-container');
                 if (container) container.style.opacity = '0';
 
-                setTimeout(function () {
+                clickTimer = setTimeout(function () {
                     linkToClick.click();
 
-                    settleFallbackTimer = setTimeout(resetStage, 1200);
+                    // Reduced from 1200ms to 800ms for snappier recovery
+                    settleFallbackTimer = setTimeout(resetStage, 800);
                     document.addEventListener('htmx:afterSettle', onRealSwapSettled);
 
-                    setTimeout(function () {
+                    opacityTimer = setTimeout(function () {
                         if (container) container.style.opacity = '';
                     }, 350);
                 }, 320);
@@ -533,19 +543,17 @@
                     outgoing.style.transform = 'translateX(0px)';
                 }
 
-                setTimeout(resetStage, 340);
+                snapTimer = setTimeout(resetStage, 340);
             }
         }, { passive: true });
 
         document.addEventListener('touchcancel', function () {
             dragging = false;
-
             const navItems = getNavItems();
             if (navItems && originalActiveLink) {
                 navItems.forEach(item => item.classList.remove('active'));
                 originalActiveLink.classList.add('active');
             }
-
             resetStage();
         }, { passive: true });
     })();
