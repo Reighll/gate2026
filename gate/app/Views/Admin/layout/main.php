@@ -99,7 +99,6 @@
 <script src="<?= base_url('assets/js/mobile.js') ?>"></script>
 <script src="<?= base_url('assets/js/theme.js') ?>"></script>
 <script src="<?= base_url('assets/js/initial-loader.js') ?>"></script>
-<script src="<?= base_url('assets/js/swipe-gesture.js') ?>"></script>
 
 <?= $this->renderSection('scripts') ?>
 

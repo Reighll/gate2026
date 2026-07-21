@@ -91,7 +91,6 @@
 <script src="<?= base_url('assets/js/student/student.js') ?>"></script>
 <script src="<?= base_url('assets/js/theme.js') ?>"></script>
 <script src="<?= base_url('assets/js/initial-loader.js') ?>"></script>
-<script src="<?= base_url('assets/js/swipe-gesture.js') ?>"></script>
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
