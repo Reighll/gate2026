@@ -182,7 +182,7 @@
     /**
      * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Features: 1:1 DOM Cloning, True Hard Boundaries, Scroll Conflict Resolution
+     * Features: True DOM cloning, top:0 alignment, and strict state-machine boundaries.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -217,18 +217,11 @@
         }
 
         function positionStage() {
-            const header = document.querySelector('.fixed-top-banner');
-            const appHeader = document.querySelector('.app-header');
-
-            let topOffset = header ? header.getBoundingClientRect().bottom : 0;
-            if (appHeader) {
-                const r = appHeader.getBoundingClientRect();
-                if (r.bottom > topOffset) topOffset = r.bottom;
-            }
-
+            // FIX 1: By pinning the stage to top: 0, the cloned DOM's internal padding
+            // will mathematically align it perfectly with the real DOM behind the headers.
             stageWidth = window.innerWidth;
-            stage.style.top = topOffset + 'px';
-            stage.style.height = `calc(100dvh - ${topOffset}px)`;
+            stage.style.top = '0px';
+            stage.style.height = '100dvh';
         }
 
         function clearLayerState() {
@@ -269,13 +262,12 @@
             xhr.send();
         }
 
-        // FIX 1: Extract the ENTIRE wrapper (outerHTML) to preserve exact top padding and margins
         function extractAppContent(html) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const el = doc.getElementById('app-content');
             if (el) {
-                el.removeAttribute('id'); // Prevent ID collision
+                el.removeAttribute('id');
                 return el.outerHTML;
             }
             return html;
@@ -331,7 +323,6 @@
 
             positionStage();
 
-            // FIX 1: Clone the node entirely so Bootstrap classes apply 1:1 inside the swipe stage
             outgoing.innerHTML = '';
             const clone = appContent.cloneNode(true);
             clone.removeAttribute('id');
@@ -366,24 +357,19 @@
 
             if (!isHorizontal) return;
 
-            const wantDirection = deltaX < 0 ? 'next' : 'prev';
-            const intendedLink = wantDirection === 'next' ? this._nextItem : this._prevItem;
-
-            // FIX 2: True Hard Wall. If there is no page to swipe to, completely ignore the movement.
-            if (!intendedLink) {
-                return;
-            }
-
-            // FIX 3: Scroll Conflict Resolution. Silences the red console error.
             if (e.cancelable) {
                 e.preventDefault();
             } else {
-                // Browser locked the scroll natively; abort the custom swipe
                 dragging = false;
                 resetStage();
                 return;
             }
 
+            const wantDirection = deltaX < 0 ? 'next' : 'prev';
+            const intendedLink = wantDirection === 'next' ? this._nextItem : this._prevItem;
+
+            // FIX 2: Check for direction changes BEFORE returning on a dead end.
+            // This ensures the memory is cleanly wiped if the user wiggles toward a boundary.
             if (direction !== wantDirection) {
                 direction = wantDirection;
                 incoming.innerHTML = '';
@@ -399,6 +385,13 @@
                 } else {
                     clearLayerState();
                 }
+            }
+
+            // True Hard Wall
+            if (!targetLink) {
+                currentX = 0;
+                outgoing.style.transform = `translateX(0px)`;
+                return;
             }
 
             const progress = Math.min(1, Math.abs(deltaX) / stageWidth);
