@@ -141,7 +141,7 @@ class Items extends BaseController
         if ($item) {
             $model->update($id, [
                 'status' => 'staged',
-                'notes'  => 'Unregistration Reason: ' . $reason
+                'reason' => $reason
             ]);
             return redirect()->to('student/dashboard')->with('success', 'Unregistration request submitted. Awaiting Admin approval.');
         }

@@ -124,15 +124,16 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                     <?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?>
                                                 </h5>
                                                 <div class="d-flex align-items-center gap-2">
-                                                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" onclick="toggleEditMode(<?= $item['id'] ?>)">
+                                                    <button type="button" id="editBtn<?= $item['id'] ?>" class="btn btn-sm btn-light border rounded-pill px-3" onclick="toggleEditMode(<?= $item['id'] ?>)">
                                                         <i class="ti ti-pencil me-1"></i> Edit
                                                     </button>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                             </div>
 
-                                            <!-- VIEW MODE -->
-                                            <div id="viewMode<?= $item['id'] ?>">
+                                            <div id="modeContainer<?= $item['id'] ?>" class="item-mode-container">
+                                                <!-- VIEW MODE -->
+                                                <div id="viewMode<?= $item['id'] ?>" class="item-mode-panel">
                                                 <div class="row align-items-center">
                                                     <div class="col-md-5 text-center mb-4 mb-md-0">
                                                         <?php if (!empty($item['photo'])): ?>
@@ -186,7 +187,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                             </div>
 
                                             <!-- EDIT MODE -->
-                                            <div id="editMode<?= $item['id'] ?>" class="d-none">
+                                            <div id="editMode<?= $item['id'] ?>" class="item-mode-panel d-none">
                                                 <form action="<?= base_url('student/items/update/' . $item['id']) ?>" method="POST" enctype="multipart/form-data">
                                                     <?= csrf_field() ?>
                                                     <div class="row">
@@ -200,7 +201,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                             <?php endif; ?>
                                                             <label class="form-label small fw-bold text-muted mb-1">Replace Photo</label>
                                                             <input type="file" class="form-control" name="photo" accept="image/*">
-                                                            <div class="form-text">Leave blank to keep the current photo.</div>
+                                                            <div class="form-text">Max file size: 50MB. Leave blank to keep the current photo.</div>
                                                         </div>
 
                                                         <div class="col-md-7">
@@ -219,6 +220,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                     </div>
                                                 </form>
                                             </div>
+                                            </div>
 
                                         </div>
                                     </div>
@@ -230,25 +232,73 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 </div>
             <?php endif; ?>
         </div>
+
+        <style>
+            .item-mode-container {
+                overflow: hidden;
+                transition: height 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .item-mode-panel { transition: opacity 0.2s ease, transform 0.2s ease; }
+            .item-mode-panel-out { opacity: 0; transform: translateY(6px); }
+            .item-mode-panel-in { opacity: 0; transform: translateY(-6px); animation: itemModeFadeIn 0.22s ease forwards; }
+            @keyframes itemModeFadeIn {
+                from { opacity: 0; transform: translateY(-6px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+        </style>
+        <script>
+            function hideMySkeletons() {
+                setTimeout(() => {
+                    document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                    document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+                }, 600);
+            }
+
+            document.addEventListener("DOMContentLoaded", hideMySkeletons);
+            document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+            window.toggleEditMode = function(id) {
+                const container = document.getElementById('modeContainer' + id);
+                const viewPanel = document.getElementById('viewMode' + id);
+                const editPanel = document.getElementById('editMode' + id);
+                const editBtn = document.getElementById('editBtn' + id);
+
+                const showingView = !viewPanel.classList.contains('d-none');
+                const outgoing = showingView ? viewPanel : editPanel;
+                const incoming = showingView ? editPanel : viewPanel;
+
+                // Lock the container to its current rendered height before anything changes
+                container.style.height = container.offsetHeight + 'px';
+
+                outgoing.classList.add('item-mode-panel-out');
+
+                setTimeout(() => {
+                    outgoing.classList.add('d-none');
+                    outgoing.classList.remove('item-mode-panel-out');
+
+                    incoming.classList.remove('d-none');
+                    incoming.classList.add('item-mode-panel-in');
+
+                    if (editBtn) {
+                        editBtn.classList.toggle('d-none', showingView);
+                    }
+
+                    // Measure the incoming panel's natural height, then animate the container to it
+                    const targetHeight = incoming.scrollHeight;
+                    // Force reflow so the browser registers the starting height before we change it
+                    void container.offsetHeight;
+                    container.style.height = targetHeight + 'px';
+
+                    setTimeout(() => {
+                        incoming.classList.remove('item-mode-panel-in');
+                        // Release the fixed height so the modal can respond naturally afterward
+                        // (e.g. file input preview changes, window resizes)
+                        container.style.height = 'auto';
+                    }, 280);
+                }, 180);
+            };
+        </script>
+
     </div>
 
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
-    <script>
-        function hideMySkeletons() {
-            setTimeout(() => {
-                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-            }, 600);
-        }
-
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
-
-        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-        function toggleEditMode(id) {
-            document.getElementById('viewMode' + id).classList.toggle('d-none');
-            document.getElementById('editMode' + id).classList.toggle('d-none');
-        }
-    </script>
 <?= $this->endSection() ?>

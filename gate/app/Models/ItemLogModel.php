@@ -8,5 +8,5 @@ class ItemLogModel extends Model
 {
     protected $table = 'item_logs';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['item_id', 'action', 'created_at'];
+    protected $allowedFields = ['item_id', 'guard_id', 'action', 'created_at'];
 }

@@ -24,6 +24,22 @@ class Auth extends BaseController
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
 
+        // --- RATE LIMIT: max 5 failed login attempts per 3-minute window, per IP ---
+        $cache = \Config\Services::cache();
+        $cacheKey = 'login_attempts_guard_' . $this->request->getIPAddress();
+        $record = $cache->get($cacheKey);
+        $now = time();
+
+        if (!$record || ($now - $record['first_attempt_at']) >= 180) {
+            $record = ['count' => 0, 'first_attempt_at' => $now];
+        }
+
+        if ($record['count'] >= 5) {
+            $secondsLeft = 180 - ($now - $record['first_attempt_at']);
+            return redirect()->back()->with('error', "Too many failed login attempts. Please try again in " . max(1, $secondsLeft) . " seconds.");
+        }
+        // --- END RATE LIMIT CHECK (failure is registered below) ---
+
         // 1. Find Guard by Username
         $guard = $model->where('username', $username)->first();
 
@@ -43,16 +59,29 @@ class Auth extends BaseController
                     'guard_logged_in' => true,
                 ];
                 $session->set($ses_data);
+                $cache->delete($cacheKey); // clear the failed-attempt counter on success
 
                 // Update Last Login Time
                 $model->update($guard['id'], ['last_login' => date('Y-m-d H:i:s')]);
 
                 return redirect()->to('guard/dashboard');
             } else {
-                return redirect()->back()->with('error', 'Incorrect password.');
+                $record['count']++;
+                $cache->save($cacheKey, $record, 190);
+                $attemptsLeft = 5 - $record['count'];
+                $msg = $attemptsLeft > 0
+                    ? "Incorrect password. You have {$attemptsLeft} attempt(s) left before you're locked out for 3 minutes."
+                    : "Incorrect password. Too many failed attempts — please try again in 3 minutes.";
+                return redirect()->back()->with('error', $msg);
             }
         } else {
-            return redirect()->back()->with('error', 'Username not found.');
+            $record['count']++;
+            $cache->save($cacheKey, $record, 190);
+            $attemptsLeft = 5 - $record['count'];
+            $msg = $attemptsLeft > 0
+                ? "Username not found. You have {$attemptsLeft} attempt(s) left before you're locked out for 3 minutes."
+                : "Username not found. Too many failed attempts — please try again in 3 minutes.";
+            return redirect()->back()->with('error', $msg);
         }
     }
 

@@ -271,7 +271,50 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
             alertEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+        // 1b-2. Face-check rate limiter (max 3 failed "no face" attempts per 2-minute window)
+        const FACE_CHECK_LIMIT = 3;
+        const FACE_CHECK_WINDOW_MS = 120000;
 
+        function getFaceCheckState() {
+            try {
+                const raw = localStorage.getItem('faceCheckAttempts');
+                if (!raw) return { count: 0, firstAttemptAt: null };
+                return JSON.parse(raw);
+            } catch (e) {
+                return { count: 0, firstAttemptAt: null };
+            }
+        }
+
+        function saveFaceCheckState(state) {
+            try {
+                localStorage.setItem('faceCheckAttempts', JSON.stringify(state));
+            } catch (e) {}
+        }
+
+        function registerFaceCheckFailure() {
+            let state = getFaceCheckState();
+            const now = Date.now();
+            if (!state.firstAttemptAt || (now - state.firstAttemptAt) >= FACE_CHECK_WINDOW_MS) {
+                state = { count: 0, firstAttemptAt: now };
+            }
+            state.count++;
+            saveFaceCheckState(state);
+        }
+
+        function resetFaceCheckState() {
+            saveFaceCheckState({ count: 0, firstAttemptAt: null });
+        }
+
+        function getFaceCheckLockStatus() {
+            const state = getFaceCheckState();
+            if (!state.firstAttemptAt) return { locked: false };
+            const elapsed = Date.now() - state.firstAttemptAt;
+            if (elapsed >= FACE_CHECK_WINDOW_MS) return { locked: false };
+            if (state.count >= FACE_CHECK_LIMIT) {
+                return { locked: true, secondsLeft: Math.ceil((FACE_CHECK_WINDOW_MS - elapsed) / 1000) };
+            }
+            return { locked: false };
+        }
         // 1c. Show/hide password toggle (delegated - works for any .toggle-password-btn on this page)
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.toggle-password-btn');
@@ -308,6 +351,13 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             const faceCheckLoading = document.getElementById('faceCheckLoading');
 
             fileInput.addEventListener('change', function (e) {
+                const lockStatus = getFaceCheckLockStatus();
+                if (lockStatus.locked) {
+                    showFormAlert('danger', `Too many failed face-detection attempts. Please try again in ${lockStatus.secondsLeft} seconds.`);
+                    fileInput.value = '';
+                    return;
+                }
+
                 const files = e.target.files;
                 if (files && files.length > 0) {
                     const reader = new FileReader();
@@ -327,11 +377,18 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                         }
 
                         if (!hasFace) {
-                            showFormAlert('danger', 'No face detected in this photo. Please upload a clear, front-facing picture of yourself.');
+                            registerFaceCheckFailure();
+                            const status = getFaceCheckLockStatus();
+                            if (status.locked) {
+                                showFormAlert('danger', `No face detected. You've reached the limit of 3 attempts. Please try again in ${status.secondsLeft} seconds.`);
+                            } else {
+                                showFormAlert('danger', 'No face detected in this photo. Please upload a clear, front-facing picture of yourself.');
+                            }
                             fileInput.value = '';
                             return;
                         }
 
+                        resetFaceCheckState();
                         cropperImage.src = dataUrl;
                         bootstrapModal.show();
                     };
@@ -362,6 +419,13 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             btnCrop.addEventListener('click', async function () {
                 if (!cropper) return;
 
+                const lockStatus = getFaceCheckLockStatus();
+                if (lockStatus.locked) {
+                    showFormAlert('danger', `Too many failed face-detection attempts. Please try again in ${lockStatus.secondsLeft} seconds.`);
+                    bootstrapModal.hide();
+                    return;
+                }
+
                 const canvas = cropper.getCroppedCanvas({
                     width: 500,
                     height: 500,
@@ -371,9 +435,18 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                 const hasFace = await imageHasFace(croppedDataUrl);
                 if (!hasFace) {
-                    showFormAlert('danger', 'No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
+                    registerFaceCheckFailure();
+                    const status = getFaceCheckLockStatus();
+                    if (status.locked) {
+                        showFormAlert('danger', `No face detected. You've reached the limit of 3 attempts. Please try again in ${status.secondsLeft} seconds.`);
+                        bootstrapModal.hide();
+                    } else {
+                        showFormAlert('danger', 'No face detected in the cropped area. Please adjust the crop so your face is fully visible.');
+                    }
                     return;
                 }
+
+                resetFaceCheckState();
 
                 previewImage.src = croppedDataUrl;
                 previewImage.setAttribute('data-updated', 'true');

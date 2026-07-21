@@ -76,14 +76,28 @@ class Dashboard extends BaseController
 
         // 4. Pass everything to the view
         $data = [
-            'title'        => 'Student Dashboard',
-            'student'      => $student,     // This passes first_name, last_name, etc. safely
-            'campusStatus' => $campusStatus,
-            'badgeClass'   => $badgeClass
+            'title'          => 'Student Dashboard',
+            'student'        => $student,     // This passes first_name, last_name, etc. safely
+            'campusStatus'   => $campusStatus,
+            'badgeClass'     => $badgeClass,
+            'showTermsModal' => empty($student['terms_accepted'])
         ];
 
         return view('Student/views/dashboard', $data);
     }
+
+    public function acceptTerms()
+    {
+        if (!session()->get('student_logged_in')) {
+            return $this->response->setStatusCode(403);
+        }
+
+        $studentModel = new StudentModel();
+        $studentModel->update(session()->get('student_id'), ['terms_accepted' => 1]);
+
+        return $this->response->setJSON(['status' => 'success']);
+    }
+
     public function itemRegistration()
     {
         if (!$this->getCurrentStudent()) return redirect()->to('student/login');
@@ -179,12 +193,30 @@ class Dashboard extends BaseController
 
         if ($file && $file->isValid() && !$file->hasMoved()) {
 
+            // --- RATE LIMIT: max 3 picture changes per 2-minute window ---
+            $cache = \Config\Services::cache();
+            $cacheKey = 'profile_pic_attempts_student_' . $studentId;
+            $record = $cache->get($cacheKey);
+            $now = time();
+
+            // Reset the window if it doesn't exist yet or the 2 minutes have passed
+            if (!$record || ($now - $record['first_attempt_at']) >= 120) {
+                $record = ['count' => 0, 'first_attempt_at' => $now];
+            }
+
+            if ($record['count'] >= 3) {
+                $secondsLeft = 120 - ($now - $record['first_attempt_at']);
+                return redirect()->back()->withInput()->with('error', "You've reached the limit of 3 profile picture changes. Please try again in " . max(1, $secondsLeft) . " seconds.");
+            }
+
+            $record['count']++;
+            $cache->save($cacheKey, $record, 130); // stored slightly longer than the window itself
+            // --- END RATE LIMIT ---
+
             $newName = $file->getRandomName();
             $uploadPath = FCPATH . 'uploads/profiles/';
 
             $file->move($uploadPath, $newName);
-
-            $filepath = $uploadPath . $newName;
 
             // 🧠 Resize + compress profile image
             try {

@@ -40,6 +40,23 @@ class Auth extends BaseController
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
 
+        // --- RATE LIMIT: max 5 failed login attempts per 3-minute window, per IP ---
+        $cache = \Config\Services::cache();
+        $cacheKey = 'login_attempts_admin_' . $this->request->getIPAddress();
+        $record = $cache->get($cacheKey);
+        $now = time();
+
+        if (!$record || ($now - $record['first_attempt_at']) >= 180) {
+            $record = ['count' => 0, 'first_attempt_at' => $now];
+        }
+
+        if ($record['count'] >= 5) {
+            $secondsLeft = 180 - ($now - $record['first_attempt_at']);
+            $session->setFlashdata('error', "Too many failed login attempts. Please try again in " . max(1, $secondsLeft) . " seconds.");
+            return redirect()->back()->withInput();
+        }
+        // --- END RATE LIMIT CHECK (failure is registered further below) ---
+
         // 2. Find the user by Username
         $admin = $model->where('username', $username)->first();
 
@@ -65,6 +82,7 @@ class Auth extends BaseController
                     'is_admin_logged_in' => true,
                 ];
                 $session->set($ses_data);
+                $cache->delete($cacheKey); // clear the failed-attempt counter on success
 
                 // Update "Last Login" timestamp
                 $model->update($admin['id'], ['last_login' => date('Y-m-d H:i:s')]);
@@ -75,7 +93,15 @@ class Auth extends BaseController
         }
 
         // 5. Failure
-        $session->setFlashdata('error', 'Invalid username or password.');
+        $record['count']++;
+        $cache->save($cacheKey, $record, 190); // stored slightly longer than the window itself
+
+        $attemptsLeft = 5 - $record['count'];
+        if ($attemptsLeft > 0) {
+            $session->setFlashdata('error', "Invalid username or password. You have {$attemptsLeft} attempt(s) left before you're locked out for 3 minutes.");
+        } else {
+            $session->setFlashdata('error', "Invalid username or password. Too many failed attempts — please try again in 3 minutes.");
+        }
         return redirect()->back()->withInput();
     }
 

@@ -57,6 +57,7 @@ class Dashboard extends BaseController
         $lastVisitorName  = null;
         $lastVisitorPhoto = null;
         $isVisitorHandled = false;
+        $newVisitorRfid   = null;
 
         // 2. LOOP THROUGH EVERY TAG IN THE BATCH
         foreach ($rfidArray as $rfid) {
@@ -122,11 +123,11 @@ class Dashboard extends BaseController
                                 }
                             }
                         }
-
-                        // If it's a NEW visitor (or they are already checked out), show the details form
                         if (!$isVisitorHandled) {
-                            session()->setFlashdata('visitor_rfid', $rfid);
-                            return redirect()->to('guard/dashboard')->with('info', 'VISITOR PASS DETECTED. Please enter details.');
+                            if ($newVisitorRfid === null) {
+                                $newVisitorRfid = $rfid;
+                            }
+                            continue;
                         }
                     }
                 }
@@ -178,7 +179,7 @@ class Dashboard extends BaseController
                     if (isset($item['in_campus']) && $item['in_campus'] == 1) {
                         $itemModel->update($item['id'], ['in_campus' => 0]);
                         if ($db->tableExists('item_logs')) {
-                            $logModel->insert(['item_id' => $item['id'], 'action' => 'time_out', 'created_at' => $timestamp]);
+                            $logModel->insert(['item_id' => $item['id'], 'guard_id' => session()->get('guard_id'), 'action' => 'time_out', 'created_at' => $timestamp]);
                         }
                         $successCount++;
                         $lastAction = 'TIME-OUT';
@@ -186,7 +187,7 @@ class Dashboard extends BaseController
                     } else {
                         $itemModel->update($item['id'], ['in_campus' => 1]);
                         if ($db->tableExists('item_logs')) {
-                            $logModel->insert(['item_id' => $item['id'], 'action' => 'time_in', 'created_at' => $timestamp]);
+                            $logModel->insert(['item_id' => $item['id'], 'guard_id' => session()->get('guard_id'), 'action' => 'time_in', 'created_at' => $timestamp]);
                         }
                         $successCount++;
                         $lastAction = 'TIME-IN';
@@ -198,6 +199,30 @@ class Dashboard extends BaseController
                     $errorMessages[] = "Unrecognized Card ({$rfid})";
                 }
             }
+        }
+
+        // Handle a new/unregistered visitor pass found in this batch, now that the
+        // rest of the batch (items) has already been processed above.
+        if ($newVisitorRfid !== null) {
+            session()->setFlashdata('visitor_rfid', $newVisitorRfid);
+
+            if (!empty($scannedItemsList) && $lastStudent) {
+                if (count($scannedItemsList) === 1) {
+                    session()->setFlashdata('scanned_item', $scannedItemsList[0]);
+                } else {
+                    session()->setFlashdata('scanned_items', $scannedItemsList);
+                }
+                session()->setFlashdata('scanned_student', $lastStudent);
+            }
+
+            $combined = array_merge($errorMessages, $warningMessages);
+            if (!empty($combined)) {
+                return redirect()->to('guard/dashboard')
+                    ->with('error', implode('<br>', $combined))
+                    ->with('info', 'VISITOR PASS DETECTED. Please enter details.');
+            }
+
+            return redirect()->to('guard/dashboard')->with('info', 'VISITOR PASS DETECTED. Please enter details.');
         }
 
         // 3. BATCH SUMMARY RESULTS
@@ -223,6 +248,10 @@ class Dashboard extends BaseController
                 return redirect()->to('guard/dashboard')->with('success', "{$lastAction} LOGGED: " . esc($lastItem['brand_model'] ?? 'Item'));
 
             } elseif (!empty($errorMessages)) {
+                if ($lastItem) {
+                    session()->setFlashdata('scanned_item', $lastItem);
+                    session()->setFlashdata('scanned_student', $lastStudent);
+                }
                 return redirect()->to('guard/dashboard')->with('error', implode('<br>', $errorMessages));
             }
 
@@ -352,6 +381,14 @@ class Dashboard extends BaseController
 
     public function checkLatestScan()
     {
+        // This endpoint is polled every second in the background. Without this,
+        // a poll landing between a scan's redirect and the dashboard's actual
+        // page render can silently consume/expire flashdata meant for that page.
+        session()->keepFlashdata([
+            'scanned_item', 'scanned_items', 'scanned_student',
+            'departed_visitor', 'success', 'error', 'warning', 'info', 'visitor_rfid'
+        ]);
+
         $file = WRITEPATH . 'latest_scan.txt';
 
         if (file_exists($file)) {
@@ -412,6 +449,27 @@ class Dashboard extends BaseController
         // 1. Handle Profile Picture Upload
         $file = $this->request->getFile('profile_pic');
         if ($file && $file->isValid() && !$file->hasMoved()) {
+
+            // --- RATE LIMIT: max 3 picture changes per 2-minute window ---
+            $cache = \Config\Services::cache();
+            $cacheKey = 'profile_pic_attempts_guard_' . $guardId;
+            $record = $cache->get($cacheKey);
+            $now = time();
+
+            // Reset the window if it doesn't exist yet or the 2 minutes have passed
+            if (!$record || ($now - $record['first_attempt_at']) >= 120) {
+                $record = ['count' => 0, 'first_attempt_at' => $now];
+            }
+
+            if ($record['count'] >= 3) {
+                $secondsLeft = 120 - ($now - $record['first_attempt_at']);
+                return redirect()->back()->with('error', "You've reached the limit of 3 profile picture changes. Please try again in " . max(1, $secondsLeft) . " seconds.");
+            }
+
+            $record['count']++;
+            $cache->save($cacheKey, $record, 130); // stored slightly longer than the window itself
+            // --- END RATE LIMIT ---
+
             $newName = $file->getRandomName();
             $file->move(FCPATH . 'uploads/profiles', $newName);
             $updateData['profile_pic'] = $newName;

@@ -20,9 +20,13 @@ class StudentItemModel extends Model
         'photo',
         'status',
         'notes',
+        'reason',
         'created_at',
         'updated_at',
         'rfid',
-        'in_campus'
+        'in_campus',
+        'resolved_at',
+        'approved_by',
+        'unregistered_by'
     ];
 }

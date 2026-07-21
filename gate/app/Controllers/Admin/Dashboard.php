@@ -88,10 +88,13 @@ class Dashboard extends BaseController
                 students.first_name, 
                 students.last_name, 
                 students.student_number,
-                students.department
+                students.department,
+                guards.first_name AS guard_first_name,
+                guards.last_name AS guard_last_name
             ');
             $builder->join('student_items', 'student_items.id = item_logs.item_id', 'left');
             $builder->join('students', 'students.id = student_items.student_id', 'left');
+            $builder->join('guards', 'guards.id = item_logs.guard_id', 'left');
 
             // Filter the history log by the exact same date filter chosen above!
             $builder->where('item_logs.created_at >=', $startDate);
