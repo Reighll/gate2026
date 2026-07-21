@@ -196,7 +196,7 @@
 <script>
     /**
      * Inline Swipe Gesture Logic
-     * Features: iOS-Style 1:1 Swipe, Ghost Wrapper, True Boundaries, Instant Nav Sync, Color Cloning.
+     * Features: iOS-Style 1:1 Swipe, Ghost Wrapper, True Boundaries, Instant Nav Sync, Color Cloning, and Forced Skeletons during drag.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -299,8 +299,10 @@
                 const el = doc.getElementById('app-content');
 
                 if (el) {
-                    el.querySelectorAll('.skeleton-wrapper').forEach(s => s.classList.add('d-none'));
-                    el.querySelectorAll('.real-wrapper').forEach(r => r.classList.remove('d-none'));
+                    // CHANGED: Force skeletons to SHOW during the swipe
+                    el.querySelectorAll('.skeleton-wrapper').forEach(s => s.classList.remove('d-none'));
+                    // CHANGED: Force real content to HIDE during the swipe
+                    el.querySelectorAll('.real-wrapper').forEach(r => r.classList.add('d-none'));
 
                     const rawHTML = el.innerHTML;
                     incoming.innerHTML = buildGhost(rawHTML);
@@ -442,7 +444,6 @@
 
             currentX = deltaX;
 
-            // CHANGED: iOS 1:1 Side-by-side math (no parallax, no dimming)
             if (direction === 'next') {
                 incoming.style.transform = `translateX(${stageWidth + deltaX}px)`;
                 outgoing.style.transform = `translateX(${deltaX}px)`;
@@ -466,7 +467,6 @@
             if (clearedThreshold && targetLink) {
                 stage.classList.add('snapping');
 
-                // CHANGED: Snap off-screen at full 1:1 width
                 if (direction === 'next') {
                     incoming.style.transform = 'translateX(0px)';
                     outgoing.style.transform = `translateX(${-stageWidth}px)`;
@@ -498,7 +498,6 @@
                     originalActiveLink.classList.add('active');
                 }
 
-                // CHANGED: Rebound snap at full 1:1 width
                 if (direction === 'next' && targetLink) {
                     incoming.style.transform = `translateX(${stageWidth}px)`;
                     outgoing.style.transform = 'translateX(0px)';
@@ -525,6 +524,7 @@
             resetStage();
         }, { passive: true });
     })();
+</script>
 </script>
 </body>
 </html>
