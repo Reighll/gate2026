@@ -2,8 +2,6 @@
 <?= $this->section('title') ?>Registered Items | Admin Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <link rel="stylesheet" href="<?= base_url('assets/css/admin/items.css') ?>" />
-
     <div class="page-transition-container pt-5 mt-4">
         <div class="row">
             <div class="col-12">
