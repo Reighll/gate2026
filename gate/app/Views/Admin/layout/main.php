@@ -101,11 +101,7 @@
 <?= $this->include('Admin/modals/delete_confirm') ?>
 
 <script>
-    document.body.addEventListener('htmx:configRequest', function(evt) {
-        evt.detail.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-        evt.detail.headers['Pragma'] = 'no-cache';
-        evt.detail.headers['Expires'] = '0';
-    });
+    // Keep your existing service worker and htmx:configRequest logic up here...
 
     function updateNavProfileVisibility() {
         const navProfileItem = document.getElementById('navProfileItem');
@@ -115,25 +111,43 @@
         navProfileItem.classList.toggle('d-flex', !onProfilePage);
     }
 
+    // --- SMART SKELETON LOADER LOGIC ---
+    let isInitialAppLoad = true;
+
     function hideMySkeletons() {
-        setTimeout(() => {
+        if (isInitialAppLoad) {
+            // First load/Hard refresh: Show skeleton for 600ms
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+                isInitialAppLoad = false; // Mark initial load as complete
+            }, 600);
+        } else {
+            // Swipe/HTMX load: Instantly strip skeletons (0ms delay)
             document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
             document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-        }, 600);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', updateNavProfileVisibility);
-    document.addEventListener('DOMContentLoaded', hideMySkeletons);
 
+    // Trigger the initial 600ms load
+    window.addEventListener('load', hideMySkeletons);
+
+    // Run the instant strip the exact millisecond HTMX injects the new DOM
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        hideMySkeletons();
+    });
+
+    // --- HTMX AFTER SETTLE ---
     document.body.addEventListener('htmx:afterSettle', function(evt) {
-
-        // --- 1. DYNAMIC NAVBAR VISIBILITY ---
+        // 1. DYNAMIC NAVBAR VISIBILITY
         const currentPath = window.location.pathname;
         const bottomNav = document.querySelector('.mobile-bottom-nav');
-        const mobileFab = document.querySelector('.mobile-fab'); // Safe check, even if Admin doesn't have it
+        const mobileFab = document.querySelector('.mobile-fab');
 
-        // Admin only needs to hide the bar on Profile
-        const shouldHideNav = currentPath.includes('profile');
+        // (Adjust this check based on your Admin vs Student portal needs)
+        const shouldHideNav = currentPath.includes('item-registration') || currentPath.includes('profile');
 
         updateNavProfileVisibility();
 
@@ -146,26 +160,27 @@
             mobileFab.classList.toggle('d-flex', !shouldHideNav);
         }
 
-        // --- 2. MOVE THE BLUE ACTIVE PILL (Foolproof URL Check) ---
+        // 2. MOVE THE BLUE ACTIVE PILL
         const activePath = window.location.pathname;
         const allNavLinks = document.querySelectorAll('.mobile-bottom-item, .sidebar-link');
 
         allNavLinks.forEach(link => {
             link.classList.remove('active');
             const linkPath = link.getAttribute('href');
-            // Check if the link exists and matches the URL
             if (linkPath && linkPath !== "javascript:void(0)" && activePath.includes(new URL(link.href).pathname)) {
                 link.classList.add('active');
             }
         });
 
-        // --- 3. HIDE STUCK PRELOADERS/SKELETONS ---
+        // 3. HIDE STUCK PRELOADERS
         const preloader = document.querySelector('.preloader');
         if (preloader) {
             preloader.style.display = 'none';
-        } hideMySkeletons();
+        }
 
-        // --- 4. RE-INITIALIZE JAVASCRIPT ---
+        // Note: hideMySkeletons() was removed from here because it is now handled by htmx:afterSwap!
+
+        // 4. RE-INITIALIZE JAVASCRIPT
         window.dispatchEvent(new Event('load'));
         if (typeof jQuery !== 'undefined') {
             $(window).trigger('load');
