@@ -186,7 +186,7 @@
     /**
      * Inline Swipe Gesture Logic
      * Handles Instagram-style swipe navigation for mobile views (<992px).
-     * Features: True DOM cloning, top:0 alignment, and strict state-machine boundaries.
+     * Features: Pixel-Matched Bounding Box, 1:1 DOM Cloning, True Hard Boundaries.
      */
     (function () {
         const SWIPE_MIN_DISTANCE = 60;
@@ -220,12 +220,17 @@
             return items.findIndex(item => item.classList.contains('active'));
         }
 
-        function positionStage() {
-            // FIX 1: By pinning the stage to top: 0, the cloned DOM's internal padding
-            // will mathematically align it perfectly with the real DOM behind the headers.
-            stageWidth = window.innerWidth;
-            stage.style.top = '0px';
-            stage.style.height = '100dvh';
+        function positionStage(appContent) {
+            // Measure the EXACT pixel location of the real content
+            const rect = appContent.getBoundingClientRect();
+
+            stageWidth = rect.width;
+
+            // Lock the stage to identical coordinates so it cannot jump up or down
+            stage.style.top = rect.top + 'px';
+            stage.style.left = rect.left + 'px';
+            stage.style.width = stageWidth + 'px';
+            stage.style.height = `calc(100dvh - ${rect.top}px)`;
         }
 
         function clearLayerState() {
@@ -266,21 +271,19 @@
             xhr.send();
         }
 
-        function extractAppContent(html) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const el = doc.getElementById('app-content');
-            if (el) {
-                el.removeAttribute('id');
-                return el.outerHTML;
-            }
-            return html;
-        }
-
         function renderIncoming() {
             incoming.dataset.waiting = '0';
             if (prefetchedHTML) {
-                incoming.innerHTML = extractAppContent(prefetchedHTML);
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(prefetchedHTML, 'text/html');
+                const el = doc.getElementById('app-content');
+                if (el) {
+                    el.removeAttribute('id');
+                    el.style.width = '100%';
+                    el.style.height = '100%';
+                    incoming.innerHTML = '';
+                    incoming.appendChild(el);
+                }
             }
         }
 
@@ -325,11 +328,15 @@
             isHorizontal = null;
             dragging = true;
 
-            positionStage();
+            // Map the stage directly onto the precise bounds of the real content
+            positionStage(appContent);
 
+            // Clone identical DOM structure
             outgoing.innerHTML = '';
             const clone = appContent.cloneNode(true);
             clone.removeAttribute('id');
+            clone.style.width = '100%';
+            clone.style.height = '100%';
             outgoing.appendChild(clone);
 
             incoming.dataset.waiting = '1';
@@ -372,8 +379,6 @@
             const wantDirection = deltaX < 0 ? 'next' : 'prev';
             const intendedLink = wantDirection === 'next' ? this._nextItem : this._prevItem;
 
-            // FIX 2: Check for direction changes BEFORE returning on a dead end.
-            // This ensures the memory is cleanly wiped if the user wiggles toward a boundary.
             if (direction !== wantDirection) {
                 direction = wantDirection;
                 incoming.innerHTML = '';
@@ -391,7 +396,7 @@
                 }
             }
 
-            // True Hard Wall
+            // TRUE HARD WALL: If no target link, completely block the horizontal movement
             if (!targetLink) {
                 currentX = 0;
                 outgoing.style.transform = `translateX(0px)`;
