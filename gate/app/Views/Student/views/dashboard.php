@@ -201,7 +201,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         function startOnboardingTour() {
             if (typeof introJs === 'undefined') return;
 
-            if (!localStorage.getItem('hasSeenDashboardTour')) {
+            const tourStorageKey = 'hasSeenDashboardTour_<?= esc(session()->get('student_id')) ?>';
+
+            if (!localStorage.getItem(tourStorageKey)) {
                 introJs().setOptions({
                     steps: [
                         {
@@ -225,11 +227,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     showBullets: false,
                     overlayOpacity: 0.6
                 }).oncomplete(function() {
-                    // Mark as seen when they finish
-                    localStorage.setItem('hasSeenDashboardTour', 'true');
+                    localStorage.setItem(tourStorageKey, 'true');
                 }).onexit(function() {
-                    // Mark as seen if they click "Skip"
-                    localStorage.setItem('hasSeenDashboardTour', 'true');
+                    localStorage.setItem(tourStorageKey, 'true');
                 }).start();
             }
         }

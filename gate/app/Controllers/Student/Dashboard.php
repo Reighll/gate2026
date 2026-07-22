@@ -82,6 +82,14 @@ class Dashboard extends BaseController
             'badgeClass'     => $badgeClass,
             'showTermsModal' => empty($student['terms_accepted'])
         ];
+        /**
+         * This page's content depends on session/account state (terms acceptance,
+         * campus status), so it must never be served from browser cache or bfcache —
+         * otherwise a different account can see a stale snapshot of someone else's state.
+         */
+
+        $this->response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $this->response->setHeader('Pragma', 'no-cache');
 
         return view('Student/views/dashboard', $data);
     }
