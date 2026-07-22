@@ -5,7 +5,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 <?= $this->section('title') ?>Item Registration | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-    <div id="registration-container" class="page-transition-container pt-5 mt-4">
+<div id="registration-container" class="page-transition-container pt-5 mt-4">
 
     <div class="reg-sheet-backdrop" onclick="document.getElementById('regSheetCloseBtn') && document.getElementById('regSheetCloseBtn').click();"></div>
 
@@ -27,8 +27,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             </a>
         </div>
 
-        <div id="alertContainer">
-            <?php if (session()->getFlashdata('error')) : ?>
+        <div id="itemRegFormFragment">
+            <div id="alertContainer">
+                <?php if (session()->getFlashdata('error')) : ?>
                 <div class="alert alert-dismissible fade show shadow-sm rounded-3 mb-4 d-flex align-items-center bg-danger-subtle text-danger border border-danger-subtle" role="alert" style="padding: 1rem 1.25rem;">
                     <i class="ti ti-alert-circle fs-5 me-2"></i>
                     <span class="fw-medium" style="opacity: 0.9;"><?= session()->getFlashdata('error') ?></span>
@@ -104,120 +105,127 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 </form>
             </div>
         </div>
+        </div>
     </div>
 </div>
 
-<script>
-    function hideMySkeletons() {
-        setTimeout(() => {
-            document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-            document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-        }, 600);
-    }
-    document.addEventListener("DOMContentLoaded", hideMySkeletons);
-    document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+<?= $this->endSection() ?>
 
-    // Alert Injector
-    window.showInlineAlert = function(message, type = 'danger') {
-        const alertContainer = document.getElementById('alertContainer');
-        if (alertContainer) {
-            const icon = type === 'success' ? 'ti-check-circle' : 'ti-alert-circle';
-            const bgClass = type === 'success' ? 'bg-success-subtle text-success border-success-subtle' : 'bg-danger-subtle text-danger border-danger-subtle';
-
-            alertContainer.innerHTML = `
-                <div class="alert alert-dismissible fade show shadow-sm rounded-3 mb-4 d-flex align-items-center ${bgClass} border" role="alert" style="padding: 1rem 1.25rem;">
-                    <i class="ti ${icon} fs-5 me-2"></i>
-                    <span class="fw-medium" style="opacity: 0.9;">${message}</span>
-                    <button type="button" class="btn-close m-0 ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+<?= $this->section('scripts') ?>
+    <script>
+        function hideMySkeletons() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+            }, 600);
         }
-    };
-    window.toggleOtherCategory = function(select) {
-        const wrapper = document.getElementById('otherCategoryWrapper');
-        const input = document.getElementById('categoryOtherInput');
-        const isOthers = select.value === 'Others';
+        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
 
-        wrapper.classList.toggle('d-none', !isOthers);
-        input.required = isOthers;
-        if (!isOthers) input.value = '';
-    };
-    // Form Processor
-    window.submitRegistration = async function(e, form) {
-        e.preventDefault();
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
+        window.showInlineAlert = function(message, type = 'danger') {
+            const alertContainer = document.getElementById('alertContainer');
+            if (alertContainer) {
+                const icon = type === 'success' ? 'ti-check-circle' : 'ti-alert-circle';
+                const bgClass = type === 'success' ? 'bg-success-subtle text-success border-success-subtle' : 'bg-danger-subtle text-danger border-danger-subtle';
 
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
-        submitBtn.classList.add('disabled');
-        submitBtn.disabled = true;
+                alertContainer.innerHTML = `
+                    <div class="alert alert-dismissible fade show shadow-sm rounded-3 mb-4 d-flex align-items-center ${bgClass} border" role="alert" style="padding: 1rem 1.25rem;">
+                        <i class="ti ${icon} fs-5 me-2"></i>
+                        <span class="fw-medium" style="opacity: 0.9;">${message}</span>
+                        <button type="button" class="btn-close m-0 ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
 
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                headers: { "X-Requested-With": "XMLHttpRequest" },
-                body: new FormData(form)
-            });
+        window.toggleOtherCategory = function(select) {
+            const wrapper = document.getElementById('otherCategoryWrapper');
+            const input = document.getElementById('categoryOtherInput');
+            const isOthers = select.value === 'Others';
 
-            const data = await response.json();
+            wrapper.classList.toggle('d-none', !isOthers);
+            input.required = isOthers;
+            if (!isOthers) input.value = '';
+        };
 
-            if (data.status === 'error') {
-                // Inject error and stop!
-                window.showInlineAlert(data.message, 'danger');
+        window.submitRegistration = async function(e, form) {
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+            submitBtn.classList.add('disabled');
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    body: new FormData(form)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'error') {
+                    window.showInlineAlert(data.message, 'danger');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.classList.remove('disabled');
+                    submitBtn.disabled = false;
+                } else {
+                    // Close the mobile modal, if that's where this was submitted from
+                    const regModalEl = document.getElementById('itemRegistrationModal');
+                    if (regModalEl) {
+                        const regModalInstance = bootstrap.Modal.getInstance(regModalEl);
+                        if (regModalInstance) regModalInstance.hide();
+                    }
+
+                    // Close the standalone-page sheet, if that's where this was submitted from
+                    const container = document.getElementById('registration-container');
+                    if (container) {
+                        container.classList.add('reg-sheet-closing');
+                    }
+
+                    const successLink = document.createElement('a');
+                    successLink.setAttribute('hx-get', '<?= base_url('student/dashboard') ?>?nocache=' + Date.now());
+                    successLink.setAttribute('hx-push-url', '<?= base_url('student/dashboard') ?>');
+                    successLink.setAttribute('hx-target', '#app-content');
+                    successLink.setAttribute('hx-select', '#app-content');
+                    successLink.setAttribute('hx-swap', 'outerHTML swap:300ms');
+
+                    const injectAlert = function(event) {
+                        if (event.detail.target.id === 'app-content') {
+                            const appContent = event.detail.target;
+                            const targetWrapper = appContent.querySelector('div') || appContent;
+
+                            const alertHtml = `
+                                <div class="alert alert-dismissible fade show shadow-sm rounded-3 mt-3 mt-lg-0 mx-3 mx-lg-0 mb-4 d-flex align-items-center bg-success-subtle text-success border border-success-subtle" role="alert" style="padding: 1rem 1.25rem;">
+                                    <i class="ti ti-check-circle fs-5 me-2"></i>
+                                    <span class="fw-medium" style="opacity: 0.9;">Item registered successfully! Awaiting admin verification.</span>
+                                    <button type="button" class="btn-close m-0 ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            `;
+
+                            targetWrapper.insertAdjacentHTML('afterbegin', alertHtml);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                            document.body.removeEventListener('htmx:afterSettle', injectAlert);
+                        }
+                    };
+
+                    document.body.addEventListener('htmx:afterSettle', injectAlert);
+
+                    document.body.appendChild(successLink);
+                    htmx.process(successLink);
+                    successLink.click();
+                }
+            } catch (err) {
+                console.error("Submission failed:", err);
+                window.showInlineAlert("A network error occurred. Please try again.", "danger");
                 submitBtn.innerHTML = originalText;
                 submitBtn.classList.remove('disabled');
                 submitBtn.disabled = false;
-            } else {
-                // SUCCESS: Setup the slide to Dashboard
-                const successLink = document.createElement('a');
-                successLink.setAttribute('hx-get', '<?= base_url('student/dashboard') ?>?nocache=' + Date.now());
-                successLink.setAttribute('hx-push-url', '<?= base_url('student/dashboard') ?>');
-                successLink.setAttribute('hx-target', '#app-content');
-                successLink.setAttribute('hx-select', '#app-content');
-                successLink.setAttribute('hx-swap', 'outerHTML swap:300ms');
-
-                // --- THE MOBILE-PROOF INJECTOR ---
-                const injectAlert = function(event) {
-                    if (event.detail.target.id === 'app-content') {
-
-                        // 1. Grab the very first container securely (ignoring CSS classes)
-                        const appContent = event.detail.target;
-                        const targetWrapper = appContent.querySelector('div') || appContent;
-
-                        // 2. Added mobile-friendly margins (mt-3 mx-3) so it doesn't get stuck under mobile navbars!
-                        const alertHtml = `
-                            <div class="alert alert-dismissible fade show shadow-sm rounded-3 mt-3 mt-lg-0 mx-3 mx-lg-0 mb-4 d-flex align-items-center bg-success-subtle text-success border border-success-subtle" role="alert" style="padding: 1rem 1.25rem;">
-                                <i class="ti ti-check-circle fs-5 me-2"></i>
-                                <span class="fw-medium" style="opacity: 0.9;">Item registered successfully! Awaiting admin verification.</span>
-                                <button type="button" class="btn-close m-0 ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        `;
-
-                        targetWrapper.insertAdjacentHTML('afterbegin', alertHtml);
-
-                        // 3. Force mobile devices to scroll to the absolute top to see the alert!
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                        document.body.removeEventListener('htmx:afterSettle', injectAlert);
-                    }
-                };
-
-                document.body.addEventListener('htmx:afterSettle', injectAlert);
-
-                document.getElementById('registration-container').classList.add('reg-sheet-closing');
-                document.body.appendChild(successLink);
-                htmx.process(successLink);
-                successLink.click();
             }
-        } catch (err) {
-            console.error("Submission failed:", err);
-            window.showInlineAlert("A network error occurred. Please try again.", "danger");
-            submitBtn.innerHTML = originalText;
-            submitBtn.classList.remove('disabled');
-            submitBtn.disabled = false;
-        }
-    };
-</script>
-
+        };
+    </script>
 <?= $this->endSection() ?>

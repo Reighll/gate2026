@@ -86,9 +86,39 @@ $nav_visibility_class = ($is_registration || $is_profile) ? 'd-none' : 'd-flex';
         </a>
     </nav>
 
-    <a href="<?= base_url('student/item-registration') ?>" hx-get="<?= base_url('student/item-registration') ?>" hx-target="#app-content" hx-select="#app-content" hx-swap="outerHTML" hx-push-url="true"
-       onclick="var p=window.location.pathname; if(!p.includes('item-registration') && !p.includes('profile')){var c=document.querySelector('.page-transition-container'); if(c){c.classList.add('page-slide-out');}}"
-       class="mobile-fab <?= $nav_visibility_class ?> d-lg-none border border-2 border-white shadow">
+    <button type="button"
+            class="mobile-fab <?= $nav_visibility_class ?> d-lg-none border border-2 border-white shadow"
+            data-bs-toggle="modal"
+            data-bs-target="#itemRegistrationModal"
+            hx-get="<?= base_url('student/item-registration') ?>"
+            hx-select="#itemRegFormFragment"
+            hx-target="#itemRegModalBody"
+            hx-swap="innerHTML">
         <i class="ti ti-plus"></i>
-    </a>
+    </button>
+
+    <!-- Item Registration — a real Bootstrap modal, so the page underneath stays visible/dimmed behind it -->
+    <div class="modal fade" id="itemRegistrationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow">
+
+                <div class="modal-header sticky-top bg-body px-4 pt-4 pb-2 border-0 z-3 w-100 d-flex justify-content-between align-items-center" style="border-radius: 24px 24px 0 0;">
+                    <h5 class="fw-bold mb-0">Item Registration</h5>
+                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                        <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="ti ti-x"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body px-4 pb-4 pt-2" id="itemRegModalBody">
+                    <div class="text-center text-muted py-5">
+                        <span class="spinner-border spinner-border-sm me-2"></span> Loading...
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 <?php endif; ?>
