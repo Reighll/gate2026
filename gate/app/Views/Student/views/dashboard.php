@@ -5,7 +5,14 @@ $referrer = service('request')->getHeaderLine('HX-Current-URL');
 $slideIn = (strpos($referrer, 'profile') !== false);
 ?>
 <?= $this->extend($layout) ?>
+
 <?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
+
+    <!-- 1. Add Intro.js CSS -->
+<?= $this->section('styles') ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+<?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
 
 <?php if (!empty($showTermsModal)): ?>
@@ -66,6 +73,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 <?php endif; ?>
 
                 <div class="skeleton-wrapper">
+                    <!-- Skeletons remain unchanged -->
                     <div class="digital-id-card mb-4 rounded-4 overflow-hidden border border-light">
                         <div class="skeleton" style="height: 160px; border-radius: 15px 15px 0 0;"></div>
                         <div class="digital-id-body pb-4 bg-white rounded-bottom shadow-sm text-center position-relative">
@@ -92,7 +100,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 </div>
 
                 <div class="real-wrapper d-none">
-                    <div class="digital-id-card mb-4">
+
+                    <!-- Digital ID Element -->
+                    <div id="tour-digital-id" class="digital-id-card mb-4">
                         <div class="digital-id-header position-relative" style="background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 15px 15px 0 0;">
                             <h5 class="text-white mb-0 opacity-75 fs-5">TECHNOLOGICAL UNIVERSITY OF THE PHILIPPINES</h5>
                             <div class="mt-4 mb-n5 position-relative" style="z-index: 2;">
@@ -118,7 +128,8 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         </div>
                     </div>
 
-                    <div class="card shadow-sm border-0">
+                    <!-- 2. Added id="tour-campus-status" here -->
+                    <div id="tour-campus-status" class="card shadow-sm border-0">
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="mb-0 fw-semibold">Campus Status</h6>
@@ -138,6 +149,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+    <!-- 3. Add Intro.js JavaScript library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
+
     <script>
         <?php if (!empty($showTermsModal)): ?>
         document.addEventListener('DOMContentLoaded', function () {
@@ -161,6 +175,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 }
 
                 termsModal.hide();
+
+                // 4. Start the tour only after the user accepts the terms
+                setTimeout(startOnboardingTour, 300);
             });
         });
         <?php endif; ?>
@@ -169,11 +186,52 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+
+                // 5. Check if modal exists and is shown. If not, we can start the tour immediately
+                const termsModalEl = document.getElementById('termsModal');
+                if (!termsModalEl || !termsModalEl.classList.contains('show')) {
+                    startOnboardingTour();
+                }
             }, 600);
         }
 
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+        // 6. The main tour logic
+        function startOnboardingTour() {
+            // Check localStorage to make sure we only show this once per user
+            if (!localStorage.getItem('hasSeenDashboardTour')) {
+                introJs().setOptions({
+                    steps: [
+                        {
+                            title: 'Welcome!',
+                            intro: 'Welcome to your Student Dashboard. Let\'s take a quick tour to help you get started.'
+                        },
+                        {
+                            element: document.querySelector('#tour-digital-id'),
+                            title: 'Digital ID',
+                            intro: 'This is your digital ID card. It securely displays your profile and current enrollment status.',
+                            position: 'bottom'
+                        },
+                        {
+                            element: document.querySelector('#tour-campus-status'),
+                            title: 'Campus Status',
+                            intro: 'Check here to see your real-time campus location status as recorded by our gate passes.',
+                            position: 'top'
+                        }
+                    ],
+                    showProgress: true,
+                    showBullets: false,
+                    overlayOpacity: 0.6
+                }).oncomplete(function() {
+                    // Mark as seen when they finish
+                    localStorage.setItem('hasSeenDashboardTour', 'true');
+                }).onexit(function() {
+                    // Mark as seen if they click "Skip"
+                    localStorage.setItem('hasSeenDashboardTour', 'true');
+                }).start();
+            }
+        }
 
+        document.addEventListener("DOMContentLoaded", hideMySkeletons);
         document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
     </script>
 <?= $this->endSection() ?>
