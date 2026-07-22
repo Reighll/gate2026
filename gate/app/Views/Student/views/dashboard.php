@@ -155,6 +155,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
     <script>
         <?php if (!empty($showTermsModal)): ?>
         document.addEventListener('DOMContentLoaded', function () {
+            console.log('TERMS MODAL SCRIPT RAN');
             const termsModalEl = document.getElementById('termsModal');
             if (!termsModalEl) return;
 
