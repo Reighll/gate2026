@@ -419,3 +419,91 @@ html, body {
         font-weight: 700;
     }
 }
+/* ===================================================================
+   ITEM REGISTRATION — Mobile/Tablet modal-style presentation
+   The whole page still navigates normally via htmx, but on phones and
+   tablets it *looks* and *feels* like a bottom-sheet modal on top of
+   the dashboard. Desktop (>=992px) is completely untouched — it stays
+   the normal full-width page/card.
+   =================================================================== */
+.reg-sheet-backdrop {
+    display: none;
+}
+
+@media (max-width: 991.98px) {
+
+    #registration-container {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    #registration-container.page-slide-in,
+    #registration-container.page-slide-out {
+        animation: none !important;
+    }
+
+    .reg-sheet-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        z-index: 1499;
+        opacity: 0;
+        animation: regBackdropFadeIn 0.28s ease forwards;
+    }
+    #registration-container.page-slide-out .reg-sheet-backdrop {
+        animation: regBackdropFadeOut 0.22s ease forwards;
+    }
+
+    .reg-sheet-panel {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1500;
+        background: var(--bs-body-bg, #fff);
+        border-radius: 24px 24px 0 0;
+        box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 10px 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+        animation: regSheetSlideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
+    }
+    .reg-sheet-panel::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        border-radius: 999px;
+        background: #dbe0e6;
+        margin: 0 auto 14px;
+    }
+    #registration-container.page-slide-out .reg-sheet-panel {
+        animation: regSheetSlideDown 0.25s ease-in forwards;
+    }
+
+    .reg-sheet-panel .card {
+        box-shadow: none !important;
+        border: none !important;
+    }
+    .reg-sheet-panel .card-body {
+        padding: 0 !important;
+    }
+}
+
+@keyframes regSheetSlideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+@keyframes regSheetSlideDown {
+    from { transform: translateY(0); }
+    to   { transform: translateY(100%); }
+}
+@keyframes regBackdropFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes regBackdropFadeOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
