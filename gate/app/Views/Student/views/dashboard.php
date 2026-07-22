@@ -175,21 +175,23 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 }
 
                 termsModal.hide();
-
-                // 4. Start the tour only after the user accepts the terms
-                setTimeout(startOnboardingTour, 300);
             });
+
+            termsModalEl.addEventListener('hidden.bs.modal', function () {
+                startOnboardingTour();
+            }, { once: true });
         });
         <?php endif; ?>
+
+        // Decided once, server-side — no runtime guessing about modal state.
+        const showTermsModalFlag = <?= !empty($showTermsModal) ? 'true' : 'false' ?>;
 
         function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
                 document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
 
-                // 5. Check if modal exists and is shown. If not, we can start the tour immediately
-                const termsModalEl = document.getElementById('termsModal');
-                if (!termsModalEl || !termsModalEl.classList.contains('show')) {
+                if (!showTermsModalFlag) {
                     startOnboardingTour();
                 }
             }, 600);
@@ -197,7 +199,8 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
         // 6. The main tour logic
         function startOnboardingTour() {
-            // Check localStorage to make sure we only show this once per user
+            if (typeof introJs === 'undefined') return;
+
             if (!localStorage.getItem('hasSeenDashboardTour')) {
                 introJs().setOptions({
                     steps: [
