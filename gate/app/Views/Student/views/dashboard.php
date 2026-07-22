@@ -149,42 +149,51 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-    <!-- 3. Add Intro.js JavaScript library -->
+    <!-- Intro.js JavaScript library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 
     <script>
         <?php if (!empty($showTermsModal)): ?>
-        document.addEventListener('DOMContentLoaded', function () {
-            alert('TERMS MODAL SCRIPT RAN');
+        function initializeTermsModal() {
             const termsModalEl = document.getElementById('termsModal');
             if (!termsModalEl) return;
+
+            // Prevent double-loading if it is already open
+            if (termsModalEl.classList.contains('show')) return;
 
             const termsModal = new bootstrap.Modal(termsModalEl);
             termsModal.show();
 
-            document.getElementById('btnAcceptTerms').addEventListener('click', function () {
-                const rememberChecked = document.getElementById('termsNeverShowAgain').checked;
+            const acceptBtn = document.getElementById('btnAcceptTerms');
+            if (acceptBtn) {
+                acceptBtn.onclick = function () {
+                    const rememberChecked = document.getElementById('termsNeverShowAgain').checked;
 
-                if (rememberChecked) {
-                    fetch("<?= base_url('student/accept-terms') ?>", {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            '<?= csrf_header() ?>': '<?= csrf_hash() ?>'
-                        }
-                    }).catch(() => {});
-                }
+                    if (rememberChecked) {
+                        fetch("<?= base_url('student/accept-terms') ?>", {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                '<?= csrf_header() ?>': '<?= csrf_hash() ?>'
+                            }
+                        }).catch(() => {});
+                    }
 
-                termsModal.hide();
-            });
+                    termsModal.hide();
+                };
+            }
 
+            // Trigger the tutorial once the modal finishes closing
             termsModalEl.addEventListener('hidden.bs.modal', function () {
                 startOnboardingTour();
             }, { once: true });
-        });
+        }
+
+        // Initialize modal on both fresh page loads and HTMX swaps
+        document.addEventListener('DOMContentLoaded', initializeTermsModal);
+        document.body.addEventListener('htmx:afterSettle', initializeTermsModal);
         <?php endif; ?>
 
-        // Decided once, server-side — no runtime guessing about modal state.
         const showTermsModalFlag = <?= !empty($showTermsModal) ? 'true' : 'false' ?>;
 
         function hideMySkeletons() {
@@ -198,7 +207,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             }, 600);
         }
 
-        // 6. The main tour logic
+        // The Upgraded Tutorial Logic
         function startOnboardingTour() {
             if (typeof introJs === 'undefined') return;
 
@@ -206,27 +215,32 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
             if (!localStorage.getItem(tourStorageKey)) {
                 introJs().setOptions({
+                    showProgress: true,
+                    showStepNumbers: true,
+                    exitOnOverlayClick: false, // Prevents accidental closing
+                    doneLabel: 'Get Started',  // Custom finish button text
                     steps: [
                         {
-                            title: 'Welcome!',
-                            intro: 'Welcome to your Student Dashboard. Let\'s take a quick tour to help you get started.'
+                            title: '👋 Welcome to GATE!',
+                            intro: 'Let us take a quick 4-step tutorial to show you around your new Student Dashboard.'
                         },
                         {
                             element: document.querySelector('#tour-digital-id'),
-                            title: 'Digital ID',
-                            intro: 'This is your digital ID card. It securely displays your profile and current enrollment status.',
+                            title: 'Your Digital ID',
+                            intro: 'This is your official digital ID card. Security personnel may ask to see this when verifying your identity.',
                             position: 'bottom'
                         },
                         {
                             element: document.querySelector('#tour-campus-status'),
                             title: 'Campus Status',
-                            intro: 'Check here to see your real-time campus location status as recorded by our gate passes.',
+                            intro: 'This updates automatically when you tap your registered items at the gate, letting you know your current campus location.',
                             position: 'top'
+                        },
+                        {
+                            title: 'You are ready!',
+                            intro: 'Use the navigation menu below to register new items, view your scan history, or update your profile. Stay safe!'
                         }
-                    ],
-                    showProgress: true,
-                    showBullets: false,
-                    overlayOpacity: 0.6
+                    ]
                 }).oncomplete(function() {
                     localStorage.setItem(tourStorageKey, 'true');
                 }).onexit(function() {
