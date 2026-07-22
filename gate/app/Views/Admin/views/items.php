@@ -77,8 +77,8 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4" data-status-filter="archived" role="button" tabindex="0">
-                            <div class="card-body p-3 p-md-4">
+                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4" data-status-filter="rejected" role="button" tabindex="0">
+                            <div class="card-body p-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
                                         <h6 class="text-muted fw-normal mb-2">Inactive / Archived</h6>
