@@ -437,11 +437,6 @@ html, body {
         margin-top: 0 !important;
     }
 
-    #registration-container.page-slide-in,
-    #registration-container.page-slide-out {
-        animation: none !important;
-    }
-
     .reg-sheet-backdrop {
         display: block;
         position: fixed;
@@ -451,7 +446,7 @@ html, body {
         opacity: 0;
         animation: regBackdropFadeIn 0.28s ease forwards;
     }
-    #registration-container.page-slide-out .reg-sheet-backdrop {
+    #registration-container.reg-sheet-closing .reg-sheet-backdrop {
         animation: regBackdropFadeOut 0.22s ease forwards;
     }
 
@@ -478,7 +473,7 @@ html, body {
         background: #dbe0e6;
         margin: 0 auto 14px;
     }
-    #registration-container.page-slide-out .reg-sheet-panel {
+    #registration-container.reg-sheet-closing .reg-sheet-panel {
         animation: regSheetSlideDown 0.25s ease-in forwards;
     }
 

@@ -5,7 +5,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 <?= $this->section('title') ?>Item Registration | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
-<div id="registration-container" class="page-transition-container pt-5 mt-4 page-slide-in">
+    <div id="registration-container" class="page-transition-container pt-5 mt-4">
 
     <div class="reg-sheet-backdrop" onclick="document.getElementById('regSheetCloseBtn') && document.getElementById('regSheetCloseBtn').click();"></div>
 
@@ -18,9 +18,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                hx-target="#app-content"
                hx-select="#app-content"
                hx-push-url="true"
-               hx-swap="outerHTML swap:0ms"
+               hx-swap="outerHTML swap:300ms"
                hx-indicator="#page-transition-loader"
-               onclick="document.getElementById('registration-container').classList.add('page-slide-out');"
+               onclick="document.getElementById('registration-container').classList.add('reg-sheet-closing');"
                class="btn btn-sm btn-light border shadow-sm rounded-circle d-flex d-lg-none align-items-center justify-content-center"
                style="width: 35px; height: 35px;">
                 <i class="ti ti-x fs-5 text-muted"></i>
@@ -205,7 +205,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                 document.body.addEventListener('htmx:afterSettle', injectAlert);
 
-                document.getElementById('registration-container').classList.add('page-slide-out');
+                document.getElementById('registration-container').classList.add('reg-sheet-closing');
                 document.body.appendChild(successLink);
                 htmx.process(successLink);
                 successLink.click();
