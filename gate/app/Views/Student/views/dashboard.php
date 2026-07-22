@@ -2,7 +2,7 @@
 $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 'Student/layout/main';
 
 $referrer = service('request')->getHeaderLine('HX-Current-URL');
-$slideIn = (strpos($referrer, 'item-registration') !== false || strpos($referrer, 'profile') !== false);
+$slideIn = (strpos($referrer, 'profile') !== false);
 ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
