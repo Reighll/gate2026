@@ -28,6 +28,7 @@ class Dashboard extends BaseController
     public function index()
     {
         $session = session();
+        log_message('error', 'DASHBOARD HIT - studentId=' . ($session->get('student_id') ?? 'NULL') . ' time=' . date('H:i:s'));
         $studentModel = new StudentModel();
 
         // 1. Get the logged-in student's ID
