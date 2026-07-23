@@ -489,10 +489,10 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         position: isMobile ? 'top' : 'right'
                     });
                 }
-                // Final step
+                // NEW: Updated Final step for Multi-Page Tour
                 tourSteps.push({
-                    title: 'You are now ready!',
-                    intro: 'You can now use your portal securely. Stay safe!'
+                    title: 'Let\'s see your items!',
+                    intro: 'Next, we will automatically take you to your Registered Items page to continue the tour.'
                 });
 
                 introJs().setOptions({
@@ -503,10 +503,18 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     keyboardNavigation: true,
                     nextLabel: 'Next',
                     prevLabel: 'Back',
-                    doneLabel: 'Get Started 🚀',
+                    doneLabel: 'Next Page 🚀', // Changed the button label
                     steps: tourSteps
                 }).oncomplete(function() {
+                    // 1. Mark the dashboard tour as completed so it doesn't show again
                     localStorage.setItem(tourStorageKey, 'true');
+
+                    // 2. Set the "Handoff" flag for the next page
+                    localStorage.setItem('gate_tour_items_pending', 'true');
+
+                    // 3. Redirect the user to the Registered Items page
+                    // (Adjust the URL below if your route is different)
+                    window.location.href = '<?= base_url('student/items') ?>';
                 }).onexit(function() {
                     localStorage.setItem(tourStorageKey, 'true');
                 }).start();

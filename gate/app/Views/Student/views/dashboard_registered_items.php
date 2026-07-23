@@ -1,6 +1,15 @@
 <?php
 $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 'Student/layout/main';
 ?>
+<?= $this->section('styles') ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+    <style>
+        /* Include the same Intro.js styling overrides here from your dashboard to keep the dark mode and mobile fixes consistent */
+        .introjs-overlay { background-color: rgba(17, 20, 45, 0.95) !important; z-index: 9999990 !important; }
+        .introjs-helperLayer { background: rgba(0, 0, 0, 0.15) !important; border-radius: 12px !important; z-index: 9999995 !important; }
+        .introjs-tooltip { border-radius: 16px !important; }
+    </style>
+<?= $this->endSection() ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Registered Items | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
@@ -357,63 +366,106 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                 }
             }
         </style>
-        <script>
-            function hideMySkeletons() {
-                setTimeout(() => {
-                    document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                    document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-                }, 600);
-            }
-
-            document.addEventListener("DOMContentLoaded", hideMySkeletons);
-            document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-
-            window.toggleEditMode = function(id) {
-                const container = document.getElementById('modeContainer' + id);
-                const viewPanel = document.getElementById('viewMode' + id);
-                const editPanel = document.getElementById('editMode' + id);
-                const editBtn = document.getElementById('editBtn' + id);
-                const cancelBtn = document.getElementById('cancelBtn' + id); // NEW: Get Cancel button
-
-                const showingView = !viewPanel.classList.contains('d-none');
-                const outgoing = showingView ? viewPanel : editPanel;
-                const incoming = showingView ? editPanel : viewPanel;
-
-                // Lock the container to its current rendered height before anything changes
-                container.style.height = container.offsetHeight + 'px';
-
-                outgoing.classList.add('item-mode-panel-out');
-
-                setTimeout(() => {
-                    outgoing.classList.add('d-none');
-                    outgoing.classList.remove('item-mode-panel-out');
-
-                    incoming.classList.remove('d-none');
-                    incoming.classList.add('item-mode-panel-in');
-
-                    // NEW: Toggle Edit and Cancel button visibility
-                    if (editBtn) {
-                        editBtn.classList.toggle('d-none', showingView);
-                    }
-                    if (cancelBtn) {
-                        cancelBtn.classList.toggle('d-none', !showingView);
-                    }
-
-                    // Measure the incoming panel's natural height, then animate the container to it
-                    const targetHeight = incoming.scrollHeight;
-                    // Force reflow so the browser registers the starting height before we change it
-                    void container.offsetHeight;
-                    container.style.height = targetHeight + 'px';
-
-                    setTimeout(() => {
-                        incoming.classList.remove('item-mode-panel-in');
-                        // Release the fixed height so the modal can respond naturally afterward
-                        container.style.height = 'auto';
-                    }, 280);
-                }, 180);
-            };
-        </script>
-
     </div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
+
+    <script>
+        function hideMySkeletons() {
+            setTimeout(() => {
+                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+
+                // NEW: Check for the handoff flag after the skeletons disappear
+                checkItemsTourHandoff();
+            }, 600);
+        }
+
+        document.addEventListener("DOMContentLoaded", hideMySkeletons);
+        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+
+        // NEW: The Catch Function
+        function checkItemsTourHandoff() {
+            if (typeof introJs === 'undefined') return;
+
+            // Check if the dashboard sent us here for a tour
+            if (localStorage.getItem('gate_tour_items_pending') === 'true') {
+
+                // 1. Immediately delete the flag so the tour doesn't trigger on normal page visits
+                localStorage.removeItem('gate_tour_items_pending');
+
+                // 2. Start the second half of the tour
+                introJs().setOptions({
+                    showProgress: false,
+                    showStepNumbers: false,
+                    showBullets: true,
+                    exitOnOverlayClick: false,
+                    keyboardNavigation: true,
+                    nextLabel: 'Next',
+                    prevLabel: 'Back',
+                    doneLabel: 'Got it! 🎉',
+                    steps: [
+                        {
+                            title: 'Your Equipment Hub',
+                            intro: 'Welcome to the Registered Items page! This is where you can manage all the devices you bring into the GATE system.'
+                        },
+                        {
+                            element: document.querySelector('.real-wrapper'),
+                            title: 'Item Status',
+                            intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status.',
+                            position: 'top'
+                        }
+                    ]
+                }).start();
+            }
+        }
+        window.toggleEditMode = function(id) {
+            const container = document.getElementById('modeContainer' + id);
+            const viewPanel = document.getElementById('viewMode' + id);
+            const editPanel = document.getElementById('editMode' + id);
+            const editBtn = document.getElementById('editBtn' + id);
+            const cancelBtn = document.getElementById('cancelBtn' + id); // NEW: Get Cancel button
+
+            const showingView = !viewPanel.classList.contains('d-none');
+            const outgoing = showingView ? viewPanel : editPanel;
+            const incoming = showingView ? editPanel : viewPanel;
+
+            // Lock the container to its current rendered height before anything changes
+            container.style.height = container.offsetHeight + 'px';
+
+            outgoing.classList.add('item-mode-panel-out');
+
+            setTimeout(() => {
+                outgoing.classList.add('d-none');
+                outgoing.classList.remove('item-mode-panel-out');
+
+                incoming.classList.remove('d-none');
+                incoming.classList.add('item-mode-panel-in');
+
+                // NEW: Toggle Edit and Cancel button visibility
+                if (editBtn) {
+                    editBtn.classList.toggle('d-none', showingView);
+                }
+                if (cancelBtn) {
+                    cancelBtn.classList.toggle('d-none', !showingView);
+                }
+
+                // Measure the incoming panel's natural height, then animate the container to it
+                const targetHeight = incoming.scrollHeight;
+                // Force reflow so the browser registers the starting height before we change it
+                void container.offsetHeight;
+                container.style.height = targetHeight + 'px';
+
+                setTimeout(() => {
+                    incoming.classList.remove('item-mode-panel-in');
+                    // Release the fixed height so the modal can respond naturally afterward
+                    container.style.height = 'auto';
+                }, 280);
+            }, 180);
+        };
+    </script>
 
 <?= $this->endSection() ?>
