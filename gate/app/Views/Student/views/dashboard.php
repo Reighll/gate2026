@@ -192,8 +192,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
             /* Move the arrow to the bottom right corner */
             .custom-register-tooltip .introjs-arrow.bottom {
-                left: auto !important;
-                right: 15px !important;    /* Pushes the arrow strictly to the right corner */
+                /* We force the left position to the absolute end of the box, minus 45px for padding */
+                left: calc(100% - 45px) !important;
+                right: auto !important;
                 margin-left: 0 !important;
             }
         }
