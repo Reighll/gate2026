@@ -78,6 +78,17 @@
 
         <div class="container-fluid" id="app-content">
             <?= $this->renderSection('content') ?>
+
+            <!--
+                FIX: per-page scripts now render INSIDE #app-content.
+                Previously this was rendered near the end of <body>, outside
+                #app-content. Since HTMX navigation uses hx-select="#app-content"
+                to pluck only that element out of the response, anything
+                outside it (including this whole scripts section) was silently
+                dropped on every HTMX-driven page swap — only the very first,
+                full-page load ever actually ran per-page <script> blocks.
+            -->
+            <?= $this->renderSection('scripts') ?>
         </div>
     </div>
 </div>
@@ -527,6 +538,5 @@
         }, { passive: true });
     })();
 </script>
-<?= $this->renderSection('scripts') ?>
 </body>
 </html>
