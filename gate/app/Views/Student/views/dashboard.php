@@ -510,10 +510,10 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         position: isMobile ? 'top' : 'right'
                     });
                 }
-                // Final step for this segment — next stop is Item Registration
+                // Final step for this segment — next stop is Registered Items
                 tourSteps.push({
-                    title: 'Let\'s register your first item!',
-                    intro: 'Next, we\'ll take you to Item Registration to continue the tour.'
+                    title: 'Let\'s see your items!',
+                    intro: 'Next, we\'ll take you to your Registered Items page to continue the tour.'
                 });
 
                 introJs().setOptions({
@@ -531,10 +531,10 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     localStorage.setItem(tourStorageKey, 'true');
 
                     // 2. Set the "Handoff" flag for the next page (Item Registration)
-                    localStorage.setItem('gate_tour_reg_pending', 'true');
+                    localStorage.setItem('gate_tour_items_pending', 'true');
 
                     // 3. Hand off via the injected-HTMX-anchor pattern, not a hard redirect
-                    gateTourNavigate('<?= base_url('student/item-registration') ?>');
+                    gateTourNavigate('<?= base_url('student/registered-items') ?>');
                 }).onexit(function() {
                     // Cancelling the tour marks it seen so it won't auto-restart,
                     // and does NOT set any handoff flag — the chain simply stops here.
