@@ -55,6 +55,9 @@
             color: #f1f9ff !important;
         }
     </style>
+
+    <?= $this->renderSection('styles') ?>
+
 </head>
 <body>
 <div id="initial-loader"><div class="ring"></div></div>
