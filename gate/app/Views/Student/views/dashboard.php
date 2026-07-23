@@ -166,22 +166,35 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         .introjs-arrow.left { border-right-color: #ffffff !important; }
         .introjs-arrow.right { border-left-color: #ffffff !important; }
 
-        /* --- ARROW ALIGNMENT FIXES FOR REGISTER TOOLTIP --- */
+        /* --- TOOLTIP BOX & ARROW ALIGNMENT FIXES --- */
 
-        /* Desktop: Pointing left towards the sidebar icon */
+        /* Desktop: Shift the entire box upward */
         @media (min-width: 992px) {
+            .custom-register-tooltip {
+                margin-top: -35px !important; /* Moves the entire box upward */
+            }
+
+            /* Keep the arrow pointing correctly at the sidebar icon */
             .custom-register-tooltip .introjs-arrow.left {
-                top: 28px !important; /* Locks the arrow to the height of the icon */
+                top: 45px !important; /* Adjust this if the arrow needs to move up/down relative to the newly positioned box */
                 margin-top: 0 !important;
             }
         }
 
-        /* Mobile/Tablet: Pointing down towards the bottom-right FAB */
+        /* Mobile/Tablet: Align the box to the right edge */
         @media (max-width: 991px) {
+            .custom-register-tooltip {
+                left: auto !important;         /* Override Intro.js default left positioning */
+                right: 15px !important;        /* Snap the box to the right margin */
+                width: calc(100vw - 30px) !important; /* Keep it responsive */
+                max-width: 350px !important;   /* Prevent it from getting too wide on horizontal phones/tablets */
+            }
+
+            /* Anchor the arrow to the right side so it points at the FAB */
             .custom-register-tooltip .introjs-arrow.bottom {
-                left: auto !important;     /* Removes the default horizontal centering */
-                right: 35px !important;    /* Anchors the arrow exactly above the FAB */
-                margin-left: 0 !important; /* Clears any default Intro.js offsets */
+                left: auto !important;
+                right: 20px !important;    /* Tweak this to align perfectly over the center of the + button */
+                margin-left: 0 !important;
             }
         }
 
