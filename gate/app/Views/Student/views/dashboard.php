@@ -174,9 +174,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 margin-top: -35px !important; /* Moves the entire box upward */
             }
 
-            /* Keep the arrow pointing correctly at the sidebar icon */
+            /* Move the arrow to the top end of the left side */
             .custom-register-tooltip .introjs-arrow.left {
-                top: 45px !important; /* Adjust this if the arrow needs to move up/down relative to the newly positioned box */
+                top: 15px !important; /* Pushes the arrow to the top edge */
                 margin-top: 0 !important;
             }
         }
@@ -184,16 +184,16 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         /* Mobile/Tablet: Align the box to the right edge */
         @media (max-width: 991px) {
             .custom-register-tooltip {
-                left: auto !important;         /* Override Intro.js default left positioning */
-                right: 15px !important;        /* Snap the box to the right margin */
-                width: calc(100vw - 30px) !important; /* Keep it responsive */
-                max-width: 350px !important;   /* Prevent it from getting too wide on horizontal phones/tablets */
+                left: auto !important;
+                right: 15px !important;
+                width: calc(100vw - 30px) !important;
+                max-width: 350px !important;
             }
 
-            /* Anchor the arrow to the right side so it points at the FAB */
+            /* Move the arrow to the bottom right corner */
             .custom-register-tooltip .introjs-arrow.bottom {
                 left: auto !important;
-                right: 20px !important;    /* Tweak this to align perfectly over the center of the + button */
+                right: 15px !important;    /* Pushes the arrow strictly to the right corner */
                 margin-left: 0 !important;
             }
         }
