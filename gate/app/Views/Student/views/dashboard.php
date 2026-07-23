@@ -8,9 +8,116 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
 <?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
 
-    <!-- 1. Add Intro.js CSS -->
+    <!-- 1. Add Intro.js CSS and our Custom Modern Theme -->
 <?= $this->section('styles') ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+
+    <style>
+        /* --- GOATED ONBOARDING UI OVERRIDES --- */
+        .introjs-tooltip {
+            background: #ffffff !important;
+            border-radius: 1.25rem !important; /* Smooth rounded corners */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+            border: none !important;
+            padding: 24px !important;
+            max-width: 380px !important;
+            font-family: inherit !important;
+        }
+        /* Dark Mode Support */
+        html[data-bs-theme="dark"] .introjs-tooltip {
+            background: #1e1e2d !important;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important;
+        }
+
+        /* Typography & Hierarchy */
+        .introjs-tooltiptitle {
+            font-size: 1.25rem !important;
+            font-weight: 700 !important;
+            color: #0d47a1 !important; /* Your primary blue */
+            margin-bottom: 0.75rem !important;
+        }
+        html[data-bs-theme="dark"] .introjs-tooltiptitle {
+            color: #5d87ff !important;
+        }
+
+        .introjs-tooltiptext {
+            font-size: 0.95rem !important;
+            color: #495057 !important;
+            line-height: 1.6 !important;
+            padding-bottom: 1rem !important;
+        }
+        html[data-bs-theme="dark"] .introjs-tooltiptext {
+            color: #a1a5b7 !important;
+        }
+
+        /* Modern Pill Buttons */
+        .introjs-tooltipbuttons {
+            border-top: 1px solid #e9ecef !important;
+            padding-top: 1.25rem !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+        }
+        html[data-bs-theme="dark"] .introjs-tooltipbuttons {
+            border-top-color: #2b2b40 !important;
+        }
+
+        .introjs-button {
+            border-radius: 50rem !important; /* Pill shape */
+            padding: 0.6rem 1.25rem !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            text-shadow: none !important;
+            border: none !important;
+            background: #f1f3f5 !important;
+            color: #495057 !important;
+            box-shadow: none !important;
+            transition: all 0.2s ease;
+        }
+        .introjs-button:hover {
+            opacity: 0.8 !important;
+        }
+        html[data-bs-theme="dark"] .introjs-button {
+            background: #2b2b40 !important;
+            color: #f1f9ff !important;
+        }
+
+        /* Primary Action Buttons (Next/Done) */
+        .introjs-nextbutton, .introjs-donebutton {
+            background: #0d47a1 !important;
+            color: #ffffff !important;
+        }
+        html[data-bs-theme="dark"] .introjs-nextbutton, html[data-bs-theme="dark"] .introjs-donebutton {
+            background: #5d87ff !important;
+        }
+
+        /* Disabled State */
+        .introjs-disabled {
+            opacity: 0.4 !important;
+            cursor: not-allowed !important;
+        }
+
+        /* Elegant Progress Dots */
+        .introjs-bullets {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        .introjs-bullets ul li a {
+            background: #cbd5e1 !important;
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 50% !important;
+            transition: all 0.3s ease !important;
+        }
+        .introjs-bullets ul li a.active {
+            background: #0d47a1 !important;
+            width: 20px !important; /* Elongated active dot */
+            border-radius: 10px !important;
+        }
+        html[data-bs-theme="dark"] .introjs-bullets ul li a.active {
+            background: #5d87ff !important;
+        }
+    </style>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
@@ -73,7 +180,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 <?php endif; ?>
 
                 <div class="skeleton-wrapper">
-                    <!-- Skeletons remain unchanged -->
                     <div class="digital-id-card mb-4 rounded-4 overflow-hidden border border-light">
                         <div class="skeleton" style="height: 160px; border-radius: 15px 15px 0 0;"></div>
                         <div class="digital-id-body pb-4 bg-white rounded-bottom shadow-sm text-center position-relative">
@@ -128,7 +234,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         </div>
                     </div>
 
-                    <!-- 2. Added id="tour-campus-status" here -->
+                    <!-- Campus Status Element -->
                     <div id="tour-campus-status" class="card shadow-sm border-0">
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
                             <div>
@@ -158,7 +264,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             const termsModalEl = document.getElementById('termsModal');
             if (!termsModalEl) return;
 
-            // Prevent double-loading if it is already open
             if (termsModalEl.classList.contains('show')) return;
 
             const termsModal = new bootstrap.Modal(termsModalEl);
@@ -183,13 +288,11 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 };
             }
 
-            // Trigger the tutorial once the modal finishes closing
             termsModalEl.addEventListener('hidden.bs.modal', function () {
                 startOnboardingTour();
             }, { once: true });
         }
 
-        // Initialize modal on both fresh page loads and HTMX swaps
         document.addEventListener('DOMContentLoaded', initializeTermsModal);
         document.body.addEventListener('htmx:afterSettle', initializeTermsModal);
         <?php endif; ?>
@@ -207,7 +310,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             }, 600);
         }
 
-        // The Upgraded Tutorial Logic
+        // --- UPGRADED ONBOARDING LOGIC ---
         function startOnboardingTour() {
             if (typeof introJs === 'undefined') return;
 
@@ -215,14 +318,18 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
             if (!localStorage.getItem(tourStorageKey)) {
                 introJs().setOptions({
-                    showProgress: true,
-                    showStepNumbers: true,
-                    exitOnOverlayClick: false, // Prevents accidental closing
-                    doneLabel: 'Get Started',  // Custom finish button text
+                    showProgress: false,       // We are using custom dots (bullets) instead of a bar
+                    showStepNumbers: false,    // Hide ugly default numbers
+                    showBullets: true,         // Show our elegant progression dots
+                    exitOnOverlayClick: false, // Force user interaction
+                    keyboardNavigation: true,
+                    nextLabel: 'Next',
+                    prevLabel: 'Back',
+                    doneLabel: 'Get Started 🚀',
                     steps: [
                         {
                             title: '👋 Welcome to GATE!',
-                            intro: 'Let us take a quick 4-step tutorial to show you around your new Student Dashboard.'
+                            intro: 'Let us take a quick tour to show you around your new Student Dashboard.'
                         },
                         {
                             element: document.querySelector('#tour-digital-id'),
@@ -237,7 +344,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                             position: 'top'
                         },
                         {
-                            title: 'You are ready!',
+                            title: '🎉 You are ready!',
                             intro: 'Use the navigation menu below to register new items, view your scan history, or update your profile. Stay safe!'
                         }
                     ]
