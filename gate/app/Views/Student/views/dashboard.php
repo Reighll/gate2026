@@ -193,7 +193,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             /* Force the arrow to the right edge by targeting the base class */
             .custom-register-tooltip .introjs-arrow {
                 left: auto !important;     /* Disables Intro.js horizontal centering */
-                right: 30px !important;    /* Locks the arrow to the right corner */
+                right: 35px !important;    /* Locks the arrow to the right corner */
                 margin-left: 0 !important; /* Clears any lingering offsets */
             }
         }
