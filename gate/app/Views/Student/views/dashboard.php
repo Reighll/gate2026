@@ -8,153 +8,176 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
 <?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
 
-    <!-- 1. Add Intro.js CSS and our Custom Premium Theme -->
 <?= $this->section('styles') ?>
+    <!-- 1. Intro.js Core CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
 
+    <!-- 2. IRONCLAD PREMIUM UI OVERRIDES -->
     <style>
-        /* =========================================================
-           PREMIUM ONBOARDING UI (Forces structure & visual hierarchy)
-           ========================================================= */
-
-        /* The main tooltip box */
+        /* Force structural integrity against Bootstrap resets */
         .introjs-tooltip {
-            background-color: #ffffff !important;
-            border-radius: 20px !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0,0,0,0.05) !important;
-            border: 1px solid rgba(0,0,0,0.05) !important;
-            padding: 24px !important;
-            max-width: 400px !important;
-            font-family: inherit !important;
-            color: #333 !important;
-        }
-
-        /* The transparent cutout that highlights the element */
-        .introjs-helperLayer {
-            background-color: transparent !important;
+            position: absolute !important;
+            background: #ffffff !important;
             border-radius: 16px !important;
-            box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 0px 5000px, rgba(255, 255, 255, 0.5) 0px 0px 0px 2px !important;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06) !important;
+            padding: 24px !important;
+            width: 340px !important;
+            max-width: calc(100vw - 40px) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            border: none !important;
+            z-index: 9999999 !important;
+            box-sizing: border-box !important;
         }
 
-        /* Tooltip Arrows (must match the background of the box) */
-        .introjs-arrow.top { border-bottom-color: #ffffff !important; }
-        .introjs-arrow.bottom { border-top-color: #ffffff !important; }
-        .introjs-arrow.left { border-right-color: #ffffff !important; }
-        .introjs-arrow.right { border-left-color: #ffffff !important; }
+        /* The dark screen overlay */
+        .introjs-overlay {
+            background-color: rgba(17, 20, 45, 0.8) !important; /* Deep navy overlay */
+            z-index: 9999990 !important;
+        }
 
-        /* Typography: Title */
+        /* The transparent cutout target */
+        .introjs-helperLayer {
+            background: transparent !important;
+            border-radius: 12px !important;
+            box-shadow: 0 0 0 0 transparent !important;
+            border: 2px solid rgba(255, 255, 255, 0.6) !important; /* Soft glowing edge */
+            z-index: 9999995 !important;
+        }
+
+        /* Typography & Hierarchy */
         .introjs-tooltipheader {
             padding: 0 !important;
             margin-bottom: 12px !important;
         }
+
         .introjs-tooltiptitle {
+            font-family: "DM Sans", sans-serif !important;
             font-size: 1.25rem !important;
             font-weight: 700 !important;
-            color: #0d47a1 !important; /* GATE Primary Blue */
+            color: #1e4db7 !important; /* GATE Primary Blue */
             margin: 0 !important;
-            line-height: 1.2 !important;
+            line-height: 1.3 !important;
         }
 
-        /* Typography: Body Text */
         .introjs-tooltiptext {
+            font-family: "DM Sans", sans-serif !important;
             font-size: 0.95rem !important;
-            color: #55595c !important;
-            line-height: 1.5 !important;
+            color: #546269 !important; /* GATE text-muted */
+            line-height: 1.6 !important;
             padding: 0 0 20px 0 !important;
+            margin: 0 !important;
         }
 
-        /* Buttons Container */
+        /* Action Buttons Area */
         .introjs-tooltipbuttons {
-            border-top: 1px solid #f1f3f5 !important;
+            border-top: 1px solid #ecf0f2 !important;
             padding-top: 16px !important;
             display: flex !important;
-            justify-content: space-between !important;
             align-items: center !important;
+            justify-content: space-between !important;
         }
 
-        /* Base Button Styles */
+        /* Shared Button Traits */
         .introjs-button {
+            font-family: "DM Sans", sans-serif !important;
             border-radius: 50px !important;
             padding: 8px 20px !important;
-            font-weight: 600 !important;
             font-size: 0.9rem !important;
-            text-shadow: none !important;
-            border: none !important;
-            box-shadow: none !important;
-            transition: all 0.2s ease !important;
+            font-weight: 600 !important;
             cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            text-shadow: none !important;
+            background-image: none !important;
+            text-decoration: none !important;
         }
 
-        /* Secondary Action (Back/Skip) */
+        /* Secondary/Back Buttons */
         .introjs-prevbutton, .introjs-skipbutton {
-            background-color: transparent !important;
-            color: #6c757d !important;
+            background: transparent !important;
+            color: #777e89 !important;
+            border: none !important;
             padding-left: 0 !important;
+            box-shadow: none !important;
         }
         .introjs-prevbutton:hover, .introjs-skipbutton:hover {
-            color: #343a40 !important;
-            background-color: transparent !important;
+            color: #11142d !important;
         }
 
-        /* Primary Action (Next/Done) */
+        /* Primary Next/Done Buttons */
         .introjs-nextbutton, .introjs-donebutton {
-            background-color: #0d47a1 !important;
+            background: #1e4db7 !important;
             color: #ffffff !important;
-            box-shadow: 0 4px 10px rgba(13, 71, 161, 0.2) !important;
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(30, 77, 183, 0.25) !important;
         }
         .introjs-nextbutton:hover, .introjs-donebutton:hover {
-            background-color: #0a367a !important;
-            transform: translateY(-1px);
+            background: #183e92 !important;
+            transform: translateY(-2px) !important;
         }
 
-        /* Disabled State */
         .introjs-disabled {
             opacity: 0.4 !important;
             cursor: not-allowed !important;
             pointer-events: none !important;
         }
 
-        /* Elegant Progress Dots (Bullets) */
+        /* Custom Elongated Progress Bullets */
         .introjs-bullets {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
             display: flex !important;
             align-items: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
         .introjs-bullets ul li a {
-            background: #dee2e6 !important;
+            background: #ced4da !important;
             width: 8px !important;
             height: 8px !important;
             border-radius: 50% !important;
+            margin: 0 4px !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         .introjs-bullets ul li a.active {
-            background: #0d47a1 !important;
-            width: 24px !important; /* Elongated pill for active state */
+            background: #1e4db7 !important;
+            width: 24px !important; /* Extends into a pill shape */
             border-radius: 10px !important;
         }
 
+        /* Alignment Arrows */
+        .introjs-arrow.top { border-bottom-color: #ffffff !important; }
+        .introjs-arrow.bottom { border-top-color: #ffffff !important; }
+        .introjs-arrow.left { border-right-color: #ffffff !important; }
+        .introjs-arrow.right { border-left-color: #ffffff !important; }
+
         /* =========================================================
-           DARK MODE SUPPORT
+           FLAWLESS DARK MODE INTEGRATION
            ========================================================= */
         html[data-bs-theme="dark"] .introjs-tooltip {
-            background-color: #1e1e2d !important;
-            border-color: #2b2b40 !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+            background: #223640 !important; /* GATE Dark Card BG */
+            border: 1px solid #4f5467 !important;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4) !important;
         }
-        html[data-bs-theme="dark"] .introjs-arrow.top { border-bottom-color: #1e1e2d !important; }
-        html[data-bs-theme="dark"] .introjs-arrow.bottom { border-top-color: #1e1e2d !important; }
-        html[data-bs-theme="dark"] .introjs-arrow.left { border-right-color: #1e1e2d !important; }
-        html[data-bs-theme="dark"] .introjs-arrow.right { border-left-color: #1e1e2d !important; }
-        html[data-bs-theme="dark"] .introjs-tooltiptitle { color: #5d87ff !important; }
-        html[data-bs-theme="dark"] .introjs-tooltiptext { color: #a1a5b7 !important; }
-        html[data-bs-theme="dark"] .introjs-tooltipbuttons { border-top-color: #2b2b40 !important; }
+        html[data-bs-theme="dark"] .introjs-tooltiptitle { color: #8bb4fa !important; }
+        html[data-bs-theme="dark"] .introjs-tooltiptext { color: #f1f9ff !important; }
+        html[data-bs-theme="dark"] .introjs-tooltipbuttons { border-top-color: #4f5467 !important; }
+
         html[data-bs-theme="dark"] .introjs-prevbutton,
-        html[data-bs-theme="dark"] .introjs-skipbutton { color: #a1a5b7 !important; }
+        html[data-bs-theme="dark"] .introjs-skipbutton { color: #a1aab2 !important; }
+        html[data-bs-theme="dark"] .introjs-prevbutton:hover,
+        html[data-bs-theme="dark"] .introjs-skipbutton:hover { color: #ffffff !important; }
+
         html[data-bs-theme="dark"] .introjs-nextbutton,
-        html[data-bs-theme="dark"] .introjs-donebutton { background-color: #5d87ff !important; }
-        html[data-bs-theme="dark"] .introjs-bullets ul li a { background: #3f4254 !important; }
-        html[data-bs-theme="dark"] .introjs-bullets ul li a.active { background: #5d87ff !important; }
+        html[data-bs-theme="dark"] .introjs-donebutton { background: #8bb4fa !important; color: #11142d !important; }
+        html[data-bs-theme="dark"] .introjs-nextbutton:hover,
+        html[data-bs-theme="dark"] .introjs-donebutton:hover { background: #a5c7ff !important; }
+
+        html[data-bs-theme="dark"] .introjs-bullets ul li a { background: #4f5467 !important; }
+        html[data-bs-theme="dark"] .introjs-bullets ul li a.active { background: #8bb4fa !important; }
+
+        html[data-bs-theme="dark"] .introjs-arrow.top { border-bottom-color: #223640 !important; }
+        html[data-bs-theme="dark"] .introjs-arrow.bottom { border-top-color: #223640 !important; }
+        html[data-bs-theme="dark"] .introjs-arrow.left { border-right-color: #223640 !important; }
+        html[data-bs-theme="dark"] .introjs-arrow.right { border-left-color: #223640 !important; }
     </style>
 <?= $this->endSection() ?>
 
@@ -218,7 +241,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 <?php endif; ?>
 
                 <div class="skeleton-wrapper">
-                    <!-- Skeletons remain unchanged -->
                     <div class="digital-id-card mb-4 rounded-4 overflow-hidden border border-light">
                         <div class="skeleton" style="height: 160px; border-radius: 15px 15px 0 0;"></div>
                         <div class="digital-id-body pb-4 bg-white rounded-bottom shadow-sm text-center position-relative">
@@ -294,7 +316,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-    <!-- Intro.js JavaScript library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 
     <script>
@@ -349,7 +370,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             }, 600);
         }
 
-        // --- UPGRADED ONBOARDING LOGIC ---
         function startOnboardingTour() {
             if (typeof introJs === 'undefined') return;
 
