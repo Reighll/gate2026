@@ -388,7 +388,14 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
             if (!localStorage.getItem(tourStorageKey)) {
 
-                // Construct the steps dynamically based on available elements
+                // Determine if we are on mobile or desktop layout
+                const isMobile = window.innerWidth < 992;
+
+                // Select the correct registration element depending on the screen size
+                const registerTarget = isMobile
+                    ? document.querySelector('.mobile-fab')
+                    : document.querySelector('.sidebar-link[href*="items"]'); // Adjust to match your sidebar link href if needed
+
                 let tourSteps = [
                     {
                         title: '👋 Welcome to GATE!',
@@ -408,22 +415,22 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     }
                 ];
 
-                // Dynamically find the registration button (Mobile FAB or Desktop Sidebar Link)
-                const registerTarget = document.querySelector('.mobile-fab') || document.querySelector('.sidebar-link[href*="registration"]');
-
-                if (registerTarget && window.getComputedStyle(registerTarget).display !== 'none') {
+                // Add the registration step pointing to the correct UI element
+                if (registerTarget) {
                     tourSteps.push({
                         element: registerTarget,
                         title: '➕ Register Items',
-                        intro: 'Click here to register your laptops and other equipment to use as your gate pass.',
-                        position: 'top' // Will auto-adjust if there isn't enough space
+                        intro: isMobile
+                            ? 'Tap this floating button to register your laptops and equipment for your gate pass.'
+                            : 'Click here in the sidebar anytime to register your personal equipment.',
+                        position: isMobile ? 'top' : 'right'
                     });
                 }
 
-                // Add the final step
+                // Final step
                 tourSteps.push({
                     title: '🎉 You are ready!',
-                    intro: 'Use the navigation menu below to view your scan history or update your profile. Stay safe!'
+                    intro: 'You can now use your portal securely. Stay safe!'
                 });
 
                 introJs().setOptions({
