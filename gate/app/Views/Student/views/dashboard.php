@@ -9,10 +9,8 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 <?= $this->section('title') ?>Dashboard | Student Portal<?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
-    <!-- 1. Intro.js Core CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
 
-    <!-- 2. IRONCLAD PREMIUM UI OVERRIDES -->
     <style>
         /* Force structural integrity against Bootstrap resets */
         .introjs-tooltip {
@@ -30,9 +28,28 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             box-sizing: border-box !important;
         }
 
+        /* --- MOBILE ADAPTIVE SCALING --- */
+        @media (max-width: 576px) {
+            .introjs-tooltip {
+                width: 90vw !important; /* Scales to 90% of phone screen width */
+                padding: 18px !important; /* Tighter padding for mobile */
+                border-radius: 14px !important;
+            }
+            .introjs-tooltiptitle {
+                font-size: 1.15rem !important; /* Slightly smaller title */
+            }
+            .introjs-tooltiptext {
+                font-size: 0.9rem !important; /* Slightly smaller text */
+            }
+            .introjs-button {
+                padding: 6px 16px !important; /* Compact buttons */
+                font-size: 0.85rem !important;
+            }
+        }
+
         /* The dark screen overlay */
         .introjs-overlay {
-            background-color: rgba(17, 20, 45, 0.8) !important; /* Deep navy overlay */
+            background-color: rgba(17, 20, 45, 0.8) !important;
             z-index: 9999990 !important;
         }
 
@@ -41,7 +58,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             background: transparent !important;
             border-radius: 12px !important;
             box-shadow: 0 0 0 0 transparent !important;
-            border: 2px solid rgba(255, 255, 255, 0.6) !important; /* Soft glowing edge */
+            border: 2px solid rgba(255, 255, 255, 0.6) !important;
             z-index: 9999995 !important;
         }
 
@@ -55,7 +72,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             font-family: "DM Sans", sans-serif !important;
             font-size: 1.25rem !important;
             font-weight: 700 !important;
-            color: #1e4db7 !important; /* GATE Primary Blue */
+            color: #1e4db7 !important;
             margin: 0 !important;
             line-height: 1.3 !important;
         }
@@ -63,7 +80,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         .introjs-tooltiptext {
             font-family: "DM Sans", sans-serif !important;
             font-size: 0.95rem !important;
-            color: #546269 !important; /* GATE text-muted */
+            color: #546269 !important;
             line-height: 1.6 !important;
             padding: 0 0 20px 0 !important;
             margin: 0 !important;
@@ -139,7 +156,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         }
         .introjs-bullets ul li a.active {
             background: #1e4db7 !important;
-            width: 24px !important; /* Extends into a pill shape */
+            width: 24px !important;
             border-radius: 10px !important;
         }
 
@@ -149,31 +166,25 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         .introjs-arrow.left { border-right-color: #ffffff !important; }
         .introjs-arrow.right { border-left-color: #ffffff !important; }
 
-        /* =========================================================
-           FLAWLESS DARK MODE INTEGRATION
-           ========================================================= */
+        /* DARK MODE INTEGRATION */
         html[data-bs-theme="dark"] .introjs-tooltip {
-            background: #223640 !important; /* GATE Dark Card BG */
+            background: #223640 !important;
             border: 1px solid #4f5467 !important;
             box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4) !important;
         }
         html[data-bs-theme="dark"] .introjs-tooltiptitle { color: #8bb4fa !important; }
         html[data-bs-theme="dark"] .introjs-tooltiptext { color: #f1f9ff !important; }
         html[data-bs-theme="dark"] .introjs-tooltipbuttons { border-top-color: #4f5467 !important; }
-
         html[data-bs-theme="dark"] .introjs-prevbutton,
         html[data-bs-theme="dark"] .introjs-skipbutton { color: #a1aab2 !important; }
         html[data-bs-theme="dark"] .introjs-prevbutton:hover,
         html[data-bs-theme="dark"] .introjs-skipbutton:hover { color: #ffffff !important; }
-
         html[data-bs-theme="dark"] .introjs-nextbutton,
         html[data-bs-theme="dark"] .introjs-donebutton { background: #8bb4fa !important; color: #11142d !important; }
         html[data-bs-theme="dark"] .introjs-nextbutton:hover,
         html[data-bs-theme="dark"] .introjs-donebutton:hover { background: #a5c7ff !important; }
-
         html[data-bs-theme="dark"] .introjs-bullets ul li a { background: #4f5467 !important; }
         html[data-bs-theme="dark"] .introjs-bullets ul li a.active { background: #8bb4fa !important; }
-
         html[data-bs-theme="dark"] .introjs-arrow.top { border-bottom-color: #223640 !important; }
         html[data-bs-theme="dark"] .introjs-arrow.bottom { border-top-color: #223640 !important; }
         html[data-bs-theme="dark"] .introjs-arrow.left { border-right-color: #223640 !important; }
@@ -376,6 +387,45 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             const tourStorageKey = 'hasSeenDashboardTour_<?= esc(session()->get('student_id')) ?>';
 
             if (!localStorage.getItem(tourStorageKey)) {
+
+                // Construct the steps dynamically based on available elements
+                let tourSteps = [
+                    {
+                        title: '👋 Welcome to GATE!',
+                        intro: 'Let us take a quick tour to show you around your new Student Dashboard.'
+                    },
+                    {
+                        element: document.querySelector('#tour-digital-id'),
+                        title: 'Your Digital ID',
+                        intro: 'This is your official digital ID card. Security personnel may ask to see this when verifying your identity.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: document.querySelector('#tour-campus-status'),
+                        title: 'Campus Status',
+                        intro: 'This updates automatically when you tap your registered items at the gate, letting you know your current campus location.',
+                        position: 'top'
+                    }
+                ];
+
+                // Dynamically find the registration button (Mobile FAB or Desktop Sidebar Link)
+                const registerTarget = document.querySelector('.mobile-fab') || document.querySelector('.sidebar-link[href*="registration"]');
+
+                if (registerTarget && window.getComputedStyle(registerTarget).display !== 'none') {
+                    tourSteps.push({
+                        element: registerTarget,
+                        title: '➕ Register Items',
+                        intro: 'Click here to register your laptops and other equipment to use as your gate pass.',
+                        position: 'top' // Will auto-adjust if there isn't enough space
+                    });
+                }
+
+                // Add the final step
+                tourSteps.push({
+                    title: '🎉 You are ready!',
+                    intro: 'Use the navigation menu below to view your scan history or update your profile. Stay safe!'
+                });
+
                 introJs().setOptions({
                     showProgress: false,
                     showStepNumbers: false,
@@ -385,28 +435,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     nextLabel: 'Next',
                     prevLabel: 'Back',
                     doneLabel: 'Get Started 🚀',
-                    steps: [
-                        {
-                            title: '👋 Welcome to GATE!',
-                            intro: 'Let us take a quick tour to show you around your new Student Dashboard.'
-                        },
-                        {
-                            element: document.querySelector('#tour-digital-id'),
-                            title: 'Your Digital ID',
-                            intro: 'This is your official digital ID card. Security personnel may ask to see this when verifying your identity.',
-                            position: 'bottom'
-                        },
-                        {
-                            element: document.querySelector('#tour-campus-status'),
-                            title: 'Campus Status',
-                            intro: 'This updates automatically when you tap your registered items at the gate, letting you know your current campus location.',
-                            position: 'top'
-                        },
-                        {
-                            title: '🎉 You are ready!',
-                            intro: 'Use the navigation menu below to register new items, view your scan history, or update your profile. Stay safe!'
-                        }
-                    ]
+                    steps: tourSteps
                 }).oncomplete(function() {
                     localStorage.setItem(tourStorageKey, 'true');
                 }).onexit(function() {
