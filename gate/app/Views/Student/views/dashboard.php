@@ -166,6 +166,21 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         .introjs-arrow.left { border-right-color: #ffffff !important; }
         .introjs-arrow.right { border-left-color: #ffffff !important; }
 
+        /* --- ARROW ALIGNMENT FIXES FOR REGISTER TOOLTIP --- */
+
+        /* Desktop (Arrow pointing left towards the sidebar) */
+        .custom-register-tooltip .introjs-arrow.left {
+            top: 20px !important; /* Elevates the arrow to align with the icon rather than the block center */
+        }
+
+        /* Mobile (Arrow pointing down towards the FAB) */
+        @media (max-width: 991px) {
+            .custom-register-tooltip .introjs-arrow.bottom {
+                /* Shifts the arrow to the right side of the tooltip to align with the bottom-right FAB */
+                left: 85% !important;
+            }
+        }
+
         /* DARK MODE INTEGRATION */
         html[data-bs-theme="dark"] .introjs-tooltip {
             background: #223640 !important;
@@ -423,7 +438,8 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         intro: isMobile
                             ? 'Tap this floating button to register your laptops and equipment for your gate pass.'
                             : 'Click here in the sidebar anytime to register your personal equipment.',
-                        position: isMobile ? 'top' : 'right'
+                        position: isMobile ? 'top' : 'right',
+                        tooltipClass: 'custom-register-tooltip' // Assigning a custom class for targeted CSS fixes
                     });
                 }
 
