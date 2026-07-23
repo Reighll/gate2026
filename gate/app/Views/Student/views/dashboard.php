@@ -446,7 +446,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
                 let tourSteps = [
                     {
-                        title: '👋 Welcome to GATE!',
+                        title: 'Welcome to GATE!',
                         intro: 'Let us take a quick tour to show you around your new Student Dashboard.'
                     },
                     {
@@ -467,7 +467,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 if (registerTarget) {
                     tourSteps.push({
                         element: registerTarget,
-                        title: '➕ Register Items',
+                        title: 'Register Items',
                         intro: isMobile
                             ? 'Tap this floating button to register your laptops and equipment for your gate pass.'
                             : 'Click here in the sidebar anytime to register your personal equipment.',
@@ -478,7 +478,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
                 // Final step
                 tourSteps.push({
-                    title: '🎉 You are ready!',
+                    title: 'You are now ready!',
                     intro: 'You can now use your portal securely. Stay safe!'
                 });
 
