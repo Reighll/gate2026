@@ -378,6 +378,27 @@ $slideIn = (strpos($referrer, 'profile') !== false);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 
     <script>
+        // ---------------------------------------------------------------
+        // Shared handoff helper: navigates via an injected HTMX anchor so
+        // the SPA transition (hx-target="#app-content") stays seamless
+        // instead of doing a hard window.location redirect.
+        // Duplicated on every tour-chain page since each HTMX fragment
+        // loads its own <script> block independently.
+        // ---------------------------------------------------------------
+        function gateTourNavigate(url) {
+            const link = document.createElement('a');
+            link.setAttribute('href', 'javascript:void(0);');
+            link.setAttribute('hx-get', url);
+            link.setAttribute('hx-target', '#app-content');
+            link.setAttribute('hx-select', '#app-content');
+            link.setAttribute('hx-push-url', 'true');
+            link.setAttribute('hx-swap', 'outerHTML swap:300ms');
+            link.setAttribute('hx-indicator', '#page-transition-loader');
+            document.body.appendChild(link);
+            htmx.process(link);
+            link.click();
+        }
+
         <?php if (!empty($showTermsModal)): ?>
         function initializeTermsModal() {
             const termsModalEl = document.getElementById('termsModal');
@@ -489,10 +510,10 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         position: isMobile ? 'top' : 'right'
                     });
                 }
-                // NEW: Updated Final step for Multi-Page Tour
+                // Final step for this segment — next stop is Item Registration
                 tourSteps.push({
-                    title: 'Let\'s see your items!',
-                    intro: 'Next, we will automatically take you to your Registered Items page to continue the tour.'
+                    title: 'Let\'s register your first item!',
+                    intro: 'Next, we\'ll take you to Item Registration to continue the tour.'
                 });
 
                 introJs().setOptions({
@@ -509,13 +530,14 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     // 1. Mark the dashboard tour as completed so it doesn't show again
                     localStorage.setItem(tourStorageKey, 'true');
 
-                    // 2. Set the "Handoff" flag for the next page
-                    localStorage.setItem('gate_tour_items_pending', 'true');
+                    // 2. Set the "Handoff" flag for the next page (Item Registration)
+                    localStorage.setItem('gate_tour_reg_pending', 'true');
 
-                    // 3. Redirect the user to the Registered Items page
-                    // (Adjust the URL below if your route is different)
-                    window.location.href = '<?= base_url('student/registered-items') ?>';
+                    // 3. Hand off via the injected-HTMX-anchor pattern, not a hard redirect
+                    gateTourNavigate('<?= base_url('student/item-registration') ?>');
                 }).onexit(function() {
+                    // Cancelling the tour marks it seen so it won't auto-restart,
+                    // and does NOT set any handoff flag — the chain simply stops here.
                     localStorage.setItem(tourStorageKey, 'true');
                 }).start();
             }

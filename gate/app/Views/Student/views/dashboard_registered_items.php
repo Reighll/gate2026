@@ -1,6 +1,8 @@
 <?php
 $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 'Student/layout/main';
 ?>
+<?= $this->extend($layout) ?>
+<?= $this->section('title') ?>Registered Items | Student Portal<?= $this->endSection() ?>
 <?= $this->section('styles') ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
     <style>
@@ -9,27 +11,27 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
         .introjs-helperLayer { background: rgba(0, 0, 0, 0.15) !important; border-radius: 12px !important; z-index: 9999995 !important; }
         .introjs-tooltip { border-radius: 16px !important; }
 
-     /* =========================================
-        1. COLOR VARIABLES (THEME MANAGEMENT)
-        ========================================= */
+        /* =========================================
+           1. COLOR VARIABLES (THEME MANAGEMENT)
+           ========================================= */
 
-             /* Light Mode (Default) Colors */
-         :root {
-             --tour-bg: #ffffff;
-             --tour-border: none;
-             --tour-title: #1e4db7;
-             --tour-text: #546269;
-             --tour-btn-top-border: 1px solid #ecf0f2;
-             --tour-prev-color: #777e89;
-             --tour-prev-hover: #11142d;
-             --tour-next-bg: #1e4db7;
-             --tour-next-color: #ffffff;
-             --tour-next-hover: #183e92;
-             --tour-bullet: #ced4da;
-             --tour-bullet-active: #1e4db7;
-             --tour-arrow: #ffffff;
-             --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
-         }
+        /* Light Mode (Default) Colors */
+        :root {
+            --tour-bg: #ffffff;
+            --tour-border: none;
+            --tour-title: #1e4db7;
+            --tour-text: #546269;
+            --tour-btn-top-border: 1px solid #ecf0f2;
+            --tour-prev-color: #777e89;
+            --tour-prev-hover: #11142d;
+            --tour-next-bg: #1e4db7;
+            --tour-next-color: #ffffff;
+            --tour-next-hover: #183e92;
+            --tour-bullet: #ced4da;
+            --tour-bullet-active: #1e4db7;
+            --tour-arrow: #ffffff;
+            --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+        }
 
         /* Dark Mode Colors */
         html[data-bs-theme="dark"] {
@@ -236,8 +238,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
         }
     </style>
 <?= $this->endSection() ?>
-<?= $this->extend($layout) ?>
-<?= $this->section('title') ?>Registered Items | Student Portal<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
     <div class=" page-transition-container pt-5 mt-4">
@@ -600,6 +600,20 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 
     <script>
+        function gateTourNavigate(url) {
+            const link = document.createElement('a');
+            link.setAttribute('href', 'javascript:void(0);');
+            link.setAttribute('hx-get', url);
+            link.setAttribute('hx-target', '#app-content');
+            link.setAttribute('hx-select', '#app-content');
+            link.setAttribute('hx-push-url', 'true');
+            link.setAttribute('hx-swap', 'outerHTML swap:300ms');
+            link.setAttribute('hx-indicator', '#page-transition-loader');
+            document.body.appendChild(link);
+            htmx.process(link);
+            link.click();
+        }
+
         function hideMySkeletons() {
             setTimeout(() => {
                 document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
@@ -643,8 +657,17 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                             title: 'Item Status',
                             intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status.',
                             position: 'top'
+                        },
+                        {
+                            title: 'Removing an item',
+                            intro: 'Next, we\'ll take you to the Remove Item page in case you ever need to unregister something.'
                         }
                     ]
+                }).oncomplete(function() {
+                    localStorage.setItem('gate_tour_remove_pending', 'true');
+                    gateTourNavigate('<?= base_url('student/remove-item') ?>');
+                }).onexit(function() {
+                    // Cancelled — chain simply stops here.
                 }).start();
             }
         }
