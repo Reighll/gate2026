@@ -93,13 +93,13 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
         /* The dark screen overlay */
         .introjs-overlay {
-            background-color: rgba(17, 20, 45, 0.8) !important;
+            background-color: rgba(17, 20, 45, 0.95) !important; /* Increased opacity for a darker background */
             z-index: 9999990 !important;
         }
 
         /* The transparent cutout target */
         .introjs-helperLayer {
-            background: transparent !important;
+            background: rgba(0, 0, 0, 0.15) !important; /* Adds a subtle dim effect over the highlighted element */
             border-radius: 12px !important;
             box-shadow: 0 0 0 0 transparent !important;
             border: 2px solid rgba(255, 255, 255, 0.6) !important;
@@ -475,7 +475,20 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         tooltipClass: 'custom-register-tooltip' // Assigning a custom class for targeted CSS fixes
                     });
                 }
+                // Target the entire navigation bar depending on the screen size
+                // IMPORTANT: Replace '.bottom-nav' and '.sidebar' with the actual CSS classes or IDs used in your HTML layout!
+                const navTarget = isMobile
+                    ? document.querySelector('.bottom-nav') // Your mobile bottom navigation container
+                    : document.querySelector('.sidebar');   // Your desktop sidebar container
 
+                if (navTarget) {
+                    tourSteps.push({
+                        element: navTarget,
+                        title: '🧭 Exploring Other Pages',
+                        intro: 'Use this menu to navigate to your Registered Items list, view your Entry History, and check for any Violation alerts.',
+                        position: isMobile ? 'top' : 'right'
+                    });
+                }
                 // Final step
                 tourSteps.push({
                     title: 'You are now ready!',
