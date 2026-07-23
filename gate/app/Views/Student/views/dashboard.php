@@ -190,12 +190,11 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 max-width: 350px !important;
             }
 
-            /* Move the arrow to the bottom right corner */
-            .custom-register-tooltip .introjs-arrow.bottom {
-                /* We force the left position to the absolute end of the box, minus 45px for padding */
-                left: calc(100% - 45px) !important;
-                right: auto !important;
-                margin-left: 0 !important;
+            /* Force the arrow to the right edge by targeting the base class */
+            .custom-register-tooltip .introjs-arrow {
+                left: auto !important;     /* Disables Intro.js horizontal centering */
+                right: 30px !important;    /* Locks the arrow to the right corner */
+                margin-left: 0 !important; /* Clears any lingering offsets */
             }
         }
 
