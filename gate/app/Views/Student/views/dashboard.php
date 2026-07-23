@@ -514,7 +514,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
                     // 3. Redirect the user to the Registered Items page
                     // (Adjust the URL below if your route is different)
-                    window.location.href = '<?= base_url('student/items') ?>';
+                    window.location.href = '<?= base_url('student/registered-items') ?>';
                 }).onexit(function() {
                     localStorage.setItem(tourStorageKey, 'true');
                 }).start();
