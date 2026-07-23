@@ -168,16 +168,20 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
         /* --- ARROW ALIGNMENT FIXES FOR REGISTER TOOLTIP --- */
 
-        /* Desktop (Arrow pointing left towards the sidebar) */
-        .custom-register-tooltip .introjs-arrow.left {
-            top: 20px !important; /* Elevates the arrow to align with the icon rather than the block center */
+        /* Desktop: Pointing left towards the sidebar icon */
+        @media (min-width: 992px) {
+            .custom-register-tooltip .introjs-arrow.left {
+                top: 28px !important; /* Locks the arrow to the height of the icon */
+                margin-top: 0 !important;
+            }
         }
 
-        /* Mobile (Arrow pointing down towards the FAB) */
+        /* Mobile/Tablet: Pointing down towards the bottom-right FAB */
         @media (max-width: 991px) {
             .custom-register-tooltip .introjs-arrow.bottom {
-                /* Shifts the arrow to the right side of the tooltip to align with the bottom-right FAB */
-                left: 85% !important;
+                left: auto !important;     /* Removes the default horizontal centering */
+                right: 35px !important;    /* Anchors the arrow exactly above the FAB */
+                margin-left: 0 !important; /* Clears any default Intro.js offsets */
             }
         }
 
