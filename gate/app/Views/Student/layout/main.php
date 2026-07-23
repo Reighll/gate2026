@@ -58,6 +58,154 @@
 
     <?= $this->renderSection('styles') ?>
 
+    <!-- Intro.js — loaded once, globally, so the onboarding tour doesn't
+         depend on per-page <script>/<link> tags surviving HTMX swaps. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+    <style>
+        :root {
+            --tour-bg: #ffffff;
+            --tour-border: none;
+            --tour-title: #1e4db7;
+            --tour-text: #546269;
+            --tour-btn-top-border: 1px solid #ecf0f2;
+            --tour-prev-color: #777e89;
+            --tour-prev-hover: #11142d;
+            --tour-next-bg: #1e4db7;
+            --tour-next-color: #ffffff;
+            --tour-next-hover: #183e92;
+            --tour-bullet: #ced4da;
+            --tour-bullet-active: #1e4db7;
+            --tour-arrow: #ffffff;
+            --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+        }
+        html[data-bs-theme="dark"] {
+            --tour-bg: #223640;
+            --tour-border: 1px solid #4f5467;
+            --tour-title: #8bb4fa;
+            --tour-text: #f1f9ff;
+            --tour-btn-top-border: 1px solid #4f5467;
+            --tour-prev-color: #a1aab2;
+            --tour-prev-hover: #ffffff;
+            --tour-next-bg: #8bb4fa;
+            --tour-next-color: #11142d;
+            --tour-next-hover: #a5c7ff;
+            --tour-bullet: #4f5467;
+            --tour-bullet-active: #8bb4fa;
+            --tour-arrow: #223640;
+            --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+        }
+        .introjs-tooltip {
+            position: absolute !important;
+            background: var(--tour-bg) !important;
+            border: var(--tour-border) !important;
+            border-radius: 16px !important;
+            box-shadow: var(--tour-shadow) !important;
+            padding: 24px !important;
+            width: 340px !important;
+            max-width: calc(100vw - 40px) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 9999999 !important;
+            box-sizing: border-box !important;
+        }
+        @media (max-width: 576px) {
+            .introjs-tooltip { width: 90vw !important; padding: 18px !important; border-radius: 14px !important; }
+            .introjs-tooltiptitle { font-size: 1.15rem !important; }
+            .introjs-tooltiptext { font-size: 0.9rem !important; }
+            .introjs-button { padding: 6px 16px !important; font-size: 0.85rem !important; }
+        }
+        .introjs-overlay { background-color: rgba(17, 20, 45, 0.95) !important; z-index: 9999990 !important; }
+        .introjs-helperLayer {
+            background: rgba(0, 0, 0, 0.15) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 0 0 0 transparent !important;
+            border: 2px solid rgba(255, 255, 255, 0.6) !important;
+            z-index: 9999995 !important;
+        }
+        .introjs-tooltipheader { padding: 0 !important; margin-bottom: 12px !important; }
+        .introjs-tooltiptitle {
+            font-family: "DM Sans", sans-serif !important;
+            font-size: 1.25rem !important;
+            font-weight: 700 !important;
+            color: var(--tour-title) !important;
+            margin: 0 !important;
+            line-height: 1.3 !important;
+        }
+        .introjs-tooltiptext {
+            font-family: "DM Sans", sans-serif !important;
+            font-size: 0.95rem !important;
+            color: var(--tour-text) !important;
+            line-height: 1.6 !important;
+            padding: 0 0 20px 0 !important;
+            margin: 0 !important;
+        }
+        .introjs-tooltipbuttons {
+            border-top: var(--tour-btn-top-border) !important;
+            padding-top: 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        .introjs-button {
+            font-family: "DM Sans", sans-serif !important;
+            border-radius: 50px !important;
+            padding: 8px 20px !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            text-shadow: none !important;
+            background-image: none !important;
+            text-decoration: none !important;
+        }
+        .introjs-prevbutton, .introjs-skipbutton {
+            background: transparent !important;
+            color: var(--tour-prev-color) !important;
+            border: none !important;
+            padding-left: 0 !important;
+            box-shadow: none !important;
+        }
+        .introjs-prevbutton:hover, .introjs-skipbutton:hover { color: var(--tour-prev-hover) !important; }
+        .introjs-nextbutton, .introjs-donebutton {
+            background: var(--tour-next-bg) !important;
+            color: var(--tour-next-color) !important;
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(0,0,0, 0.15) !important;
+        }
+        .introjs-nextbutton:hover, .introjs-donebutton:hover {
+            background: var(--tour-next-hover) !important;
+            transform: translateY(-2px) !important;
+        }
+        .introjs-disabled { opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important; }
+        .introjs-bullets { display: flex !important; align-items: center !important; padding: 0 !important; margin: 0 !important; }
+        .introjs-bullets ul li a {
+            background: var(--tour-bullet) !important;
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 50% !important;
+            margin: 0 4px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .introjs-bullets ul li a.active { background: var(--tour-bullet-active) !important; width: 24px !important; border-radius: 10px !important; }
+        .introjs-arrow.top { border-bottom-color: var(--tour-arrow) !important; }
+        .introjs-arrow.bottom { border-top-color: var(--tour-arrow) !important; }
+        .introjs-arrow.left { border-right-color: var(--tour-arrow) !important; }
+        .introjs-arrow.right { border-left-color: var(--tour-arrow) !important; }
+        @media (min-width: 992px) {
+            .custom-register-tooltip { margin-top: -35px !important; }
+            .custom-register-tooltip .introjs-arrow.left { top: 15px !important; margin-top: 0 !important; }
+        }
+        @media (max-width: 991px) {
+            .custom-register-tooltip {
+                left: auto !important;
+                right: 15px !important;
+                width: calc(100vw - 30px) !important;
+                max-width: 350px !important;
+            }
+            .custom-register-tooltip .introjs-arrow { left: auto !important; right: 10px !important; margin-left: 0 !important; }
+        }
+    </style>
+
 </head>
 <body>
 <div id="initial-loader"><div class="ring"></div></div>
@@ -95,6 +243,7 @@
 
 <script src="<?= base_url('assets/libs/jquery/dist/jquery.min.js') ?>"></script>
 <script src="<?= base_url('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') ?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 <script src="<?= base_url('assets/js/sidebarmenu.js') ?>"></script>
 <script src="<?= base_url('assets/js/app.min.js') ?>"></script>
 <script src="<?= base_url('assets/libs/simplebar/dist/simplebar.js') ?>"></script>
@@ -132,6 +281,92 @@
         hideMySkeletons();
     });
 
+    // ================================================================
+    // GATE ONBOARDING TOUR — centralized dispatcher.
+    //
+    // This intentionally does NOT live in each page's own 'scripts'
+    // section. Per-page <script> blocks are not guaranteed to
+    // re-execute reliably when their markup arrives via an HTMX swap
+    // (a well-known browser quirk: <script> elements inserted through
+    // innerHTML-style parsing are marked inert unless explicitly
+    // recreated — htmx's own swap handling for hx-select'd fragments
+    // doesn't always trigger that recreation). That's why the tour
+    // previously only "showed up" after a hard refresh.
+    //
+    // Instead, all catch/handoff logic lives here, driven by the
+    // htmx:afterSettle listener below — which is bound exactly once
+    // at initial page load and simply re-runs on every swap, the same
+    // way nav-highlighting and skeleton-hiding already reliably do.
+    // ================================================================
+    function gateTourNavigate(url) {
+        const link = document.createElement('a');
+        link.setAttribute('href', 'javascript:void(0);');
+        link.setAttribute('hx-get', url);
+        link.setAttribute('hx-target', '#app-content');
+        link.setAttribute('hx-select', '#app-content');
+        link.setAttribute('hx-push-url', 'true');
+        link.setAttribute('hx-swap', 'outerHTML swap:300ms');
+        link.setAttribute('hx-indicator', '#page-transition-loader');
+        document.body.appendChild(link);
+        htmx.process(link);
+        link.click();
+    }
+
+    function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel) {
+        if (typeof introJs === 'undefined') return;
+        if (localStorage.getItem(flagKey) !== 'true') return;
+        localStorage.removeItem(flagKey);
+
+        introJs().setOptions({
+            showProgress: false,
+            showStepNumbers: false,
+            showBullets: true,
+            exitOnOverlayClick: false,
+            keyboardNavigation: true,
+            nextLabel: 'Next',
+            prevLabel: 'Back',
+            doneLabel: doneLabel || 'Next Page 🚀',
+            steps: steps
+        }).oncomplete(function () {
+            if (nextFlagKey && nextUrl) {
+                localStorage.setItem(nextFlagKey, 'true');
+                gateTourNavigate(nextUrl);
+            }
+        }).onexit(function () {
+            // Cancelled — chain simply stops here, nothing further happens.
+        }).start();
+    }
+
+    function checkGateTourHandoff() {
+        const path = window.location.pathname;
+
+        if (path.includes('registered-items')) {
+            runGateTourStep('gate_tour_items_pending', 'gate_tour_remove_pending', '<?= base_url('student/remove-item') ?>', [
+                { title: 'Your Equipment Hub', intro: 'Welcome to the Registered Items page! This is where you can manage all the devices you bring into the GATE system.' },
+                { element: document.querySelector('.real-wrapper'), title: 'Item Status', intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status.', position: 'top' },
+                { title: 'Removing an item', intro: "Next, we'll take you to the Remove Item page in case you ever need to unregister something." }
+            ]);
+        } else if (path.includes('remove-item')) {
+            runGateTourStep('gate_tour_remove_pending', 'gate_tour_report_pending', '<?= base_url('student/report-item') ?>', [
+                { title: 'Unregistering an Item', intro: 'If you sell, lose, or stop using a device, this is where you request to have it removed from your gate pass.' },
+                { element: document.querySelector('.real-wrapper'), title: 'Request Removal', intro: 'Tap "Unregister" on any item card, and an admin will review your request.', position: 'top' },
+                { title: 'Reporting a lost item', intro: "Next, we'll take you to the Report Item page — useful if something goes missing on campus." }
+            ]);
+        } else if (path.includes('report-item')) {
+            runGateTourStep('gate_tour_report_pending', 'gate_tour_history_pending', '<?= base_url('student/history') ?>', [
+                { title: 'Report a Missing Item', intro: 'If your equipment goes missing on campus, report it here right away so security can be alerted.' },
+                { element: document.querySelector('#item_id'), title: 'Select the Item', intro: 'Choose which of your registered items is missing.', position: 'bottom' },
+                { element: document.querySelector('#location'), title: 'Last Known Location', intro: 'Tell us where you last had it — this helps guards narrow down where to look.', position: 'top' },
+                { title: 'One last stop!', intro: "Next, we'll take you to your Scan History page to finish the tour." }
+            ]);
+        } else if (path.includes('history')) {
+            runGateTourStep('gate_tour_history_pending', null, null, [
+                { title: 'Your Scan History', intro: 'Every time your items are tapped at the gate, it shows up here — a full log of your campus entries and exits.' },
+                { title: "That's the tour!", intro: 'You now know your way around GATE. You can revisit any of these pages anytime from the menu.' }
+            ], "You're all set! 🎉");
+        }
+    }
+
     document.body.addEventListener('htmx:afterSettle', function(evt) {
         const currentPath = window.location.pathname;
         const bottomNav = document.querySelector('.mobile-bottom-nav');
@@ -165,6 +400,8 @@
         if (typeof jQuery !== 'undefined') {
             $(window).trigger('load');
         }
+
+        checkGateTourHandoff();
     });
 </script>
 
