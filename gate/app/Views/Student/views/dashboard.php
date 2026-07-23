@@ -12,18 +12,62 @@ $slideIn = (strpos($referrer, 'profile') !== false);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
 
     <style>
+        /* =========================================
+           1. COLOR VARIABLES (THEME MANAGEMENT)
+           ========================================= */
+
+        /* Light Mode (Default) Colors */
+        :root {
+            --tour-bg: #ffffff;
+            --tour-border: none;
+            --tour-title: #1e4db7;
+            --tour-text: #546269;
+            --tour-btn-top-border: 1px solid #ecf0f2;
+            --tour-prev-color: #777e89;
+            --tour-prev-hover: #11142d;
+            --tour-next-bg: #1e4db7;
+            --tour-next-color: #ffffff;
+            --tour-next-hover: #183e92;
+            --tour-bullet: #ced4da;
+            --tour-bullet-active: #1e4db7;
+            --tour-arrow: #ffffff;
+            --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Dark Mode Colors */
+        html[data-bs-theme="dark"] {
+            --tour-bg: #223640;
+            --tour-border: 1px solid #4f5467;
+            --tour-title: #8bb4fa;
+            --tour-text: #f1f9ff;
+            --tour-btn-top-border: 1px solid #4f5467;
+            --tour-prev-color: #a1aab2;
+            --tour-prev-hover: #ffffff;
+            --tour-next-bg: #8bb4fa;
+            --tour-next-color: #11142d;
+            --tour-next-hover: #a5c7ff;
+            --tour-bullet: #4f5467;
+            --tour-bullet-active: #8bb4fa;
+            --tour-arrow: #223640;
+            --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* =========================================
+           2. STRUCTURAL & COMPONENT STYLES
+           ========================================= */
+
         /* Force structural integrity against Bootstrap resets */
         .introjs-tooltip {
             position: absolute !important;
-            background: #ffffff !important;
+            background: var(--tour-bg) !important;
+            border: var(--tour-border) !important;
             border-radius: 16px !important;
-            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06) !important;
+            box-shadow: var(--tour-shadow) !important;
             padding: 24px !important;
             width: 340px !important;
             max-width: calc(100vw - 40px) !important;
             opacity: 1 !important;
             visibility: visible !important;
-            border: none !important;
             z-index: 9999999 !important;
             box-sizing: border-box !important;
         }
@@ -31,18 +75,18 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         /* --- MOBILE ADAPTIVE SCALING --- */
         @media (max-width: 576px) {
             .introjs-tooltip {
-                width: 90vw !important; /* Scales to 90% of phone screen width */
-                padding: 18px !important; /* Tighter padding for mobile */
+                width: 90vw !important;
+                padding: 18px !important;
                 border-radius: 14px !important;
             }
             .introjs-tooltiptitle {
-                font-size: 1.15rem !important; /* Slightly smaller title */
+                font-size: 1.15rem !important;
             }
             .introjs-tooltiptext {
-                font-size: 0.9rem !important; /* Slightly smaller text */
+                font-size: 0.9rem !important;
             }
             .introjs-button {
-                padding: 6px 16px !important; /* Compact buttons */
+                padding: 6px 16px !important;
                 font-size: 0.85rem !important;
             }
         }
@@ -72,7 +116,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             font-family: "DM Sans", sans-serif !important;
             font-size: 1.25rem !important;
             font-weight: 700 !important;
-            color: #1e4db7 !important;
+            color: var(--tour-title) !important; /* Using variable */
             margin: 0 !important;
             line-height: 1.3 !important;
         }
@@ -80,7 +124,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         .introjs-tooltiptext {
             font-family: "DM Sans", sans-serif !important;
             font-size: 0.95rem !important;
-            color: #546269 !important;
+            color: var(--tour-text) !important; /* Using variable */
             line-height: 1.6 !important;
             padding: 0 0 20px 0 !important;
             margin: 0 !important;
@@ -88,7 +132,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
 
         /* Action Buttons Area */
         .introjs-tooltipbuttons {
-            border-top: 1px solid #ecf0f2 !important;
+            border-top: var(--tour-btn-top-border) !important; /* Using variable */
             padding-top: 16px !important;
             display: flex !important;
             align-items: center !important;
@@ -112,24 +156,24 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         /* Secondary/Back Buttons */
         .introjs-prevbutton, .introjs-skipbutton {
             background: transparent !important;
-            color: #777e89 !important;
+            color: var(--tour-prev-color) !important; /* Using variable */
             border: none !important;
             padding-left: 0 !important;
             box-shadow: none !important;
         }
         .introjs-prevbutton:hover, .introjs-skipbutton:hover {
-            color: #11142d !important;
+            color: var(--tour-prev-hover) !important; /* Using variable */
         }
 
         /* Primary Next/Done Buttons */
         .introjs-nextbutton, .introjs-donebutton {
-            background: #1e4db7 !important;
-            color: #ffffff !important;
+            background: var(--tour-next-bg) !important; /* Using variable */
+            color: var(--tour-next-color) !important; /* Using variable */
             border: none !important;
-            box-shadow: 0 4px 10px rgba(30, 77, 183, 0.25) !important;
+            box-shadow: 0 4px 10px rgba(0,0,0, 0.15) !important; /* Unified shadow for simplicity */
         }
         .introjs-nextbutton:hover, .introjs-donebutton:hover {
-            background: #183e92 !important;
+            background: var(--tour-next-hover) !important; /* Using variable */
             transform: translateY(-2px) !important;
         }
 
@@ -147,7 +191,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             margin: 0 !important;
         }
         .introjs-bullets ul li a {
-            background: #ced4da !important;
+            background: var(--tour-bullet) !important; /* Using variable */
             width: 8px !important;
             height: 8px !important;
             border-radius: 50% !important;
@@ -155,28 +199,26 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         .introjs-bullets ul li a.active {
-            background: #1e4db7 !important;
+            background: var(--tour-bullet-active) !important; /* Using variable */
             width: 24px !important;
             border-radius: 10px !important;
         }
 
         /* Alignment Arrows */
-        .introjs-arrow.top { border-bottom-color: #ffffff !important; }
-        .introjs-arrow.bottom { border-top-color: #ffffff !important; }
-        .introjs-arrow.left { border-right-color: #ffffff !important; }
-        .introjs-arrow.right { border-left-color: #ffffff !important; }
+        .introjs-arrow.top { border-bottom-color: var(--tour-arrow) !important; }
+        .introjs-arrow.bottom { border-top-color: var(--tour-arrow) !important; }
+        .introjs-arrow.left { border-right-color: var(--tour-arrow) !important; }
+        .introjs-arrow.right { border-left-color: var(--tour-arrow) !important; }
 
         /* --- TOOLTIP BOX & ARROW ALIGNMENT FIXES --- */
 
         /* Desktop: Shift the entire box upward */
         @media (min-width: 992px) {
             .custom-register-tooltip {
-                margin-top: -35px !important; /* Moves the entire box upward */
+                margin-top: -35px !important;
             }
-
-            /* Move the arrow to the top end of the left side */
             .custom-register-tooltip .introjs-arrow.left {
-                top: 15px !important; /* Pushes the arrow to the top edge */
+                top: 15px !important;
                 margin-top: 0 !important;
             }
         }
@@ -189,38 +231,12 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 width: calc(100vw - 30px) !important;
                 max-width: 350px !important;
             }
-
-            /* Force the arrow to the right edge by targeting the base class */
             .custom-register-tooltip .introjs-arrow {
-                left: auto !important;     /* Disables Intro.js horizontal centering */
-                right: 10px !important;    /* Locks the arrow to the right corner */
-                margin-left: 0 !important; /* Clears any lingering offsets */
+                left: auto !important;
+                right: 10px !important;
+                margin-left: 0 !important;
             }
         }
-
-        /* DARK MODE INTEGRATION */
-        html[data-bs-theme="dark"] .introjs-tooltip {
-            background: #223640 !important;
-            border: 1px solid #4f5467 !important;
-            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4) !important;
-        }
-        html[data-bs-theme="dark"] .introjs-tooltiptitle { color: #8bb4fa !important; }
-        html[data-bs-theme="dark"] .introjs-tooltiptext { color: #f1f9ff !important; }
-        html[data-bs-theme="dark"] .introjs-tooltipbuttons { border-top-color: #4f5467 !important; }
-        html[data-bs-theme="dark"] .introjs-prevbutton,
-        html[data-bs-theme="dark"] .introjs-skipbutton { color: #a1aab2 !important; }
-        html[data-bs-theme="dark"] .introjs-prevbutton:hover,
-        html[data-bs-theme="dark"] .introjs-skipbutton:hover { color: #ffffff !important; }
-        html[data-bs-theme="dark"] .introjs-nextbutton,
-        html[data-bs-theme="dark"] .introjs-donebutton { background: #8bb4fa !important; color: #11142d !important; }
-        html[data-bs-theme="dark"] .introjs-nextbutton:hover,
-        html[data-bs-theme="dark"] .introjs-donebutton:hover { background: #a5c7ff !important; }
-        html[data-bs-theme="dark"] .introjs-bullets ul li a { background: #4f5467 !important; }
-        html[data-bs-theme="dark"] .introjs-bullets ul li a.active { background: #8bb4fa !important; }
-        html[data-bs-theme="dark"] .introjs-arrow.top { border-bottom-color: #223640 !important; }
-        html[data-bs-theme="dark"] .introjs-arrow.bottom { border-top-color: #223640 !important; }
-        html[data-bs-theme="dark"] .introjs-arrow.left { border-right-color: #223640 !important; }
-        html[data-bs-theme="dark"] .introjs-arrow.right { border-left-color: #223640 !important; }
     </style>
 <?= $this->endSection() ?>
 
