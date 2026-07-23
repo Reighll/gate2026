@@ -8,6 +8,232 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
         .introjs-overlay { background-color: rgba(17, 20, 45, 0.95) !important; z-index: 9999990 !important; }
         .introjs-helperLayer { background: rgba(0, 0, 0, 0.15) !important; border-radius: 12px !important; z-index: 9999995 !important; }
         .introjs-tooltip { border-radius: 16px !important; }
+
+     /* =========================================
+        1. COLOR VARIABLES (THEME MANAGEMENT)
+        ========================================= */
+
+             /* Light Mode (Default) Colors */
+         :root {
+             --tour-bg: #ffffff;
+             --tour-border: none;
+             --tour-title: #1e4db7;
+             --tour-text: #546269;
+             --tour-btn-top-border: 1px solid #ecf0f2;
+             --tour-prev-color: #777e89;
+             --tour-prev-hover: #11142d;
+             --tour-next-bg: #1e4db7;
+             --tour-next-color: #ffffff;
+             --tour-next-hover: #183e92;
+             --tour-bullet: #ced4da;
+             --tour-bullet-active: #1e4db7;
+             --tour-arrow: #ffffff;
+             --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+         }
+
+        /* Dark Mode Colors */
+        html[data-bs-theme="dark"] {
+            --tour-bg: #223640;
+            --tour-border: 1px solid #4f5467;
+            --tour-title: #8bb4fa;
+            --tour-text: #f1f9ff;
+            --tour-btn-top-border: 1px solid #4f5467;
+            --tour-prev-color: #a1aab2;
+            --tour-prev-hover: #ffffff;
+            --tour-next-bg: #8bb4fa;
+            --tour-next-color: #11142d;
+            --tour-next-hover: #a5c7ff;
+            --tour-bullet: #4f5467;
+            --tour-bullet-active: #8bb4fa;
+            --tour-arrow: #223640;
+            --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* =========================================
+           2. STRUCTURAL & COMPONENT STYLES
+           ========================================= */
+
+        /* Force structural integrity against Bootstrap resets */
+        .introjs-tooltip {
+            position: absolute !important;
+            background: var(--tour-bg) !important;
+            border: var(--tour-border) !important;
+            border-radius: 16px !important;
+            box-shadow: var(--tour-shadow) !important;
+            padding: 24px !important;
+            width: 340px !important;
+            max-width: calc(100vw - 40px) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 9999999 !important;
+            box-sizing: border-box !important;
+        }
+
+        /* --- MOBILE ADAPTIVE SCALING --- */
+        @media (max-width: 576px) {
+            .introjs-tooltip {
+                width: 90vw !important;
+                padding: 18px !important;
+                border-radius: 14px !important;
+            }
+            .introjs-tooltiptitle {
+                font-size: 1.15rem !important;
+            }
+            .introjs-tooltiptext {
+                font-size: 0.9rem !important;
+            }
+            .introjs-button {
+                padding: 6px 16px !important;
+                font-size: 0.85rem !important;
+            }
+        }
+
+        /* The dark screen overlay */
+        .introjs-overlay {
+            background-color: rgba(17, 20, 45, 0.95) !important; /* Increased opacity for a darker background */
+            z-index: 9999990 !important;
+        }
+
+        /* The transparent cutout target */
+        .introjs-helperLayer {
+            background: rgba(0, 0, 0, 0.15) !important; /* Adds a subtle dim effect over the highlighted element */
+            border-radius: 12px !important;
+            box-shadow: 0 0 0 0 transparent !important;
+            border: 2px solid rgba(255, 255, 255, 0.6) !important;
+            z-index: 9999995 !important;
+        }
+
+        /* Typography & Hierarchy */
+        .introjs-tooltipheader {
+            padding: 0 !important;
+            margin-bottom: 12px !important;
+        }
+
+        .introjs-tooltiptitle {
+            font-family: "DM Sans", sans-serif !important;
+            font-size: 1.25rem !important;
+            font-weight: 700 !important;
+            color: var(--tour-title) !important; /* Using variable */
+            margin: 0 !important;
+            line-height: 1.3 !important;
+        }
+
+        .introjs-tooltiptext {
+            font-family: "DM Sans", sans-serif !important;
+            font-size: 0.95rem !important;
+            color: var(--tour-text) !important; /* Using variable */
+            line-height: 1.6 !important;
+            padding: 0 0 20px 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Action Buttons Area */
+        .introjs-tooltipbuttons {
+            border-top: var(--tour-btn-top-border) !important; /* Using variable */
+            padding-top: 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+
+        /* Shared Button Traits */
+        .introjs-button {
+            font-family: "DM Sans", sans-serif !important;
+            border-radius: 50px !important;
+            padding: 8px 20px !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            text-shadow: none !important;
+            background-image: none !important;
+            text-decoration: none !important;
+        }
+
+        /* Secondary/Back Buttons */
+        .introjs-prevbutton, .introjs-skipbutton {
+            background: transparent !important;
+            color: var(--tour-prev-color) !important; /* Using variable */
+            border: none !important;
+            padding-left: 0 !important;
+            box-shadow: none !important;
+        }
+        .introjs-prevbutton:hover, .introjs-skipbutton:hover {
+            color: var(--tour-prev-hover) !important; /* Using variable */
+        }
+
+        /* Primary Next/Done Buttons */
+        .introjs-nextbutton, .introjs-donebutton {
+            background: var(--tour-next-bg) !important; /* Using variable */
+            color: var(--tour-next-color) !important; /* Using variable */
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(0,0,0, 0.15) !important; /* Unified shadow for simplicity */
+        }
+        .introjs-nextbutton:hover, .introjs-donebutton:hover {
+            background: var(--tour-next-hover) !important; /* Using variable */
+            transform: translateY(-2px) !important;
+        }
+
+        .introjs-disabled {
+            opacity: 0.4 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+
+        /* Custom Elongated Progress Bullets */
+        .introjs-bullets {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .introjs-bullets ul li a {
+            background: var(--tour-bullet) !important; /* Using variable */
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 50% !important;
+            margin: 0 4px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .introjs-bullets ul li a.active {
+            background: var(--tour-bullet-active) !important; /* Using variable */
+            width: 24px !important;
+            border-radius: 10px !important;
+        }
+
+        /* Alignment Arrows */
+        .introjs-arrow.top { border-bottom-color: var(--tour-arrow) !important; }
+        .introjs-arrow.bottom { border-top-color: var(--tour-arrow) !important; }
+        .introjs-arrow.left { border-right-color: var(--tour-arrow) !important; }
+        .introjs-arrow.right { border-left-color: var(--tour-arrow) !important; }
+
+        /* --- TOOLTIP BOX & ARROW ALIGNMENT FIXES --- */
+
+        /* Desktop: Shift the entire box upward */
+        @media (min-width: 992px) {
+            .custom-register-tooltip {
+                margin-top: -35px !important;
+            }
+            .custom-register-tooltip .introjs-arrow.left {
+                top: 15px !important;
+                margin-top: 0 !important;
+            }
+        }
+
+        /* Mobile/Tablet: Align the box to the right edge */
+        @media (max-width: 991px) {
+            .custom-register-tooltip {
+                left: auto !important;
+                right: 15px !important;
+                width: calc(100vw - 30px) !important;
+                max-width: 350px !important;
+            }
+            .custom-register-tooltip .introjs-arrow {
+                left: auto !important;
+                right: 10px !important;
+                margin-left: 0 !important;
+            }
+        }
     </style>
 <?= $this->endSection() ?>
 <?= $this->extend($layout) ?>
