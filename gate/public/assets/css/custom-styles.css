@@ -9,13 +9,14 @@
     min-height: 85px;
 
     background: #2563eb;
-    /* NEW: Concentric elliptical curves splitting the 3 colors! */
-    background: radial-gradient(ellipse 150% 200% at -10% -50%,
-    #1e40af 35%,        /* 1. Dark Blue Zone */
-    #2563eb 35.2%,      /* Smooth transition */
-    #2563eb 65%,        /* 2. Primary Blue Zone */
-    #3b82f6 65.2%,      /* Smooth transition */
-    #3b82f6 100%        /* 3. Light Blue Zone */
+    /* UPDATED: Taller ellipse (100% 400%) anchored higher (-100%)
+       creates a steeper, ~70-degree curved incline */
+    background: radial-gradient(ellipse 100% 400% at -10% -100%,
+    #1e40af 35%,
+    #2563eb 35.2%,
+    #2563eb 65%,
+    #3b82f6 65.2%,
+    #3b82f6 100%
     );
 
     z-index: 1100;
@@ -56,8 +57,8 @@
     .fixed-top-banner {
         min-height: 75px;
 
-        /* Adjusted the curve width slightly for smaller mobile screens */
-        background: radial-gradient(ellipse 200% 200% at -20% -50%,
+        /* UPDATED: Steeper mobile curve to match the 70-degree desktop feel */
+        background: radial-gradient(ellipse 120% 400% at -20% -100%,
         #1e40af 40%,
         #2563eb 40.2%,
         #2563eb 65%,
@@ -84,7 +85,6 @@
         background-color: #ffffff;
     }
 
-    /* Outward flair on the right side */
     .app-header::after {
         content: "";
         position: absolute;
@@ -116,7 +116,6 @@
         background-color: #ffffff;
     }
 
-    /* Outward flair on the right side */
     .app-header::after {
         content: "";
         position: absolute;
