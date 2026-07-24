@@ -460,11 +460,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 // Determine if we are on mobile or desktop layout
                 const isMobile = window.innerWidth < 992;
 
-                // Select the correct registration element depending on the screen size
-                const registerTarget = isMobile
-                    ? document.querySelector('.mobile-fab')
-                    : document.querySelector('.sidebar-link[href*="items"]'); // Adjust to match your sidebar link href if needed
-
                 let tourSteps = [
                     {
                         title: 'Welcome to GATE!',
@@ -484,18 +479,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     }
                 ];
 
-                // Add the registration step pointing to the correct UI element
-                if (registerTarget) {
-                    tourSteps.push({
-                        element: registerTarget,
-                        title: 'Register Items',
-                        intro: isMobile
-                            ? 'Tap this floating button to register your laptops and equipment for your gate pass.'
-                            : 'Click here in the sidebar anytime to register your personal equipment.',
-                        position: isMobile ? 'top' : 'right',
-                        tooltipClass: 'custom-register-tooltip' // Assigning a custom class for targeted CSS fixes
-                    });
-                }
                 // Target the entire navigation bar depending on the screen size
                 // IMPORTANT: Replace '.bottom-nav' and '.sidebar' with the actual CSS classes or IDs used in your HTML layout!
                 const navTarget = isMobile
@@ -510,10 +493,10 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                         position: isMobile ? 'top' : 'right'
                     });
                 }
-                // Final step for this segment — next stop is Registered Items
+                // Final step for this segment — next stop is Item Registration
                 tourSteps.push({
-                    title: 'Let\'s see your items!',
-                    intro: 'Next, we\'ll take you to your Registered Items page to continue the tour.'
+                    title: 'Let\'s register your first item!',
+                    intro: 'Next, we\'ll take you to Item Registration to continue the tour.'
                 });
 
                 introJs().setOptions({
@@ -531,10 +514,10 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     localStorage.setItem(tourStorageKey, 'true');
 
                     // 2. Set the "Handoff" flag for the next page (Item Registration)
-                    localStorage.setItem('gate_tour_items_pending', 'true');
+                    localStorage.setItem('gate_tour_reg_pending', 'true');
 
                     // 3. Hand off via the injected-HTMX-anchor pattern, not a hard redirect
-                    gateTourNavigate('<?= base_url('student/registered-items') ?>');
+                    gateTourNavigate('<?= base_url('student/item-registration') ?>');
                 }).onexit(function() {
                     // Cancelling the tour marks it seen so it won't auto-restart,
                     // and does NOT set any handoff flag — the chain simply stops here.

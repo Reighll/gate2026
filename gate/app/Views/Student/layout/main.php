@@ -340,7 +340,36 @@
     function checkGateTourHandoff() {
         const path = window.location.pathname;
 
-        if (path.includes('registered-items')) {
+        if (path.includes('item-registration')) {
+            runGateTourStep('gate_tour_reg_pending', 'gate_tour_items_pending', '<?= base_url('student/registered-items') ?>', [
+                {
+                    title: 'Register Your Equipment',
+                    intro: 'This is where you\'ll register any personal devices you plan to bring into the campus.'
+                },
+                {
+                    element: document.querySelector('#categorySelect'),
+                    title: 'Item Category',
+                    intro: 'Start by choosing what kind of item this is — a laptop, phone, or other equipment.',
+                    position: 'bottom'
+                },
+                {
+                    element: document.querySelector('input[name="serial_number"]'),
+                    title: 'Serial Number',
+                    intro: 'This is used to verify your item at the gate, so make sure it matches your device exactly.',
+                    position: 'top'
+                },
+                {
+                    element: document.querySelector('input[name="photo"]'),
+                    title: 'Item Photo',
+                    intro: 'Upload a clear photo — this helps security staff visually confirm the item.',
+                    position: 'top'
+                },
+                {
+                    title: 'On to your item list!',
+                    intro: 'Next, we\'ll take you to your Registered Items page to continue the tour.'
+                }
+            ]);
+        } else if (path.includes('registered-items')) {
             runGateTourStep('gate_tour_items_pending', 'gate_tour_remove_pending', '<?= base_url('student/remove-item') ?>', [
                 { title: 'Your Equipment Hub', intro: 'Welcome to the Registered Items page! This is where you can manage all the devices you bring into the GATE system.' },
                 { element: document.querySelector('.real-wrapper'), title: 'Item Status', intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status.', position: 'top' },
