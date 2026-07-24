@@ -6,8 +6,6 @@
     top: 0;
     left: 0;
     width: 100%;
-
-    /* Taller minimum height ensures the blue covers the space behind the white curve */
     min-height: 85px;
 
     background: #2563eb;
@@ -33,7 +31,6 @@
     margin: 0;
     padding: 0;
 
-    /* Matches the exposed area before the 60px top navbar */
     height: 60px;
     line-height: 60px;
 
@@ -72,11 +69,26 @@
 
     .app-header {
         top: 55px !important;
-        /* UPDATED: Top-left curved (18px), all other corners sharp (0) */
         border-radius: 18px 0 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+        /* Ensure header has a solid background color for the flair to match */
+        background-color: #ffffff;
+    }
+
+    /* Outward flare for mobile */
+    .app-header::after {
+        content: "";
+        position: absolute;
+        top: -18px; /* Matches the 18px radius */
+        right: 0;
+        width: 18px;
+        height: 18px;
+        /* Draws a transparent circle on the top-left, leaving white on the bottom-right */
+        /* The 18.5px creates a tiny anti-aliased blur so the curve isn't jagged */
+        background: radial-gradient(circle at top left, transparent 18px, #ffffff 18.5px);
+        pointer-events: none;
     }
 
     .content-padding-fix {
@@ -92,11 +104,24 @@
 @media (min-width: 769px) {
     .app-header {
         top: 60px !important;
-        /* UPDATED: Top-left curved (18px), all other corners sharp (0) */
         border-radius: 18px 0 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+        /* Ensure header has a solid background color for the flair to match */
+        background-color: #ffffff;
+    }
+
+    /* Outward flare for desktop */
+    .app-header::after {
+        content: "";
+        position: absolute;
+        top: -18px;
+        right: 0;
+        width: 18px;
+        height: 18px;
+        background: radial-gradient(circle at top left, transparent 18px, #ffffff 18.5px);
+        pointer-events: none;
     }
 }
 /* ==========================================
