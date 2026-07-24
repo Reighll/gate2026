@@ -9,33 +9,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
         <div class="reg-sheet-backdrop" onclick="document.getElementById('regSheetCloseBtn') && document.getElementById('regSheetCloseBtn').click();"></div>
 
-        <style>
-            .custom-drawer-handle {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                padding-bottom: 16px;
-                cursor: grab;
-                touch-action: none;
-            }
-            .custom-drawer-pill {
-                width: 40px;
-                height: 5px;
-                border-radius: 999px;
-                background-color: #dbe0e6;
-                transition: background-color 0.2s ease, transform 0.1s ease;
-            }
-            .custom-drawer-handle:active .custom-drawer-pill {
-                background-color: #ced4da;
-                transform: scale(0.95);
-            }
-        </style>
-
         <div class="reg-sheet-panel">
-
-            <div class="custom-drawer-handle">
-                <div class="custom-drawer-pill"></div>
-            </div>
 
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h4 class="fw-semibold mb-0">Item Registration</h4>
@@ -52,8 +26,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     <i class="ti ti-x fs-5 text-muted"></i>
                 </a>
             </div>
-
-            <!-- ... The rest of your form starts here ... -->
 
             <div id="itemRegFormFragment">
                 <div id="alertContainer">
