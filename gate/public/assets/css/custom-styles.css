@@ -60,15 +60,17 @@
     .fixed-top-banner {
         min-height: 75px;
 
-        /* Same multiple background technique, adjusted slightly for mobile width */
+        /* MULTIPLE BACKGROUNDS - MOBILE ONLY */
         background:
+            /* Overlay: Thinner bands, shifted further right */
                 linear-gradient(110deg,
-                transparent 40%,
-                rgba(255, 255, 255, 0.08) 40%, rgba(255, 255, 255, 0.08) 60%,
-                rgba(255, 255, 255, 0.15) 60%, rgba(255, 255, 255, 0.15) 75%,
-                rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 90%,
-                transparent 90%
+                transparent 55%,
+                rgba(255, 255, 255, 0.08) 55%, rgba(255, 255, 255, 0.08) 65%, /* 10% width */
+                rgba(255, 255, 255, 0.15) 65%, rgba(255, 255, 255, 0.15) 75%, /* 10% width */
+                rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 85%, /* 10% width */
+                transparent 85%
                 ),
+                    /* Base: Smooth blue color fade */
                 linear-gradient(110deg,
                 #1e40af 0%,
                 #2563eb 50%,
