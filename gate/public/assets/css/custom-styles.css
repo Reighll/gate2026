@@ -9,13 +9,14 @@
     min-height: 85px;
 
     background: #2563eb;
-    /* UPDATED: Adjusted percentages to 20% and 80% to widen the middle color
-       and push the dark/light accents to the outer edges */
-    background: radial-gradient(ellipse 100% 400% at -10% -100%,
-    #1e40af 20%,
-    #2563eb 20.2%,
-    #2563eb 80%,
-    #3b82f6 80.2%,
+    /* UPDATED: Anchored at 0% left.
+       The 35% and 60% stops ensure all 3 colors are visible
+       while keeping the steep 70-degree curve! */
+    background: radial-gradient(ellipse 150% 400% at 0% -100%,
+    #1e40af 35%,
+    #2563eb 35.2%,
+    #2563eb 60%,
+    #3b82f6 60.2%,
     #3b82f6 100%
     );
 
@@ -57,12 +58,12 @@
     .fixed-top-banner {
         min-height: 75px;
 
-        /* UPDATED: Widened the middle color for mobile as well */
-        background: radial-gradient(ellipse 120% 400% at -20% -100%,
-        #1e40af 25%,
-        #2563eb 25.2%,
-        #2563eb 80%,
-        #3b82f6 80.2%,
+        /* UPDATED: Mobile curve widened slightly so the 3 colors fit nicely on small screens */
+        background: radial-gradient(ellipse 200% 400% at 0% -100%,
+        #1e40af 30%,
+        #2563eb 30.2%,
+        #2563eb 55%,
+        #3b82f6 55.2%,
         #3b82f6 100%
         );
     }
