@@ -4,32 +4,49 @@
 .fixed-top-banner {
     position: fixed;
     top: 0;
+    left: 0;
     width: 100%;
-    min-height: 65px;
-    background-color: #2563eb; /* A clean, modern flat royal blue */
+
+    /* INCREASED: Must be taller than app-header top (60px) + border-radius (18px).
+       85px ensures the blue completely covers the space behind the white curve! */
+    min-height: 85px;
+
+    background: #2563eb;
+    background: linear-gradient(110deg,
+    #1e40af 0%, #1e40af 15%,
+    #2563eb 15%, #2563eb 85%,
+    #3b82f6 85%, #3b82f6 100%
+    );
     z-index: 1100;
-    /* Flexbox ensures the text is perfectly centered */
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .fixed-top-banner .banner-title {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
     color: #ffffff;
-    font-size: 14px; /* Small, clean text */
-    font-weight: 500; /* Flat and crisp, not overly bold */
+    font-size: 14px;
+    font-weight: 600;
     letter-spacing: 1px;
     text-transform: uppercase;
-    text-align: center;
     margin: 0;
-    padding: 0 16px;
+    padding: 0;
+
+    /* CENTER FIX: Matches the exposed area before the 60px top navbar */
+    height: 60px;
+    line-height: 60px;
+
+    white-space: nowrap;
+    z-index: 1;
 }
 
 .banner-title .full     { display: inline; }
 .banner-title .short    { display: none; }
 
 .content-padding-fix {
-    padding-top: 116px !important;
+    padding-top: 125px !important;
 }
 
 /* ==========================================
@@ -37,12 +54,21 @@
    ========================================== */
 @media (max-width: 768px) {
     .fixed-top-banner {
-        min-height: 40px;
+        /* INCREASED: 55px (header top) + 18px (radius) = 73px minimum */
+        min-height: 75px;
+        background: linear-gradient(110deg,
+        #1e40af 0%, #1e40af 20%,
+        #2563eb 20%, #2563eb 80%,
+        #3b82f6 80%, #3b82f6 100%
+        );
     }
 
-    /* Make text even smaller for mobile */
     .fixed-top-banner .banner-title {
-        font-size: 12px;
+        font-size: 16px;
+
+        /* CENTER FIX: Matches the exposed area before the 55px top navbar */
+        height: 55px;
+        line-height: 55px;
     }
 
     .banner-title .full  { display: none; }
@@ -68,7 +94,7 @@
    ========================================== */
 @media (min-width: 769px) {
     .app-header {
-        top: 51px !important;
+        top: 60px !important;
         border-radius: 18px 18px 0 0 !important;
         position: relative;
         z-index: 1101;
