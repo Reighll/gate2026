@@ -9,14 +9,12 @@
     min-height: 85px;
 
     background: #2563eb;
-    /* UPDATED: Anchored at 0% left.
-       The 35% and 60% stops ensure all 3 colors are visible
-       while keeping the steep 70-degree curve! */
-    background: radial-gradient(ellipse 150% 400% at 0% -100%,
-    #1e40af 35%,
-    #2563eb 35.2%,
-    #2563eb 60%,
-    #3b82f6 60.2%,
+    /* UPDATED: A massive 250% width ellipse flattens the curve into a gentle, smooth sweep! */
+    background: radial-gradient(ellipse 250% 200% at 0% -50%,
+    #1e40af 25%,
+    #2563eb 25.2%,
+    #2563eb 75%,
+    #3b82f6 75.2%,
     #3b82f6 100%
     );
 
@@ -58,12 +56,12 @@
     .fixed-top-banner {
         min-height: 75px;
 
-        /* UPDATED: Mobile curve widened slightly so the 3 colors fit nicely on small screens */
-        background: radial-gradient(ellipse 200% 400% at 0% -100%,
-        #1e40af 30%,
-        #2563eb 30.2%,
-        #2563eb 55%,
-        #3b82f6 55.2%,
+        /* UPDATED: Flatter curve for mobile to match the gentle desktop sweep */
+        background: radial-gradient(ellipse 250% 200% at 0% -50%,
+        #1e40af 20%,
+        #2563eb 20.2%,
+        #2563eb 80%,
+        #3b82f6 80.2%,
         #3b82f6 100%
         );
     }
