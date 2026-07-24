@@ -8,16 +8,11 @@
     width: 100%;
     min-height: 85px;
 
-    /* Fallback color */
     background: #2563eb;
-
-    /* NEW: Elliptical radial gradient for the inclined curve.
-       It creates a massive sweeping oval from the top-left.
-       The 40% and 40.2% hard stops create a crisp, curved dividing line. */
-    background: radial-gradient(ellipse 150% 200% at -10% -50%,
-    #1e40af 40%,
-    #2563eb 40.2%,
-    #2563eb 100%
+    background: linear-gradient(110deg,
+    #1e40af 0%, #1e40af 15%,
+    #2563eb 15%, #2563eb 85%,
+    #3b82f6 85%, #3b82f6 100%
     );
     z-index: 1100;
 }
@@ -56,12 +51,10 @@
 @media (max-width: 768px) {
     .fixed-top-banner {
         min-height: 75px;
-
-        /* NEW: Adjusted the curve slightly for smaller mobile screens */
-        background: radial-gradient(ellipse 180% 200% at -20% -50%,
-        #1e40af 45%,
-        #2563eb 45.2%,
-        #2563eb 100%
+        background: linear-gradient(110deg,
+        #1e40af 0%, #1e40af 20%,
+        #2563eb 20%, #2563eb 80%,
+        #3b82f6 80%, #3b82f6 100%
         );
     }
 
@@ -80,16 +73,20 @@
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+        /* Ensure header has a solid background color for the flair to match */
         background-color: #ffffff;
     }
 
+    /* Outward flare for mobile */
     .app-header::after {
         content: "";
         position: absolute;
-        top: -18px;
+        top: -18px; /* Matches the 18px radius */
         right: 0;
         width: 18px;
         height: 18px;
+        /* Draws a transparent circle on the top-left, leaving white on the bottom-right */
+        /* The 18.5px creates a tiny anti-aliased blur so the curve isn't jagged */
         background: radial-gradient(circle at top left, transparent 18px, #ffffff 18.5px);
         pointer-events: none;
     }
@@ -111,9 +108,11 @@
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+        /* Ensure header has a solid background color for the flair to match */
         background-color: #ffffff;
     }
 
+    /* Outward flare for desktop */
     .app-header::after {
         content: "";
         position: absolute;
