@@ -4,49 +4,33 @@
 .fixed-top-banner {
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
-    min-height: 85px;
-
-    background: #2563eb;
-    /* The gentle 3-color sweep */
-    background: radial-gradient(ellipse 250% 200% at 0% -50%,
-    #1e40af 25%,
-    #2563eb 25.2%,
-    #2563eb 75%,
-    #3b82f6 75.2%,
-    #3b82f6 100%
-    );
-
+    min-height: 56px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08);
     z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .fixed-top-banner .banner-title {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-
     color: #ffffff;
-    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    text-align: center;
     margin: 0;
-    padding: 0;
-
-    height: 60px;
-    line-height: 60px;
-
-    white-space: nowrap;
-    z-index: 1;
+    padding: 0 16px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .banner-title .full     { display: inline; }
 .banner-title .short    { display: none; }
 
 .content-padding-fix {
-    padding-top: 125px !important;
+    padding-top: 96px !important;
 }
 
 /* ==========================================
@@ -54,51 +38,24 @@
    ========================================== */
 @media (max-width: 768px) {
     .fixed-top-banner {
-        min-height: 75px;
-
-        /* Flatter curve for mobile to match the gentle desktop sweep */
-        background: radial-gradient(ellipse 250% 200% at 0% -50%,
-        #1e40af 20%,
-        #2563eb 20.2%,
-        #2563eb 80%,
-        #3b82f6 80.2%,
-        #3b82f6 100%
-        );
-    }
-
-    .fixed-top-banner .banner-title {
-        font-size: 16px;
-        height: 55px;
-        line-height: 55px;
+        min-height: 44px;
     }
 
     .banner-title .full  { display: none; }
     .banner-title .short { display: inline; }
 
     .app-header {
-        top: 55px !important;
-        border-radius: 18px 0 0 0 !important;
+        top: 35px !important;
+        border-radius: 16px 16px 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-        background-color: #ffffff;
-    }
-
-    .app-header::after {
-        content: "";
-        position: absolute;
-        top: -18px;
-        right: 0;
-        width: 18px;
-        height: 18px;
-        background: radial-gradient(circle at top left, transparent 18px, #ffffff 18.5px);
-        pointer-events: none;
     }
 
     .content-padding-fix {
-        padding-top: 88px !important;
-        padding-left: 20px !important;
-        padding-right: 20px !important;
+        padding-top: 74px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
     }
 }
 
@@ -107,70 +64,55 @@
    ========================================== */
 @media (min-width: 769px) {
     .app-header {
-        top: 60px !important;
-        border-radius: 18px 0 0 0 !important;
+        top: 42px !important;
+        border-radius: 16px 16px 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-        background-color: #ffffff;
-    }
-
-    .app-header::after {
-        content: "";
-        position: absolute;
-        top: -18px;
-        right: 0;
-        width: 18px;
-        height: 18px;
-        background: radial-gradient(circle at top left, transparent 18px, #ffffff 18.5px);
-        pointer-events: none;
     }
 }
-
-/* ==========================================
-   4. DARK MODE OVERRIDES
-   ========================================== */
-.dark-mode .app-header {
-    background-color: #11142d !important;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.dark-mode .app-header::after {
-    background: radial-gradient(circle at top left, transparent 18px, #11142d 18.5px);
-}
-
 /* ==========================================
    MOBILE SIDEBAR OVERLAY FIX
    ========================================== */
 @media (max-width: 1199px) {
+    /* Forces the mobile sidebar to float ABOVE the top header (z-index 1100) */
     .left-sidebar {
         z-index: 1200 !important;
     }
 }
-
 /* ==========================================================================
    DROPDOWN ANIMATION (Spring Enter & Pop Exit)
    ========================================================================== */
+
+/* 1. The Hidden State (The "Pop" Exit) */
 .dropdown-menu-animate-up {
     display: block !important;
     visibility: hidden;
     opacity: 0;
+
+    /* THE FIX: Removes the slide, shrinks directly towards the caret */
     transform: scale(0.7);
     transform-origin: top right;
+
+    /* Extremely fast, crisp 0.15s exit transition */
     transition: visibility 0.15s, opacity 0.15s ease, transform 0.15s ease-in;
     pointer-events: none;
 }
 
+/* 2. The Open State (The "Spring" Enter) */
 .dropdown-menu-animate-up.show {
     visibility: visible;
     opacity: 1;
+
+    /* Snaps to full size */
     transform: scale(1);
     pointer-events: auto;
+
+    /* Bouncy 0.3s spring entrance */
     transition: visibility 0.3s, opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
 /* ==========================================
-   THEME TOGGLE - EXPANDING CIRCLE ANIMATION
+   THEME TOGGLE - EXPANDING CIRCLE ANIMATION (with feathered edge)
    ========================================== */
 @property --wave-r {
     syntax: '<length>';
@@ -187,12 +129,15 @@
     animation: none;
     mix-blend-mode: normal;
 }
+
 ::view-transition-old(root) {
     z-index: 1;
 }
+
 ::view-transition-new(root) {
     z-index: 2;
     animation: theme-reveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
     mask-image: radial-gradient(
             circle at var(--theme-x, 50%) var(--theme-y, 50%),
             black calc(var(--wave-r) - 70px),
@@ -209,18 +154,17 @@
     from { --wave-r: 0px; }
     to   { --wave-r: var(--theme-r, 150%); }
 }
-
 /* ==========================================
    PREVENT HEADER FLICKER DURING PAGE SLIDE TRANSITIONS
    ========================================== */
 html, body {
     overflow-x: hidden;
 }
+/* Only allow the loader to intercept clicks while a request is actually in flight */
 .htmx-request #page-transition-loader,
 .htmx-request.htmx-indicator {
     pointer-events: auto;
 }
-
 /* ==========================================
    MODERN PAGE TRANSITION LOADER
    ========================================== */
@@ -233,6 +177,7 @@ html, body {
     -webkit-backdrop-filter: blur(6px);
     transition: opacity 0.2s ease;
 }
+
 #page-transition-loader .loader-ring {
     position: relative;
     width: 48px;
@@ -241,6 +186,7 @@ html, body {
     transform: scale(0.85);
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
+
 #page-transition-loader .loader-ring::before,
 #page-transition-loader .loader-ring::after {
     content: "";
@@ -249,11 +195,13 @@ html, body {
     border-radius: 50%;
     border: 3px solid transparent;
 }
+
 #page-transition-loader .loader-ring::before {
     border-top-color: var(--bs-primary);
     border-right-color: var(--bs-primary);
     animation: loader-spin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
+
 #page-transition-loader .loader-ring::after {
     border-bottom-color: rgba(var(--bs-primary-rgb), 0.25);
     border-left-color: rgba(var(--bs-primary-rgb), 0.25);
@@ -264,6 +212,7 @@ html, body {
     to { transform: rotate(360deg); }
 }
 
+/* Fade + scale in only while a request is actually running */
 .htmx-request #page-transition-loader,
 .htmx-request.htmx-indicator {
     pointer-events: auto;
@@ -273,7 +222,6 @@ html, body {
     opacity: 1;
     transform: scale(1);
 }
-
 /* ==========================================
    MASTER EQUIPMENT LIST - VERTICAL SCROLL ONLY
    ========================================== */
@@ -283,16 +231,19 @@ html, body {
     overflow-y: auto;
     overflow-x: hidden;
 }
+
 .table-container-fixed table {
     border-collapse: separate;
     border-spacing: 0;
 }
+
 .table-container-fixed table td,
 .table-container-fixed table th {
     white-space: normal;
     word-break: break-word;
     overflow-wrap: anywhere;
 }
+
 .table-container-fixed thead th {
     position: sticky;
     top: 0;
@@ -300,6 +251,7 @@ html, body {
     z-index: 2;
     box-shadow: inset 0 -2px 0 #f0f0f0;
 }
+
 .equipment-list-toolbar {
     position: sticky;
     top: 0;
@@ -307,7 +259,6 @@ html, body {
     z-index: 5;
     padding: 8px 0;
 }
-
 @media (max-width: 991.98px) {
     @keyframes slideInFromRight {
         from { opacity: 0; transform: translateX(24px); }
@@ -328,6 +279,7 @@ html, body {
         overflow: hidden;
         pointer-events: none;
         display: none;
+        /* FIX: Prevents text selection magnifiers (shrinking) on long hold */
         user-select: none;
         -webkit-user-select: none;
     }
@@ -340,6 +292,7 @@ html, body {
         z-index: 1600 !important;
     }
 
+    /* FIX: Prevents the cloned page from showing a duplicate, stuck nav pill */
     #swipe-stage .mobile-bottom-nav,
     #swipe-stage .mobile-fab {
         display: none !important;
@@ -355,6 +308,7 @@ html, body {
         background: var(--bs-body-bg);
         will-change: transform;
         z-index: 1;
+        /* FIX: Forces zero transition during manual drag to prevent scale/shrinking glitches */
         transition: none;
     }
 
@@ -374,6 +328,7 @@ html, body {
         pointer-events: none;
     }
 
+    /* Re-enables smooth transitions only when the user releases the screen (snapping) */
     #swipe-stage.snapping #swipe-outgoing,
     #swipe-stage.snapping #swipe-incoming {
         transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
@@ -383,10 +338,11 @@ html, body {
         transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1);
     }
 }
-
 /* ===================================================================
    MOBILE / TABLET ONLY — Bottom sheet modal styling
+   Matches breakpoints up to Bootstrap's lg (992px)
    =================================================================== */
+/* Custom circular close button for mobile sheets */
 .mobile-sheet-close {
     display: none;
     align-items: center;
@@ -430,8 +386,13 @@ html, body {
 
     .modal-content {
         border-radius: 24px 24px 0 0 !important;
+
+        /* FIX: Strictly force a maximum height of 80% of the screen */
         max-height: 80vh !important;
+
+        /* FIX: Strictly enforce scrolling for overflow content */
         overflow-y: auto !important;
+
         box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
         padding-bottom: env(safe-area-inset-bottom, 16px);
     }
@@ -481,15 +442,19 @@ html, body {
         font-weight: 700;
     }
 }
-
 /* ===================================================================
    ITEM REGISTRATION — Mobile/Tablet modal-style presentation
+   The whole page still navigates normally via htmx, but on phones and
+   tablets it *looks* and *feels* like a bottom-sheet modal on top of
+   the dashboard. Desktop (>=992px) is completely untouched — it stays
+   the normal full-width page/card.
    =================================================================== */
 .reg-sheet-backdrop {
     display: none;
 }
 
 @media (max-width: 991.98px) {
+
     #registration-container {
         padding-top: 0 !important;
         margin-top: 0 !important;
