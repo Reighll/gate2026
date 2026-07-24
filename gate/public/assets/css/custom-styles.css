@@ -9,12 +9,13 @@
     min-height: 85px;
 
     background: #2563eb;
-    /* UPDATED: A massive 250% width ellipse flattens the curve into a gentle, smooth sweep! */
-    background: radial-gradient(ellipse 250% 200% at 0% -50%,
-    #1e40af 25%,
-    #2563eb 25.2%,
-    #2563eb 75%,
-    #3b82f6 75.2%,
+    /* UPDATED: Adjusted percentages to 20% and 80% to widen the middle color
+       and push the dark/light accents to the outer edges */
+    background: radial-gradient(ellipse 100% 400% at -10% -100%,
+    #1e40af 20%,
+    #2563eb 20.2%,
+    #2563eb 80%,
+    #3b82f6 80.2%,
     #3b82f6 100%
     );
 
@@ -56,10 +57,10 @@
     .fixed-top-banner {
         min-height: 75px;
 
-        /* UPDATED: Flatter curve for mobile to match the gentle desktop sweep */
-        background: radial-gradient(ellipse 250% 200% at 0% -50%,
-        #1e40af 20%,
-        #2563eb 20.2%,
+        /* UPDATED: Widened the middle color for mobile as well */
+        background: radial-gradient(ellipse 120% 400% at -20% -100%,
+        #1e40af 25%,
+        #2563eb 25.2%,
         #2563eb 80%,
         #3b82f6 80.2%,
         #3b82f6 100%
