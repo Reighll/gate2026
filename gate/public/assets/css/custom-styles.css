@@ -140,46 +140,6 @@
     }
 }
 /* ==========================================
-   DARK MODE OVERRIDES (Banner)
-   ========================================== */
-.dark-mode .fixed-top-banner {
-    background-color: #11142d;
-
-    /* DESKTOP DARK MODE: 7% bands at 65% */
-    background:
-            linear-gradient(110deg,
-            transparent 65%,
-            rgba(255, 255, 255, 0.02) 65%, rgba(255, 255, 255, 0.02) 72%,
-            rgba(255, 255, 255, 0.05) 72%, rgba(255, 255, 255, 0.05) 79%,
-            rgba(255, 255, 255, 0.01) 79%, rgba(255, 255, 255, 0.01) 86%,
-            transparent 86%
-            ),
-            linear-gradient(110deg,
-            #070a13 0%,
-            #11142d 50%,
-            #1e2548 100%
-            );
-}
-
-/* MOBILE DARK MODE: 10% bands at 55% */
-@media (max-width: 768px) {
-    .dark-mode .fixed-top-banner {
-        background:
-                linear-gradient(110deg,
-                transparent 55%,
-                rgba(255, 255, 255, 0.02) 55%, rgba(255, 255, 255, 0.02) 65%,
-                rgba(255, 255, 255, 0.05) 65%, rgba(255, 255, 255, 0.05) 75%,
-                rgba(255, 255, 255, 0.01) 75%, rgba(255, 255, 255, 0.01) 85%,
-                transparent 85%
-                ),
-                linear-gradient(110deg,
-                #070a13 0%,
-                #11142d 50%,
-                #1e2548 100%
-                );
-    }
-}
-/* ==========================================
    MOBILE SIDEBAR OVERLAY FIX
    ========================================== */
 @media (max-width: 1199px) {
