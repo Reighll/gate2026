@@ -6,14 +6,14 @@
     top: 0;
     left: 0;
     width: 100%;
-    min-height: 65px; /* Kept slim to match your inward curve design */
+    min-height: 65px;
 
-    /* Geometric diagonal background matching your PWA blue palette */
-    background: #2563eb; /* Fallback flat blue */
+    /* Geometric diagonal background */
+    background: #2563eb;
     background: linear-gradient(110deg,
-    #1e40af 0%, #1e40af 15%,   /* Dark blue left diagonal */
-    #2563eb 15%, #2563eb 85%,  /* Primary flat blue middle */
-    #3b82f6 85%, #3b82f6 100%  /* Light blue right diagonal */
+    #1e40af 0%, #1e40af 15%,
+    #2563eb 15%, #2563eb 85%,
+    #3b82f6 85%, #3b82f6 100%
     );
 
     z-index: 1100;
@@ -21,13 +21,11 @@
 }
 
 .fixed-top-banner .banner-title {
-    /* Absolute positioning locks the span exactly in the center */
     position: absolute;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
 
-    /* Text styling */
     color: #ffffff;
     font-size: 14px;
     font-weight: 600;
@@ -36,17 +34,17 @@
     margin: 0;
     padding: 0;
 
-    /* Matches banner height to vertically center the text */
     line-height: 65px;
-    white-space: nowrap; /* Prevents text from breaking into two lines */
+    white-space: nowrap;
     z-index: 1;
 }
 
 .banner-title .full     { display: inline; }
 .banner-title .short    { display: none; }
 
+/* Increased by ~9px to account for the lowered app-header below */
 .content-padding-fix {
-    padding-top: 116px !important;
+    padding-top: 125px !important;
 }
 
 /* ==========================================
@@ -55,7 +53,6 @@
 @media (max-width: 768px) {
     .fixed-top-banner {
         min-height: 40px;
-        /* Adjusted gradient percentages for smaller screens */
         background: linear-gradient(110deg,
         #1e40af 0%, #1e40af 20%,
         #2563eb 20%, #2563eb 80%,
@@ -64,14 +61,14 @@
     }
 
     .fixed-top-banner .banner-title {
-        font-size: 12px;
-        line-height: 40px; /* Match mobile height */
+        /* BUMPED UP from 12px to 16px so "GATE" is highly readable */
+        font-size: 16px;
+        line-height: 40px;
     }
 
     .banner-title .full  { display: none; }
     .banner-title .short { display: inline; }
 
-    /* Your inward curve settings */
     .app-header {
         top: 55px !important;
         border-radius: 18px 18px 0 0 !important;
@@ -92,7 +89,8 @@
    ========================================== */
 @media (min-width: 769px) {
     .app-header {
-        top: 51px !important;
+        /* LOWERED from 51px to 60px to push the curve down to the sidebar highlight */
+        top: 60px !important;
         border-radius: 18px 18px 0 0 !important;
         position: relative;
         z-index: 1101;
