@@ -594,3 +594,30 @@ html, body {
     from { opacity: 1; }
     to   { opacity: 0; }
 }
+/* ==========================================
+   DRAWER DRAG HANDLE STYLES
+   ========================================== */
+.drawer-drag-handle {
+    width: 100%;
+    /* The padding creates a tall invisible box so it's easy for thumbs to grab */
+    padding: 10px 0 16px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+}
+
+.drawer-pill {
+    /* This actually draws the grey pill */
+    width: 40px;
+    height: 5px;
+    border-radius: 999px;
+    background-color: #dbe0e6;
+}
+
+/* Optional: Shrinks the pill slightly when actively pressing down on it */
+.drawer-drag-handle:active .drawer-pill {
+    transform: scale(0.95);
+    background-color: #ced4da;
+    transition: all 0.1s ease;
+}
