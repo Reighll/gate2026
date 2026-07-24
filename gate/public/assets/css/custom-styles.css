@@ -7,14 +7,21 @@
     left: 0;
     width: 100%;
     min-height: 85px;
-
-    /* UPDATED: Smooth blending linear gradient */
-    background: #2563eb;
-    background: linear-gradient(110deg,
-    #1e40af 0%,     /* Dark blue starts on the left */
-    #2563eb 50%,    /* Primary blue fades in at the center */
-    #3b82f6 100%    /* Light blue fades in on the right */
+    background-color: #2563eb;
+    background:
+        linear-gradient(110deg,
+        transparent 50%,
+        rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.08) 65%,
+        rgba(255, 255, 255, 0.15) 65%, rgba(255, 255, 255, 0.15) 80%,
+        rgba(255, 255, 255, 0.05) 80%, rgba(255, 255, 255, 0.05) 95%,
+        transparent 95%
+        ),
+        linear-gradient(110deg,
+        #1e40af 0%,
+        #2563eb 50%,
+        #3b82f6 100%
     );
+
     z-index: 1100;
 }
 
@@ -53,12 +60,20 @@
     .fixed-top-banner {
         min-height: 75px;
 
-        /* UPDATED: Smooth blending linear gradient for mobile */
-        background: linear-gradient(110deg,
-        #1e40af 0%,
-        #2563eb 50%,
-        #3b82f6 100%
-        );
+        /* Same multiple background technique, adjusted slightly for mobile width */
+        background:
+                linear-gradient(110deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.08) 40%, rgba(255, 255, 255, 0.08) 60%,
+                rgba(255, 255, 255, 0.15) 60%, rgba(255, 255, 255, 0.15) 75%,
+                rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 90%,
+                transparent 90%
+                ),
+                linear-gradient(110deg,
+                #1e40af 0%,
+                #2563eb 50%,
+                #3b82f6 100%
+                );
     }
 
     .fixed-top-banner .banner-title {
