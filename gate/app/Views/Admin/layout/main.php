@@ -64,6 +64,10 @@
 <body>
 <div id="initial-loader"><div class="ring"></div></div>
 <div class="fixed-top-banner">
+    <span class="banner-title">
+        <span class="full">Guest and Technology Entry</span>
+        <span class="short">GATE</span>
+    </span>
     <?= $this->include('Admin/partials/navbar') ?>
 </div>
 

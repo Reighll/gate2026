@@ -5,38 +5,72 @@
     position: fixed;
     top: 0;
     width: 100%;
-    min-height: 65px;
-    background-color: royalblue;
+    min-height: 100px;
+    background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
     z-index: 1100;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.fixed-top-banner::before,
+.fixed-top-banner::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 42%;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%20100'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0,0%20C60,10%2040,60%2090,55%20C130,50%20110,10%20160,20%20L200,0%20L200,100%20L0,100%20Z'%20fill='%235d87ff'%20fill-opacity='0.35'/%3E%3Cpath%20d='M0,20%20C50,25%2045,70%20100,65%20C140,60%20120,25%20170,35%20L200,20%20L200,100%20L0,100%20Z'%20fill='%2311142d'%20fill-opacity='0.55'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: cover;
+    pointer-events: none;
+}
+.fixed-top-banner::before { left: 0; }
+.fixed-top-banner::after  { right: 0; transform: scaleX(-1); }
+
+.fixed-top-banner .banner-title {
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    padding: 0 16px;
+    pointer-events: none;
+    font-size: clamp(0.9rem, 2vw, 1.4rem);
+}
+
+.banner-title .full     { display: inline; }
+.banner-title .short    { display: none; }
+
 .content-padding-fix {
-    padding-top: 116px !important;
+    padding-top: 151px !important;
 }
 
 /* ==========================================
    2. MOBILE STYLES (Phones & Small Tablets)
    ========================================== */
 @media (max-width: 768px) {
-    /* Slim accent strip — still visibly present as a banner */
     .fixed-top-banner {
-        min-height: 40px;
+        min-height: 64px;
     }
 
-    /* Overlap the white navbar ~12px into the banner with rounded top
-       corners, revealing the banner's blue in the curve. */
+    .banner-title .full  { display: none; }
+    .banner-title .short { display: inline; }
+
     .app-header {
-        top: 55px !important;
+        top: 79px !important;
         border-radius: 18px 18px 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
     }
 
-    /* Reduced top padding to match the new, shorter banner+header stack */
     .content-padding-fix {
-        padding-top: 88px !important;
-
+        padding-top: 112px !important;
         padding-left: 20px !important;
         padding-right: 20px !important;
     }
@@ -45,14 +79,8 @@
    TABLET + DESKTOP: INWARD CURVE
    ========================================== */
 @media (min-width: 769px) {
-    /* Banner keeps its original 65px size here — this only pulls the
-       white navbar up ~14px into it with rounded top corners, same
-       "curve inward" treatment as mobile, just scaled for the bigger
-       banner. Also supersedes the old tablet-only top:65px flush fix
-       below, since that fix's whole purpose was "match desktop" —
-       now desktop itself curves, so tablet should match that instead. */
     .app-header {
-        top: 51px !important;
+        top: 86px !important;
         border-radius: 18px 18px 0 0 !important;
         position: relative;
         z-index: 1101;

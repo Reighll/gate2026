@@ -220,7 +220,11 @@
 <body>
 <div id="initial-loader"><div class="ring"></div></div>
 <div class="fixed-top-banner">
-    <?= $this->include('Student/partials/navbar') ?>
+    <span class="banner-title">
+        <span class="full">Guest and Technology Entry</span>
+        <span class="short">GATE</span>
+    </span>
+    <?= $this->include('Admin/partials/navbar') ?>
 </div>
 
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
