@@ -11,7 +11,7 @@
 }
 
 .content-padding-fix {
-    padding-top: 130px !important;
+    padding-top: 116px !important;
 }
 
 /* ==========================================
@@ -46,14 +46,21 @@
     }
 }
 /* ==========================================
-   TABLET FIX (769px - 991px)
+   TABLET + DESKTOP: INWARD CURVE
    ========================================== */
-@media (min-width: 769px) and (max-width: 991.98px) {
-    /* styles.min.css drops .app-header to top: 131px at this range,
-       creating a gap under the banner. Pin it back to 65px so it
-       stays flush, matching desktop. */
+@media (min-width: 769px) {
+    /* Banner keeps its original 65px size here — this only pulls the
+       white navbar up ~14px into it with rounded top corners, same
+       "curve inward" treatment as mobile, just scaled for the bigger
+       banner. Also supersedes the old tablet-only top:65px flush fix
+       below, since that fix's whole purpose was "match desktop" —
+       now desktop itself curves, so tablet should match that instead. */
     .app-header {
-        top: 65px !important;
+        top: 51px !important;
+        border-radius: 18px 18px 0 0 !important;
+        position: relative;
+        z-index: 1101;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
     }
 }
 /* ==========================================
