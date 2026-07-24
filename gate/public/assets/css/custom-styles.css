@@ -9,13 +9,13 @@
     min-height: 85px;
 
     background: #2563eb;
-    /* UPDATED: Taller ellipse (100% 400%) anchored higher (-100%)
-       creates a steeper, ~70-degree curved incline */
+    /* UPDATED: Adjusted percentages to 20% and 80% to widen the middle color
+       and push the dark/light accents to the outer edges */
     background: radial-gradient(ellipse 100% 400% at -10% -100%,
-    #1e40af 35%,
-    #2563eb 35.2%,
-    #2563eb 65%,
-    #3b82f6 65.2%,
+    #1e40af 20%,
+    #2563eb 20.2%,
+    #2563eb 80%,
+    #3b82f6 80.2%,
     #3b82f6 100%
     );
 
@@ -57,12 +57,12 @@
     .fixed-top-banner {
         min-height: 75px;
 
-        /* UPDATED: Steeper mobile curve to match the 70-degree desktop feel */
+        /* UPDATED: Widened the middle color for mobile as well */
         background: radial-gradient(ellipse 120% 400% at -20% -100%,
-        #1e40af 40%,
-        #2563eb 40.2%,
-        #2563eb 65%,
-        #3b82f6 65.2%,
+        #1e40af 25%,
+        #2563eb 25.2%,
+        #2563eb 80%,
+        #3b82f6 80.2%,
         #3b82f6 100%
         );
     }
