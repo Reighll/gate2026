@@ -5,10 +5,10 @@
     position: fixed;
     top: 0;
     width: 100%;
-    min-height: 56px;
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08);
+    min-height: 65px;
+    background-color: #2563eb; /* A clean, modern flat royal blue */
     z-index: 1100;
+    /* Flexbox ensures the text is perfectly centered */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -16,21 +16,20 @@
 
 .fixed-top-banner .banner-title {
     color: #ffffff;
-    font-weight: 600;
-    font-size: 0.875rem;
-    letter-spacing: 0.5px;
-    text-transform: none;
+    font-size: 14px; /* Small, clean text */
+    font-weight: 500; /* Flat and crisp, not overly bold */
+    letter-spacing: 1px;
+    text-transform: uppercase;
     text-align: center;
     margin: 0;
     padding: 0 16px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .banner-title .full     { display: inline; }
 .banner-title .short    { display: none; }
 
 .content-padding-fix {
-    padding-top: 96px !important;
+    padding-top: 116px !important;
 }
 
 /* ==========================================
@@ -38,24 +37,29 @@
    ========================================== */
 @media (max-width: 768px) {
     .fixed-top-banner {
-        min-height: 44px;
+        min-height: 40px;
+    }
+
+    /* Make text even smaller for mobile */
+    .fixed-top-banner .banner-title {
+        font-size: 12px;
     }
 
     .banner-title .full  { display: none; }
     .banner-title .short { display: inline; }
 
     .app-header {
-        top: 35px !important;
-        border-radius: 16px 16px 0 0 !important;
+        top: 55px !important;
+        border-radius: 18px 18px 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
     }
 
     .content-padding-fix {
-        padding-top: 74px !important;
-        padding-left: 16px !important;
-        padding-right: 16px !important;
+        padding-top: 88px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
     }
 }
 
@@ -64,8 +68,8 @@
    ========================================== */
 @media (min-width: 769px) {
     .app-header {
-        top: 42px !important;
-        border-radius: 16px 16px 0 0 !important;
+        top: 51px !important;
+        border-radius: 18px 18px 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
