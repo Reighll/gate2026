@@ -9,11 +9,15 @@
     min-height: 85px;
 
     background: #2563eb;
-    background: linear-gradient(110deg,
-    #1e40af 0%, #1e40af 15%,
-    #2563eb 15%, #2563eb 85%,
-    #3b82f6 85%, #3b82f6 100%
+    /* NEW: Concentric elliptical curves splitting the 3 colors! */
+    background: radial-gradient(ellipse 150% 200% at -10% -50%,
+    #1e40af 35%,        /* 1. Dark Blue Zone */
+    #2563eb 35.2%,      /* Smooth transition */
+    #2563eb 65%,        /* 2. Primary Blue Zone */
+    #3b82f6 65.2%,      /* Smooth transition */
+    #3b82f6 100%        /* 3. Light Blue Zone */
     );
+
     z-index: 1100;
 }
 
@@ -51,10 +55,14 @@
 @media (max-width: 768px) {
     .fixed-top-banner {
         min-height: 75px;
-        background: linear-gradient(110deg,
-        #1e40af 0%, #1e40af 20%,
-        #2563eb 20%, #2563eb 80%,
-        #3b82f6 80%, #3b82f6 100%
+
+        /* Adjusted the curve width slightly for smaller mobile screens */
+        background: radial-gradient(ellipse 200% 200% at -20% -50%,
+        #1e40af 40%,
+        #2563eb 40.2%,
+        #2563eb 65%,
+        #3b82f6 65.2%,
+        #3b82f6 100%
         );
     }
 
@@ -73,20 +81,17 @@
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-        /* Ensure header has a solid background color for the flair to match */
         background-color: #ffffff;
     }
 
-    /* Outward flare for mobile */
+    /* Outward flair on the right side */
     .app-header::after {
         content: "";
         position: absolute;
-        top: -18px; /* Matches the 18px radius */
+        top: -18px;
         right: 0;
         width: 18px;
         height: 18px;
-        /* Draws a transparent circle on the top-left, leaving white on the bottom-right */
-        /* The 18.5px creates a tiny anti-aliased blur so the curve isn't jagged */
         background: radial-gradient(circle at top left, transparent 18px, #ffffff 18.5px);
         pointer-events: none;
     }
@@ -108,11 +113,10 @@
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-        /* Ensure header has a solid background color for the flair to match */
         background-color: #ffffff;
     }
 
-    /* Outward flare for desktop */
+    /* Outward flair on the right side */
     .app-header::after {
         content: "";
         position: absolute;
