@@ -264,6 +264,7 @@
 <script src="<?= base_url('assets/js/student/student.js') ?>"></script>
 <script src="<?= base_url('assets/js/theme.js') ?>"></script>
 <script src="<?= base_url('assets/js/initial-loader.js') ?>"></script>
+<script src="<?= base_url('assets/js/drawer.js') ?>"></script>
 <script>
     function updateNavProfileVisibility() {
         const navProfileItem = document.getElementById('navProfileItem');
