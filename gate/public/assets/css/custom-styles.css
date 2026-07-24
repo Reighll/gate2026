@@ -20,13 +20,13 @@
 @media (max-width: 768px) {
     /* Slim accent strip — still visibly present as a banner */
     .fixed-top-banner {
-        min-height: 55px;
+        min-height: 40px;
     }
 
     /* Overlap the white navbar ~12px into the banner with rounded top
        corners, revealing the banner's blue in the curve. */
     .app-header {
-        top: 28px !important;
+        top: 55px !important;
         border-radius: 18px 18px 0 0 !important;
         position: relative;
         z-index: 1101;
