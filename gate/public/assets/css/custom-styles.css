@@ -140,37 +140,25 @@
     }
 }
 /* ==========================================
-   4. DARK MODE OVERRIDES
+   DARK MODE OVERRIDES (Banner)
    ========================================== */
-/* App Header overrides (Your existing code) */
-.dark-mode .app-header {
-    background-color: #11142d !important;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.dark-mode .app-header::after {
-    background: radial-gradient(circle at top left, transparent 18px, #11142d 18.5px);
-}
-
-/* ------------------------------------------
-   NEW: Dark Mode Banner Overrides
-   ------------------------------------------ */
 .dark-mode .fixed-top-banner {
     background-color: #11142d;
 
+    /* DESKTOP DARK MODE: 7% bands at 65% */
     background:
-        linear-gradient(110deg,
-        transparent 65%,
-        rgba(255, 255, 255, 0.02) 65%, rgba(255, 255, 255, 0.02) 72%,
-        rgba(255, 255, 255, 0.05) 72%, rgba(255, 255, 255, 0.05) 79%,
-        rgba(255, 255, 255, 0.01) 79%, rgba(255, 255, 255, 0.01) 86%,
-        transparent 86%
-        ),
-        linear-gradient(110deg,
-        #070a13 0%,
-        #11142d 50%,
-        #1e2548 100%
-        );
+            linear-gradient(110deg,
+            transparent 65%,
+            rgba(255, 255, 255, 0.02) 65%, rgba(255, 255, 255, 0.02) 72%,
+            rgba(255, 255, 255, 0.05) 72%, rgba(255, 255, 255, 0.05) 79%,
+            rgba(255, 255, 255, 0.01) 79%, rgba(255, 255, 255, 0.01) 86%,
+            transparent 86%
+            ),
+            linear-gradient(110deg,
+            #070a13 0%,
+            #11142d 50%,
+            #1e2548 100%
+            );
 }
 
 /* MOBILE DARK MODE: 10% bands at 55% */
@@ -329,6 +317,7 @@ html, body {
 }
 
 @keyframes loader-spin {
+    to { transform: rotate(360deg); }
     to { transform: rotate(360deg); }
 }
 
