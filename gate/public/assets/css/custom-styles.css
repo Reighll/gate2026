@@ -125,6 +125,23 @@
     }
 }
 /* ==========================================
+   4. DARK MODE OVERRIDES
+   ========================================== */
+/* Note: Change '.dark-mode' to whatever class your app uses for dark mode
+   (e.g., body.dark, [data-theme="dark"], etc.) */
+
+.dark-mode .app-header {
+    background-color: #11142d !important; /* Your dark mode header color */
+    /* Optional: soften the shadow for dark mode */
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Update the right-side flair to match the dark header */
+.dark-mode .app-header::after {
+    /* Notice the #11142d replacing the #ffffff in the gradient */
+    background: radial-gradient(circle at top left, transparent 18px, #11142d 18.5px);
+}
+/* ==========================================
    MOBILE SIDEBAR OVERLAY FIX
    ========================================== */
 @media (max-width: 1199px) {
