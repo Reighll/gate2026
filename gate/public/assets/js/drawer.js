@@ -22,8 +22,10 @@ function initDrawerSwipe() {
 
         // 1. Detect when the user touches the panel
         panel.addEventListener('touchstart', (e) => {
-            // Only initiate drag if the panel is scrolled to the very top.
-            // This allows users to scroll down long lists without closing the modal!
+            if (e.target.closest('button, a, input, select, textarea, label')) {
+                return;
+            }
+
             if (panel.scrollTop <= 0) {
                 startY = e.touches[0].clientY;
                 isDragging = true;
