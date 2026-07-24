@@ -553,22 +553,18 @@ html, body {
         box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
         max-height: 80vh;
         overflow-y: auto;
-        /* INCREASED TOP PADDING: Gives the handle breathing room */
-        padding: 16px 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+        padding: 10px 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
         animation: regSheetSlideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
     }
-
-    /* THE CSS DRAWER HANDLE */
     .reg-sheet-panel::before {
         content: '';
         display: block;
         width: 40px;
-        height: 5px; /* Slightly thicker to match the pill */
+        height: 4px;
         border-radius: 999px;
-        background-color: #dbe0e6;
-        margin: 0 auto 16px auto; /* Centers it and adds space below */
+        background: #dbe0e6;
+        margin: 0 auto 14px;
     }
-
     #registration-container.reg-sheet-closing .reg-sheet-panel {
         animation: regSheetSlideDown 0.25s ease-in forwards;
     }
@@ -597,31 +593,4 @@ html, body {
 @keyframes regBackdropFadeOut {
     from { opacity: 1; }
     to   { opacity: 0; }
-}
-/* ==========================================
-   DRAWER DRAG HANDLE STYLES
-   ========================================== */
-.drawer-drag-handle {
-    width: 100%;
-    /* The padding creates a tall invisible box so it's easy for thumbs to grab */
-    padding: 10px 0 16px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: grab;
-}
-
-.drawer-pill {
-    /* This actually draws the grey pill */
-    width: 40px;
-    height: 5px;
-    border-radius: 999px;
-    background-color: #dbe0e6;
-}
-
-/* Optional: Shrinks the pill slightly when actively pressing down on it */
-.drawer-drag-handle:active .drawer-pill {
-    transform: scale(0.95);
-    background-color: #ced4da;
-    transition: all 0.1s ease;
 }
