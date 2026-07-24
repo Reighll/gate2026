@@ -18,19 +18,27 @@
    2. MOBILE STYLES (Phones & Small Tablets)
    ========================================== */
 @media (max-width: 768px) {
-    /* Shrink the top banner slightly to save vertical space */
+    /* Shrink the top banner down to a slim accent strip */
     .fixed-top-banner {
-        min-height: 45px;
+        min-height: 26px;
     }
 
-    /* Pull the white navbar up to match the new, smaller banner height */
+    /* Let the white navbar overlap up into the banner by ~14px, with
+       rounded top corners — the overlap + curve is what reads as the
+       banner "curving inward" instead of ending in a flat straight line.
+       z-index has to sit above the banner so the curve actually reveals
+       the banner's blue underneath it, rather than the page background. */
     .app-header {
-        top: 45px !important;
+        top: 12px !important;
+        border-radius: 18px 18px 0 0 !important;
+        position: relative;
+        z-index: 1101;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
     }
 
-    /* Reduce the massive top padding so the ID card is visible immediately without scrolling */
+    /* Reduce the top padding to match the new, shorter banner+header stack */
     .content-padding-fix {
-        padding-top: 105px !important;
+        padding-top: 78px !important;
 
         /* Add a bit more side padding so the edges of the ID card don't touch the phone screen bezels */
         padding-left: 20px !important;
