@@ -109,19 +109,21 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
         </div>
     </div>
     <style>
-        /* Drawer handle — mirrors the bottom-sheet handle used in registered-items modal */
         @media (max-width: 991.98px) {
             .reg-sheet-panel {
                 position: relative;
+                padding-top: 18px; /* room for the handle */
             }
             .reg-sheet-panel::before {
                 content: '';
-                display: block;
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
                 width: 40px;
                 height: 4px;
                 border-radius: 999px;
                 background: #dbe0e6;
-                margin: 0 auto 14px;
             }
         }
     </style>
