@@ -6,23 +6,24 @@
     top: 0;
     width: 100%;
     min-height: 65px;
-    background-color: #2563eb; /* A clean, modern flat royal blue */
+    background-color: #2563eb;
     z-index: 1100;
-    /* Flexbox ensures the text is perfectly centered */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /* Removed flexbox to prevent crushing the nested navbar */
+    text-align: center;
 }
 
 .fixed-top-banner .banner-title {
+    /* inline-block allows the span to respond to vertical line-height centering */
+    display: inline-block;
     color: #ffffff;
-    font-size: 14px; /* Small, clean text */
-    font-weight: 500; /* Flat and crisp, not overly bold */
+    font-size: 14px;
+    font-weight: 500;
     letter-spacing: 1px;
     text-transform: uppercase;
-    text-align: center;
     margin: 0;
     padding: 0 16px;
+    /* Vertically centers the text exactly within the 65px banner height */
+    line-height: 65px;
 }
 
 .banner-title .full     { display: inline; }
@@ -40,9 +41,10 @@
         min-height: 40px;
     }
 
-    /* Make text even smaller for mobile */
     .fixed-top-banner .banner-title {
         font-size: 12px;
+        /* Matches the mobile banner min-height for perfect vertical centering */
+        line-height: 40px;
     }
 
     .banner-title .full  { display: none; }

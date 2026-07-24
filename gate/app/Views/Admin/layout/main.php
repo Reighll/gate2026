@@ -64,10 +64,10 @@
 <body>
 <div id="initial-loader"><div class="ring"></div></div>
 <div class="fixed-top-banner">
-    <h1 class="banner-title">
+    <span class="banner-title">
         <span class="full">Guest and Technology Entry</span>
-        <span class="short">Tech Entry</span>
-    </h1>
+        <span class="short">GATE</span>
+    </span>
     <?= $this->include('Admin/partials/navbar') ?>
 </div>
 
