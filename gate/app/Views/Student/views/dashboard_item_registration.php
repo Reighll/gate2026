@@ -8,27 +8,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
     <div id="registration-container" class="page-transition-container pt-5 mt-4">
 
         <div class="reg-sheet-backdrop" onclick="document.getElementById('regSheetCloseBtn') && document.getElementById('regSheetCloseBtn').click();"></div>
-        <style>
-            @media (max-width: 991.98px) {
-                .reg-sheet-panel {
-                    /* Ensure there is enough padding at the top for the handle to breathe */
-                    padding-top: 16px !important;
-                }
-
-                /* This mimics exactly what you showed in image_c8fab2.png */
-                .reg-sheet-panel::before {
-                    content: '';
-                    display: block;
-                    width: 40px;
-                    height: 4px;
-                    border-radius: 999px;
-                    background-color: #dbe0e6;
-                    margin: 0 auto 16px auto;
-                }
-            }
-        </style>
 
         <div class="reg-sheet-panel">
+
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h4 class="fw-semibold mb-0">Item Registration</h4>
                 <a id="regSheetCloseBtn" href="javascript:void(0);"
@@ -126,7 +108,23 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             </div>
         </div>
     </div>
-
+    <style>
+        /* Drawer handle — mirrors the bottom-sheet handle used in registered-items modal */
+        @media (max-width: 991.98px) {
+            .reg-sheet-panel {
+                position: relative;
+            }
+            .reg-sheet-panel::before {
+                content: '';
+                display: block;
+                width: 40px;
+                height: 4px;
+                border-radius: 999px;
+                background: #dbe0e6;
+                margin: 0 auto 14px;
+            }
+        }
+    </style>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
