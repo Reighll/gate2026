@@ -8,11 +8,12 @@
     width: 100%;
     min-height: 85px;
 
+    /* UPDATED: Smooth blending linear gradient */
     background: #2563eb;
     background: linear-gradient(110deg,
-    #1e40af 0%, #1e40af 15%,
-    #2563eb 15%, #2563eb 85%,
-    #3b82f6 85%, #3b82f6 100%
+    #1e40af 0%,     /* Dark blue starts on the left */
+    #2563eb 50%,    /* Primary blue fades in at the center */
+    #3b82f6 100%    /* Light blue fades in on the right */
     );
     z-index: 1100;
 }
@@ -51,10 +52,12 @@
 @media (max-width: 768px) {
     .fixed-top-banner {
         min-height: 75px;
+
+        /* UPDATED: Smooth blending linear gradient for mobile */
         background: linear-gradient(110deg,
-        #1e40af 0%, #1e40af 20%,
-        #2563eb 20%, #2563eb 80%,
-        #3b82f6 80%, #3b82f6 100%
+        #1e40af 0%,
+        #2563eb 50%,
+        #3b82f6 100%
         );
     }
 
@@ -73,11 +76,9 @@
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-        /* FIX: Relies on the dynamic theme variable instead of hardcoded white */
         background-color: var(--bs-body-bg) !important;
     }
 
-    /* Outward flare for mobile */
     .app-header::after {
         content: "";
         position: absolute;
@@ -85,7 +86,6 @@
         right: 0;
         width: 18px;
         height: 18px;
-        /* FIX: Uses the dynamic theme variable for the curve mask */
         background: radial-gradient(circle at top left, transparent 18px, var(--bs-body-bg) 18.5px);
         pointer-events: none;
     }
@@ -107,11 +107,9 @@
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-        /* FIX: Relies on the dynamic theme variable instead of hardcoded white */
         background-color: var(--bs-body-bg) !important;
     }
 
-    /* Outward flare for desktop */
     .app-header::after {
         content: "";
         position: absolute;
@@ -119,7 +117,6 @@
         right: 0;
         width: 18px;
         height: 18px;
-        /* FIX: Uses the dynamic theme variable for the curve mask */
         background: radial-gradient(circle at top left, transparent 18px, var(--bs-body-bg) 18.5px);
         pointer-events: none;
     }
