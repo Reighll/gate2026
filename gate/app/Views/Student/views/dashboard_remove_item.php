@@ -35,9 +35,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                     </div>
                 <?php endif; ?>
 
-                <div class="real-wrapper <?= empty($approvedItems) ? '' : 'd-none' ?>">
+                <div class="real-wrapper <?= empty($approvedItems) ? '' : 'd-none' ?>" id="removeItemRealWrapper">
                     <?php if (empty($approvedItems)): ?>
-                        <div class="text-center text-muted py-4">
+                        <div class="text-center text-muted py-4" id="removeItemEmptyState">
                             <i class="ti ti-device-laptop d-block mb-3 text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
                             No active items available to unregister.
                         </div>

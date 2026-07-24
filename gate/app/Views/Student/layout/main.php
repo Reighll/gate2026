@@ -114,7 +114,12 @@
             .introjs-tooltiptext { font-size: 0.9rem !important; }
             .introjs-button { padding: 6px 16px !important; font-size: 0.85rem !important; }
         }
-        .introjs-overlay { background-color: rgba(17, 20, 45, 0.95) !important; z-index: 9999990 !important; }
+        .introjs-overlay {
+            background-color: rgba(10, 12, 30, 0.97) !important;
+            backdrop-filter: blur(3px) !important;
+            -webkit-backdrop-filter: blur(3px) !important;
+            z-index: 9999990 !important;
+        }
         .introjs-helperLayer {
             background: rgba(0, 0, 0, 0.15) !important;
             border-radius: 12px !important;
@@ -177,6 +182,11 @@
             transform: translateY(-2px) !important;
         }
         .introjs-disabled { opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important; }
+        .gate-tour-sample-badge {
+            font-size: 0.6rem !important;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
         .introjs-bullets { display: flex !important; align-items: center !important; padding: 0 !important; margin: 0 !important; }
         .introjs-bullets ul li a {
             background: var(--tour-bullet) !important;
@@ -312,7 +322,28 @@
         link.click();
     }
 
-    function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel) {
+    // Temporarily swaps an empty-state block for a labelled "SAMPLE" example
+    // during the tour, so the tour can actually show what the real thing
+    // looks like even for a brand-new account with no data yet. Cleaned up
+    // automatically once the segment finishes or is cancelled.
+    function gateTourInjectSample(wrapperId, emptyStateId, sampleId, sampleHtml) {
+        const wrapper = document.getElementById(wrapperId);
+        if (!wrapper) return;
+        const emptyState = document.getElementById(emptyStateId);
+        if (emptyState) emptyState.classList.add('d-none');
+        if (!document.getElementById(sampleId)) {
+            wrapper.insertAdjacentHTML('afterbegin', sampleHtml);
+        }
+    }
+
+    function gateTourRemoveSample(sampleId, emptyStateId) {
+        const sample = document.getElementById(sampleId);
+        if (sample) sample.remove();
+        const emptyState = document.getElementById(emptyStateId);
+        if (emptyState) emptyState.classList.remove('d-none');
+    }
+
+    function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone) {
         if (typeof introJs === 'undefined') return;
         if (localStorage.getItem(flagKey) !== 'true') return;
         localStorage.removeItem(flagKey);
@@ -328,12 +359,15 @@
             doneLabel: doneLabel || 'Next Page 🚀',
             steps: steps
         }).oncomplete(function () {
+            if (typeof onDone === 'function') onDone();
             if (nextFlagKey && nextUrl) {
                 localStorage.setItem(nextFlagKey, 'true');
                 gateTourNavigate(nextUrl);
             }
         }).onexit(function () {
-            // Cancelled — chain simply stops here, nothing further happens.
+            // Cancelled — chain simply stops here, but still clean up any
+            // sample placeholder that was injected for this segment.
+            if (typeof onDone === 'function') onDone();
         }).start();
     }
 
@@ -370,17 +404,63 @@
                 }
             ]);
         } else if (path.includes('registered-items')) {
+            if (localStorage.getItem('gate_tour_items_pending') === 'true') {
+                const sampleItemHtml = `
+                    <div class="row px-2 px-md-0" id="gateTourSampleItem">
+                        <div class="col-6 col-md-6 col-xl-4 mb-3 mb-md-4 px-2">
+                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                                <span class="badge bg-primary gate-tour-sample-badge position-absolute top-0 start-0 m-2 text-uppercase" style="z-index:2;">Sample</span>
+                                <div class="bg-light d-flex align-items-center justify-content-center card-img-top" style="height: 150px;">
+                                    <i class="ti ti-device-laptop text-muted opacity-50" style="font-size: 3rem;"></i>
+                                </div>
+                                <div class="card-body d-flex flex-column p-3 p-md-4">
+                                    <div class="mb-2"><span class="badge bg-success px-2 py-1 text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">approved</span></div>
+                                    <h6 class="fw-bold mb-1 text-dark text-truncate" style="font-size: 1rem;">Acer Predator Helios 300</h6>
+                                    <div class="mb-2"><span class="fw-bolder text-dark" style="font-size: 0.85rem;">SN-EXAMPLE-0001</span></div>
+                                    <div class="d-flex flex-column flex-md-row text-muted mb-2 gap-1 gap-md-2 fw-medium" style="font-size: 0.8rem;">
+                                        <div class="d-flex align-items-center text-truncate"><i class="ti ti-category me-1 fs-5"></i><span class="text-truncate">Personal Computing Device</span></div>
+                                        <div class="d-flex align-items-center text-truncate"><i class="ti ti-nfc me-1 fs-5 text-primary"></i><span class="text-truncate">04:AB:22:FF</span></div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="btn btn-primary w-100 fw-bold py-2 rounded-3" style="pointer-events: none; font-size: 0.85rem;">
+                                            <i class="ti ti-building fs-5 me-1"></i> Inside <span class="d-none d-md-inline">Campus</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                gateTourInjectSample('registeredItemsRealWrapper', 'itemsEmptyStateCard', 'gateTourSampleItem', sampleItemHtml);
+            }
+
             runGateTourStep('gate_tour_items_pending', 'gate_tour_remove_pending', '<?= base_url('student/remove-item') ?>', [
                 { title: 'Your Equipment Hub', intro: 'Welcome to the Registered Items page! This is where you can manage all the devices you bring into the GATE system.' },
-                { element: document.querySelector('.real-wrapper'), title: 'Item Status', intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status.', position: 'top' },
+                { element: document.querySelector('#gateTourSampleItem .card') || document.querySelector('.real-wrapper'), title: 'Item Status', intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status. (This one\'s just an example — yours will show up here once registered.)', position: 'top' },
                 { title: 'Removing an item', intro: "Next, we'll take you to the Remove Item page in case you ever need to unregister something." }
-            ]);
+            ], null, function () {
+                gateTourRemoveSample('gateTourSampleItem', 'itemsEmptyStateCard');
+            });
         } else if (path.includes('remove-item')) {
+            if (localStorage.getItem('gate_tour_remove_pending') === 'true') {
+                const sampleRemoveHtml = `
+                    <div class="border rounded p-3 d-flex justify-content-between align-items-center mb-3 border-warning bg-light position-relative" id="gateTourSampleRemoveItem">
+                        <span class="badge bg-primary gate-tour-sample-badge position-absolute top-0 end-0 m-2 text-uppercase">Sample</span>
+                        <div>
+                            <h6 class="fw-bold mb-0">Acer Predator Helios 300</h6>
+                            <small class="text-muted">SN: SAMPLE-0001</small>
+                        </div>
+                        <button type="button" class="btn btn-outline-warning btn-sm fw-bold" disabled>Unregister</button>
+                    </div>`;
+                gateTourInjectSample('removeItemRealWrapper', 'removeItemEmptyState', 'gateTourSampleRemoveItem', sampleRemoveHtml);
+            }
+
             runGateTourStep('gate_tour_remove_pending', 'gate_tour_report_pending', '<?= base_url('student/report-item') ?>', [
                 { title: 'Unregistering an Item', intro: 'If you sell, lose, or stop using a device, this is where you request to have it removed from your gate pass.' },
-                { element: document.querySelector('.real-wrapper'), title: 'Request Removal', intro: 'Tap "Unregister" on any item card, and an admin will review your request.', position: 'top' },
+                { element: document.querySelector('#gateTourSampleRemoveItem') || document.querySelector('.real-wrapper'), title: 'Request Removal', intro: 'Tap "Unregister" on any item card, and an admin will review your request. (This one\'s just an example.)', position: 'top' },
                 { title: 'Reporting a lost item', intro: "Next, we'll take you to the Report Item page — useful if something goes missing on campus." }
-            ]);
+            ], null, function () {
+                gateTourRemoveSample('gateTourSampleRemoveItem', 'removeItemEmptyState');
+            });
         } else if (path.includes('report-item')) {
             runGateTourStep('gate_tour_report_pending', 'gate_tour_history_pending', '<?= base_url('student/history') ?>', [
                 { title: 'Report a Missing Item', intro: 'If your equipment goes missing on campus, report it here right away so security can be alerted.' },

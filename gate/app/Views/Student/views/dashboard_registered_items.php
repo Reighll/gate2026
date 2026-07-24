@@ -31,9 +31,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             </div>
         <?php endif; ?>
 
-        <div class="real-wrapper <?= empty($items) ? '' : 'd-none' ?>">
+        <div class="real-wrapper <?= empty($items) ? '' : 'd-none' ?>" id="registeredItemsRealWrapper">
             <?php if (empty($items)): ?>
-                <div class="card border-0 shadow-sm w-100 rounded-4">
+                <div class="card border-0 shadow-sm w-100 rounded-4" id="itemsEmptyStateCard">
                     <div class="card-body p-5 text-center">
                         <i class="ti ti-device-laptop d-block mb-3 text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
                         <h5 class="fw-bold text-dark">No Items Found</h5>
