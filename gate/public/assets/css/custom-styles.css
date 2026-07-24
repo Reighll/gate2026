@@ -6,9 +6,6 @@
     top: 0;
     left: 0;
     width: 100%;
-
-    /* INCREASED: Must be taller than app-header top (60px) + border-radius (18px).
-       85px ensures the blue completely covers the space behind the white curve! */
     min-height: 85px;
 
     background: #2563eb;
@@ -34,7 +31,6 @@
     margin: 0;
     padding: 0;
 
-    /* CENTER FIX: Matches the exposed area before the 60px top navbar */
     height: 60px;
     line-height: 60px;
 
@@ -54,7 +50,6 @@
    ========================================== */
 @media (max-width: 768px) {
     .fixed-top-banner {
-        /* INCREASED: 55px (header top) + 18px (radius) = 73px minimum */
         min-height: 75px;
         background: linear-gradient(110deg,
         #1e40af 0%, #1e40af 20%,
@@ -65,8 +60,6 @@
 
     .fixed-top-banner .banner-title {
         font-size: 16px;
-
-        /* CENTER FIX: Matches the exposed area before the 55px top navbar */
         height: 55px;
         line-height: 55px;
     }
@@ -76,10 +69,25 @@
 
     .app-header {
         top: 55px !important;
-        border-radius: 18px 18px 0 0 !important;
+        border-radius: 18px 0 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+        /* FIX: Relies on the dynamic theme variable instead of hardcoded white */
+        background-color: var(--bs-body-bg) !important;
+    }
+
+    /* Outward flare for mobile */
+    .app-header::after {
+        content: "";
+        position: absolute;
+        top: -18px;
+        right: 0;
+        width: 18px;
+        height: 18px;
+        /* FIX: Uses the dynamic theme variable for the curve mask */
+        background: radial-gradient(circle at top left, transparent 18px, var(--bs-body-bg) 18.5px);
+        pointer-events: none;
     }
 
     .content-padding-fix {
@@ -95,10 +103,25 @@
 @media (min-width: 769px) {
     .app-header {
         top: 60px !important;
-        border-radius: 18px 18px 0 0 !important;
+        border-radius: 18px 0 0 0 !important;
         position: relative;
         z-index: 1101;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+        /* FIX: Relies on the dynamic theme variable instead of hardcoded white */
+        background-color: var(--bs-body-bg) !important;
+    }
+
+    /* Outward flare for desktop */
+    .app-header::after {
+        content: "";
+        position: absolute;
+        top: -18px;
+        right: 0;
+        width: 18px;
+        height: 18px;
+        /* FIX: Uses the dynamic theme variable for the curve mask */
+        background: radial-gradient(circle at top left, transparent 18px, var(--bs-body-bg) 18.5px);
+        pointer-events: none;
     }
 }
 /* ==========================================
