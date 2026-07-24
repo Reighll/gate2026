@@ -553,18 +553,22 @@ html, body {
         box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
         max-height: 80vh;
         overflow-y: auto;
-        padding: 10px 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+        /* INCREASED TOP PADDING: Gives the handle breathing room */
+        padding: 16px 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
         animation: regSheetSlideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
     }
+
+    /* THE CSS DRAWER HANDLE */
     .reg-sheet-panel::before {
         content: '';
         display: block;
         width: 40px;
-        height: 4px;
+        height: 5px; /* Slightly thicker to match the pill */
         border-radius: 999px;
-        background: #dbe0e6;
-        margin: 0 auto 14px;
+        background-color: #dbe0e6;
+        margin: 0 auto 16px auto; /* Centers it and adds space below */
     }
+
     #registration-container.reg-sheet-closing .reg-sheet-panel {
         animation: regSheetSlideDown 0.25s ease-in forwards;
     }

@@ -11,10 +11,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
         <div class="reg-sheet-panel">
 
-            <div class="drawer-drag-handle">
-                <div class="drawer-pill"></div>
-            </div>
-
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h4 class="fw-semibold mb-0">Item Registration</h4>
                 <a id="regSheetCloseBtn" href="javascript:void(0);"
