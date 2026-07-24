@@ -20,7 +20,7 @@
 @media (max-width: 768px) {
     /* Slim accent strip — still visibly present as a banner */
     .fixed-top-banner {
-        min-height: 40px;
+        min-height: 55px;
     }
 
     /* Overlap the white navbar ~12px into the banner with rounded top
