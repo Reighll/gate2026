@@ -34,12 +34,11 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             </form>
         </div>
 
-    <div class="row skeleton-wrapper">
-        <?php for($i=0; $i<3; $i++): ?>
-        <div class="col-6 col-lg-4 mb-3 mb-lg-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body p-3 p-md-4">
-                        <div class="card-body p-4">
+        <div class="row skeleton-wrapper">
+            <?php for($i=0; $i<3; $i++): ?>
+                <div class="col-6 col-lg-4 mb-3 mb-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-3 p-md-4">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="w-100">
                                     <div class="skeleton skeleton-text w-50 mb-3"></div>
@@ -59,7 +58,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         <div class="row real-wrapper d-none">
             <div class="col-6 col-lg-4 mb-3 mb-lg-4">
                 <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-md-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted fw-normal mb-2">Student Entries</h6>
@@ -76,9 +75,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-6 col-lg-4 mb-3 mb-lg-4">
                 <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-md-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted fw-normal mb-2">Visitor Entries</h6>
@@ -95,9 +94,9 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-6 col-lg-4 mb-3 mb-lg-4">
                 <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-danger">
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-md-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <h6 class="text-muted fw-normal mb-2">Missing Item Reports</h6>
