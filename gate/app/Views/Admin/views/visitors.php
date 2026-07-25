@@ -26,7 +26,7 @@
         </div>
 
         <div class="row real-wrapper d-none">
-            <div class="col-md-6">
+            <div class="col-6">
                 <div class="card bg-light-info shadow-none border-0 mb-4 rounded-4">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-6">
                 <div class="card bg-light-success shadow-none border-0 mb-4 rounded-4">
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-3">
