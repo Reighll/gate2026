@@ -103,6 +103,7 @@
         // 2. The Cropper.js Logic
         function initProfileCropper() {
             const fileInput = document.getElementById('profile_pic');
+            console.log('[debug] initProfileCropper called, fileInput found:', !!fileInput, 'already init:', fileInput?.hasAttribute('data-cropper-init'));
             const cropperImage = document.getElementById('cropperImage');
             const previewImage = document.getElementById('profilePicPreview');
             const cropModalEl = document.getElementById('cropModal');
