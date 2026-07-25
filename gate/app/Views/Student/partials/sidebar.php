@@ -45,14 +45,14 @@ $nav_visibility_class = ($is_registration || $is_profile) ? 'd-none' : 'd-flex';
                     </li>
 
                     <li class="sidebar-item">
-                        <a class="sidebar-link <?= strpos($current_uri, 'report-item') !== false ? 'active' : '' ?>" href="<?= base_url('student/report-item') ?>" aria-expanded="false">
+                        <a class="sidebar-link <?= strpos($current_uri, 'report-item') !== false ? 'active' : '' ?>" href="<?= base_url('student/items/report') ?>" aria-expanded="false">
                             <span><i class="ti ti-alert-triangle"></i></span>
                             <span class="hide-menu">Report Item</span>
                         </a>
                     </li>
 
                     <li class="sidebar-item">
-                        <a class="sidebar-link <?= strpos($current_uri, 'history') !== false ? 'active' : '' ?>" href="<?= base_url('student/history') ?>" aria-expanded="false">
+                        <a class="sidebar-link <?= strpos($current_uri, 'history') !== false ? 'active' : '' ?>" href="<?= base_url('student/items/history') ?>" aria-expanded="false">
                             <span><i class="ti ti-history"></i></span>
                             <span class="hide-menu">History</span>
                         </a>
