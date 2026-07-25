@@ -467,14 +467,14 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     },
                     {
                         element: document.querySelector('#tour-digital-id'),
-                        title: 'Your Digital ID',
-                        intro: 'This is your official digital ID card. Security personnel may ask to see this when verifying your identity.',
+                        title: 'Your TUPT ID',
+                        intro: 'This is your official TUPT ID card. Security personnel may ask to see this when verifying your identity.',
                         position: 'bottom'
                     },
                     {
                         element: document.querySelector('#tour-campus-status'),
                         title: 'Campus Status',
-                        intro: 'This updates automatically when you tap your registered items at the gate, letting you know your current campus location.',
+                        intro: 'This updates automatically when you tap your registered items at the scanner, letting you know your items were inside.',
                         position: 'top'
                     }
                 ];
@@ -507,7 +507,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     keyboardNavigation: true,
                     nextLabel: 'Next',
                     prevLabel: 'Back',
-                    doneLabel: 'Next Page 🚀', // Changed the button label
+                    doneLabel: 'Next Page <i class="fa-regular fa-rocket"></i>', // Changed the button label
                     steps: tourSteps
                 }).oncomplete(function() {
                     // 1. Mark the dashboard tour as completed so it doesn't show again
@@ -517,7 +517,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     localStorage.setItem('gate_tour_reg_pending', 'true');
 
                     // 3. Hand off via the injected-HTMX-anchor pattern, not a hard redirect
-                    gateTourNavigate('<?= base_url('student/item-registration') ?>');
+                    gateTourNavigate('<?= base_url('student/items/registration') ?>');
                 }).onexit(function() {
                     // Cancelling the tour marks it seen so it won't auto-restart,
                     // and does NOT set any handoff flag — the chain simply stops here.

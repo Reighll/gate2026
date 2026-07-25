@@ -122,11 +122,11 @@ $routes->group('student', function($routes) {
     $routes->post('accept-terms', 'Student\Dashboard::acceptTerms');
 
     // NEW: The routes matching your sidebar.php links
-    $routes->get('item-registration', 'Student\Dashboard::itemRegistration', ['filter' => 'studentAuth']);
-    $routes->get('registered-items', 'Student\Dashboard::registeredItems', ['filter' => 'studentAuth']);
-    $routes->get('remove-item', 'Student\Dashboard::removeItem', ['filter' => 'studentAuth']);
-    $routes->get('report-item', 'Student\Dashboard::reportItem', ['filter' => 'studentAuth']);
-    $routes->get('history', 'Student\Dashboard::history', ['filter' => 'studentAuth']);
+    $routes->get('items/registration', 'Student\Dashboard::itemRegistration', ['filter' => 'studentAuth']);
+    $routes->get('items/registered', 'Student\Dashboard::registeredItems', ['filter' => 'studentAuth']);
+    $routes->get('items/remove', 'Student\Dashboard::removeItem', ['filter' => 'studentAuth']);
+    $routes->get('items/report', 'Student\Dashboard::reportItem', ['filter' => 'studentAuth']);
+    $routes->get('items/history', 'Student\Dashboard::history', ['filter' => 'studentAuth']);
 
     // Item Management Actions (POST/Logic)
     $routes->post('items/update/(:num)', 'Student\Items::update/$1');

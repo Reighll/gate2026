@@ -125,7 +125,7 @@ class Items extends BaseController
 
         $model->update($id, $updateData);
 
-        return redirect()->to('student/registered-items')->with('success', 'Item updated successfully.');
+        return redirect()->to('student/items/registered')->with('success', 'Item updated successfully.');
     }
 
     public function requestUnregister($id)

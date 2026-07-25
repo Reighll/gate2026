@@ -111,7 +111,7 @@ class Dashboard extends BaseController
     {
         if (!$this->getCurrentStudent()) return redirect()->to('student/login');
 
-        return view('Student/views/dashboard_item_registration');
+        return view('Student/views/item_registration');
     }
 
     public function registeredItems()
@@ -122,7 +122,7 @@ class Dashboard extends BaseController
         $itemModel = new StudentItemModel();
         $items = $itemModel->where('student_id', $student['id'])->findAll();
 
-        return view('Student/views/dashboard_registered_items', ['items' => $items]);
+        return view('Student/views/registered_items', ['items' => $items]);
     }
 
     public function removeItem()
@@ -133,7 +133,7 @@ class Dashboard extends BaseController
         $itemModel = new StudentItemModel();
         $items = $itemModel->where('student_id', $student['id'])->findAll();
 
-        return view('Student/views/dashboard_remove_item', ['items' => $items]);
+        return view('Student/views/remove_item', ['items' => $items]);
     }
 
     public function reportItem()
@@ -144,7 +144,7 @@ class Dashboard extends BaseController
         $itemModel = new StudentItemModel();
         $items = $itemModel->where('student_id', $student['id'])->findAll();
 
-        return view('Student/views/dashboard_report_item', ['items' => $items]);
+        return view('Student/views/report_item', ['items' => $items]);
     }
 
     public function history()
@@ -164,7 +164,7 @@ class Dashboard extends BaseController
             $logs = $builder->get()->getResultArray();
         }
 
-        return view('Student/views/dashboard_history', ['logs' => $logs]);
+        return view('Student/views/history', ['logs' => $logs]);
     }
 
     // ==========================================
