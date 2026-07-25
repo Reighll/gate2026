@@ -378,13 +378,6 @@ $slideIn = (strpos($referrer, 'profile') !== false);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 
     <script>
-        // ---------------------------------------------------------------
-        // Shared handoff helper: navigates via an injected HTMX anchor so
-        // the SPA transition (hx-target="#app-content") stays seamless
-        // instead of doing a hard window.location redirect.
-        // Duplicated on every tour-chain page since each HTMX fragment
-        // loads its own <script> block independently.
-        // ---------------------------------------------------------------
         function gateTourNavigate(url) {
             const link = document.createElement('a');
             link.setAttribute('href', 'javascript:void(0);');
