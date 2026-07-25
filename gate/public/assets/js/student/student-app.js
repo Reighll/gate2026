@@ -143,31 +143,30 @@ function gateTourPositionPointer(targetElement) {
         return;
     }
 
-    // Intro.js hides/recreates the tooltip on every step change, and its
-    // rect briefly reports all-zero while it's still hidden mid-transition.
-    // Poll until it actually has real dimensions instead of guessing a
-    // frame count — this can't race the transition regardless of how
-    // long it takes.
+    // Direction comes from the body class set by gateTourApplyMobileDock()
+    // just before this runs — that's synchronous and always correct,
+    // unlike reading it back off the tooltip's rect (which can still be
+    // mid-transition and report all-zero for a few frames).
+    const dockedTop = document.body.classList.contains('gate-tour-dock-top');
+
     let attempts = 0;
-    const maxAttempts = 20; // ~20 frames, well past any normal transition
+    const maxAttempts = 30;
 
     function tryPosition() {
         const tooltipEl = document.querySelector('.introjs-tooltip');
         const tooltipRect = tooltipEl ? tooltipEl.getBoundingClientRect() : null;
+        const hasRealRect = tooltipRect && tooltipRect.width > 0 && tooltipRect.height > 0;
 
-        if (!tooltipRect || tooltipRect.width === 0) {
+        if (!hasRealRect && attempts < maxAttempts) {
             attempts++;
-            if (attempts < maxAttempts) {
-                requestAnimationFrame(tryPosition);
-            } else {
-                pointer.style.display = 'none'; // gave up cleanly, no wrong position shown
-            }
+            requestAnimationFrame(tryPosition);
             return;
         }
 
+        // Either we got a real rect, or we ran out of attempts — either way,
+        // show the pointer now. A fallback offset (matching the CSS dock
+        // spacing) beats silently hiding it.
         const targetRect = targetElement.getBoundingClientRect();
-        const dockedTop = tooltipRect.top < window.innerHeight / 2;
-
         const rawX = targetRect.left + targetRect.width / 2;
         const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
 
@@ -175,17 +174,18 @@ function gateTourPositionPointer(targetElement) {
         pointer.style.display = 'block';
 
         if (dockedTop) {
-            // Tooltip is at the top, target is below it — point down, sit
-            // just under the tooltip's bottom edge.
             pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
-            pointer.style.top = tooltipRect.bottom + 'px';
             pointer.style.bottom = 'auto';
+            pointer.style.top = hasRealRect ? (tooltipRect.bottom + 'px') : '90px';
         } else {
-            // Tooltip is at the bottom, target is above it — point up, sit
-            // just above the tooltip's top edge.
             pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
-            pointer.style.top = (tooltipRect.top - 10) + 'px';
-            pointer.style.bottom = 'auto';
+            if (hasRealRect) {
+                pointer.style.bottom = 'auto';
+                pointer.style.top = (tooltipRect.top - 10) + 'px';
+            } else {
+                pointer.style.top = 'auto';
+                pointer.style.bottom = '100px';
+            }
         }
     }
 
