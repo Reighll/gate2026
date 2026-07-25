@@ -176,6 +176,16 @@ html[data-bs-theme="dark"] {
     .introjs-arrow {
         display: none !important;
     }
+
+    /* Toggled on <body> by gateTourApplyMobileDock() in student-app.js
+       when the highlighted target sits in the lower half of the screen —
+       flips the tooltip to the top edge instead, so it never covers its
+       own target (e.g. the Campus Status card, which sits low on the
+       dashboard). */
+    body.gate-tour-dock-top .introjs-tooltip {
+        top: max(16px, env(safe-area-inset-top)) !important;
+        bottom: auto !important;
+    }
 }
 
 /* Tablet: cap the width instead of letting it stretch edge-to-edge */

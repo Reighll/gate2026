@@ -70,12 +70,12 @@ function startOnboardingTour() {
         let tourSteps = [
             {
                 title: 'Welcome to GATE!',
-                intro: 'Let us take a quick tour to show you around your own Student Dashboard.'
+                intro: 'Let us take a quick tour to show you around your new Student Dashboard.'
             },
             {
                 element: document.querySelector('#tour-digital-id'),
-                title: 'Your Campus Details',
-                intro: 'This is your official Campus Details. Security personnel may ask to see this when verifying your identity.',
+                title: 'Your TUPT ID',
+                intro: 'This is your official TUPT ID card. Security personnel may ask to see this when verifying your identity.',
                 position: 'bottom'
             },
             {
@@ -89,13 +89,13 @@ function startOnboardingTour() {
         // Target the entire navigation bar depending on the screen size
         // IMPORTANT: Replace '.bottom-nav' and '.sidebar' with the actual CSS classes or IDs used in your HTML layout!
         const navTarget = isMobile
-            ? document.querySelector('.mobile-bottom-nav')
-            : document.querySelector('.left-sidebar');
+            ? document.querySelector('.bottom-nav') // Your mobile bottom navigation container
+            : document.querySelector('.sidebar');   // Your desktop sidebar container
 
         if (navTarget) {
             tourSteps.push({
                 element: navTarget,
-                title: 'Exploring Other Pages',
+                title: '🧭 Exploring Other Pages',
                 intro: 'Use this menu to navigate to your Registered Items list, view your Entry History, and check for any Violation alerts.',
                 position: isMobile ? 'top' : 'right'
             });
@@ -116,7 +116,13 @@ function startOnboardingTour() {
             prevLabel: 'Back',
             doneLabel: 'Next Page <i class="fa-regular fa-rocket"></i>', // Changed the button label
             steps: tourSteps
+        }).onbeforechange(function(targetElement) {
+            if (typeof window.gateTourApplyMobileDock === 'function') {
+                window.gateTourApplyMobileDock(targetElement);
+            }
         }).oncomplete(function() {
+            document.body.classList.remove('gate-tour-dock-top');
+
             // 1. Mark the dashboard tour as completed so it doesn't show again
             localStorage.setItem(tourStorageKey, 'true');
 
@@ -126,6 +132,7 @@ function startOnboardingTour() {
             // 3. Hand off via the injected-HTMX-anchor pattern, not a hard redirect
             gateTourNavigate(window.dashboardConfig.itemRegistrationUrl);
         }).onexit(function() {
+            document.body.classList.remove('gate-tour-dock-top');
             // Cancelling the tour marks it seen so it won't auto-restart,
             // and does NOT set any handoff flag — the chain simply stops here.
             localStorage.setItem(tourStorageKey, 'true');
