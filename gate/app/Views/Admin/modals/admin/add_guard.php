@@ -1,16 +1,21 @@
-<div class="modal fade" id="addGuardModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade sheet-modal" id="addGuardModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered px-2 px-sm-0">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
             <form action="<?= base_url('admin/users/createGuard') ?>" method="post">
                 <?= csrf_field() ?>
-                <div class="modal-header border-bottom-0 pt-4 px-4 pb-2">
-                    <h5 class="modal-title fw-bolder text-dark d-flex align-items-center">
+                <div class="modal-header border-bottom-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title fw-bolder text-dark d-flex align-items-center mb-0 text-truncate pe-2">
                         <div class="bg-light-warning text-warning rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 40px; height: 40px;">
                             <i class="ti ti-shield-lock fs-5"></i>
                         </div>
                         Add New Guard
                     </h5>
-                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                        <button type="button" class="btn-close shadow-none m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="ti ti-x"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-body px-4 py-3">
                     <div class="mb-3">
@@ -37,9 +42,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-grid gap-2 d-sm-flex justify-content-sm-end">
-                    <button type="button" class="btn btn-adaptive-cancel fw-bold px-4 py-2 m-0" style="border-radius: 10px;" data-bs-dismiss="modal">Cancel</button>
-
+                <div class="modal-footer border-top-0 px-4 pb-4 pt-2 d-flex justify-content-end modal-actions-mobile">
                     <button type="submit" class="btn btn-warning text-white fw-bold px-4 py-2 shadow-sm m-0" style="border-radius: 10px;">Create Account</button>
                 </div>
             </form>
