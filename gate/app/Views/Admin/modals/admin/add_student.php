@@ -94,3 +94,66 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // 1. Combine Email Prefix before form submission
+        const form = document.getElementById('addStudentForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const emailPrefix = document.getElementById('email_prefix').value;
+                const fullEmailInput = document.getElementById('full_email');
+
+                if (emailPrefix) {
+                    // Combine the prefix with the domain behind the scenes
+                    fullEmailInput.value = emailPrefix + '@tup.edu.ph';
+                }
+            });
+        }
+
+        // 2. Prevent "@" from being typed in the email prefix field
+        const emailPrefixInput = document.getElementById('email_prefix');
+        if (emailPrefixInput) {
+            emailPrefixInput.addEventListener('input', function() {
+                // Check if the user typed or pasted an '@' symbol
+                if (this.value.includes('@')) {
+                    // Split the string at the '@' and only keep the first part (the username)
+                    this.value = this.value.split('@')[0];
+                }
+
+                // Optional: You can also force it to be lowercase so it looks cleaner
+                this.value = this.value.toLowerCase();
+            });
+        }
+
+        // 3. Toggle Password Visibility (Updated for maximum reliability)
+        // We use querySelectorAll to grab ALL toggle buttons on the page
+        const togglePasswordBtns = document.querySelectorAll('.btn-toggle-pass');
+
+        togglePasswordBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                // Find the specific input inside the same input-group as the button clicked
+                const inputGroup = this.closest('.input-group');
+                const passwordInput = inputGroup.querySelector('input');
+                const icon = this.querySelector('i');
+
+                if (passwordInput && icon) {
+                    // Check current type and swap it
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+
+                    // Swap the icons
+                    if (isPassword) {
+                        icon.classList.remove('ti-eye');
+                        icon.classList.add('ti-eye-off');
+                    } else {
+                        icon.classList.remove('ti-eye-off');
+                        icon.classList.add('ti-eye');
+                    }
+                }
+            });
+        });
+
+    });
+</script>
