@@ -151,7 +151,7 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
 function checkGateTourHandoff() {
     const path = window.location.pathname;
 
-    if (path.includes('item-registration')) {
+    if (path.includes('items/registration')) {
         runGateTourStep('gate_tour_reg_pending', 'gate_tour_items_pending', window.gateTourRoutes.registeredItems, [
             {
                 title: 'Register Your Equipment',
@@ -257,7 +257,7 @@ document.body.addEventListener('htmx:afterSettle', function(evt) {
     const currentPath = window.location.pathname;
     const bottomNav = document.querySelector('.mobile-bottom-nav');
     const mobileFab = document.querySelector('.mobile-fab');
-    const shouldHideNav = currentPath.includes('item-registration') || currentPath.includes('profile');
+    const shouldHideNav = currentPath.includes('items/registration') || currentPath.includes('profile');
 
     updateNavProfileVisibility();
 
