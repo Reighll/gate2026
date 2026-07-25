@@ -151,7 +151,15 @@ function gateTourPositionPointer(targetElement) {
 
     const targetRect = targetElement.getBoundingClientRect();
     const tooltipRect = tooltipEl.getBoundingClientRect();
-    const dockedTop = document.body.classList.contains('gate-tour-dock-top');
+    // Read the dock direction straight off the tooltip's actual current
+    // position rather than re-checking the body class — that class was
+    // set earlier in onbeforechange, using the target's position BEFORE
+    // Intro.js auto-scrolled it into view, so by the time this runs
+    // (onafterchange, after the scroll) it can be stale even though the
+    // CSS itself already rendered correctly off the same class. Reading
+    // the live tooltip position instead can't desync from what's
+    // actually on screen.
+    const dockedTop = tooltipRect.top < window.innerHeight / 2;
 
     // Aim at the target's horizontal center, clamped so the pointer
     // itself never sits closer than 20px to a screen edge.
