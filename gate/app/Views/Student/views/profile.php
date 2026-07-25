@@ -199,37 +199,38 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script id="faceApiLib" hx-preserve="true" src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
     <script id="faceModelLoader" hx-preserve="true">
-        // 0. Face Detection Setup
-        // This script tag is marked hx-preserve so it loads the face-detection model
-        // only ONCE per browser session, instead of every time this page is opened via htmx.
-        // Model files must be placed at public/assets/models/ (see notes below the code).
-        window.faceModelsReady = window.faceModelsReady || (async function loadFaceModels() {
-            const MODEL_URL = '<?= base_url('assets/models') ?>';
-            try {
-                await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-                return true;
-            } catch (err) {
-                console.error('Face detection models failed to load:', err);
-                return false;
+        // Loads face-api.js + its models exactly once per session, no matter
+        // how htmx orders/executes this tag relative to anything else.
+        window.faceModelsReady = window.faceModelsReady || (function loadFaceEverything() {
+            function loadScript(src) {
+                return new Promise((resolve, reject) => {
+                    const s = document.createElement('script');
+                    s.src = src;
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
             }
+
+            return loadScript('https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js')
+                .then(() => {
+                    const MODEL_URL = '<?= base_url('assets/models') ?>';
+                    return faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+                })
+                .then(() => true)
+                .catch(err => {
+                    console.error('Face detection setup failed:', err);
+                    return false;
+                });
         })();
 
         window.imageHasFace = window.imageHasFace || async function imageHasFace(dataUrl) {
-            // Don't trust a stale cached failure — check the real model state,
-            // and retry loading once if it's not actually ready yet.
-            if (!faceapi.nets.ssdMobilenetv1.isLoaded) {
-                try {
-                    const MODEL_URL = '<?= base_url('assets/models') ?>';
-                    await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
-                    window.faceModelsReady = Promise.resolve(true);
-                } catch (err) {
-                    console.error('Face detection models failed to load (retry):', err);
-                    // Genuinely unavailable this time — fail open.
-                    return true;
-                }
+            // Always wait on the same load chain — never race a raw isLoaded check again.
+            const ready = await window.faceModelsReady;
+            if (!ready || typeof faceapi === 'undefined') {
+                return true; // genuinely unavailable — fail open, don't block the user
             }
 
             const img = new Image();
