@@ -51,6 +51,11 @@
             box-sizing: border-box !important;
         }
         @media (max-width: 576px) {
+            .introjs-tooltip {
+                left: 5vw !important;
+                right: 5vw !important;
+                width: auto !important;
+            }
             .introjs-tooltip { width: 90vw !important; padding: 18px !important; border-radius: 14px !important; }
             .introjs-tooltiptitle { font-size: 1.15rem !important; }
             .introjs-tooltiptext { font-size: 0.9rem !important; }

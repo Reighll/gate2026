@@ -185,7 +185,7 @@
 
             runGateTourStep('gate_tour_items_pending', 'gate_tour_remove_pending', window.gateTourRoutes.removeItem, [
                 { title: 'Your Equipment Hub', intro: 'Welcome to the Registered Items page! This is where you can manage all the devices you bring into the GATE system.' },
-                { element: document.querySelector('#gateTourSampleItem .card') || document.querySelector('.real-wrapper'), title: 'Item Status', intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status. (This one\'s just an example — yours will show up here once registered.)', position: 'top' },
+                { element: document.querySelector('#gateTourSampleItem') || document.querySelector('.real-wrapper'), title: 'Item Status', intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status. (This one\'s just an example — yours will show up here once registered.)', position: 'top' },
                 { title: 'Removing an item', intro: "Next, we'll take you to the Remove Item page in case you ever need to unregister something." }
             ], null, function () {
                 gateTourRemoveSample('gateTourSampleItem', 'itemsEmptyStateCard');
