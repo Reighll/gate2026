@@ -12,15 +12,15 @@
 
                 <div class="row mb-4 skeleton-wrapper">
                     <?php for($i=0; $i<4; $i++): ?>
-                        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                        <div class="col-6 col-lg-3 mb-3 mb-lg-0">
                             <div class="card border-0 shadow-sm h-100 rounded-4">
-                                <div class="card-body p-4">
+                                <div class="card-body p-3 p-md-4">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="w-100">
                                             <div class="skeleton skeleton-text w-75 mb-3"></div>
                                             <div class="skeleton skeleton-title w-25 mb-0"></div>
                                         </div>
-                                        <div class="skeleton skeleton-avatar ms-3" style="width: 54px; height: 54px;"></div>
+                                        <div class="skeleton skeleton-avatar ms-3 stat-icon" style="width: 54px; height: 54px;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -29,15 +29,15 @@
                 </div>
 
                 <div class="row mb-4 real-wrapper d-none" id="statusFilterCards">
-                    <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                    <div class="col-6 col-lg-3 mb-3 mb-lg-0">
                         <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-warning rounded-4" data-status-filter="pending" role="button" tabindex="0">
-                            <div class="card-body p-4">
+                            <div class="card-body p-3 p-md-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <h6 class="text-muted fw-normal mb-2">Pending Requests</h6>
-                                        <h3 class="fw-bold mb-0 text-warning"><?= esc($pendingItemsCount ?? 0) ?></h3>
+                                        <h6 class="text-muted fw-normal mb-2 stat-label">Pending Requests</h6>
+                                        <h3 class="fw-bold mb-0 text-warning stat-number"><?= esc($pendingItemsCount ?? 0) ?></h3>
                                     </div>
-                                    <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 54px; height: 54px;">
+                                    <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm stat-icon" style="width: 54px; height: 54px;">
                                         <i class="ti ti-device-laptop fs-4"></i>
                                     </div>
                                 </div>
@@ -45,15 +45,15 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                    <div class="col-6 col-lg-3 mb-3 mb-lg-0">
                         <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-success rounded-4" data-status-filter="approved" role="button" tabindex="0">
-                            <div class="card-body p-4">
+                            <div class="card-body p-3 p-md-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <h6 class="text-muted fw-normal mb-2">Approved Items</h6>
-                                        <h3 class="fw-bold mb-0 text-success"><?= esc($approvedItemsCount ?? 0) ?></h3>
+                                        <h6 class="text-muted fw-normal mb-2 stat-label">Approved Items</h6>
+                                        <h3 class="fw-bold mb-0 text-success stat-number"><?= esc($approvedItemsCount ?? 0) ?></h3>
                                     </div>
-                                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 54px; height: 54px;">
+                                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm stat-icon" style="width: 54px; height: 54px;">
                                         <i class="ti ti-check fs-4"></i>
                                     </div>
                                 </div>
@@ -61,30 +61,31 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4" data-status-filter="rejected" role="button" tabindex="0">
-                            <div class="card-body p-4">
+                    <div class="col-6 col-lg-3 mb-3 mb-lg-0">
+                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-danger rounded-4" data-status-filter="rejected" role="button" tabindex="0">
+                            <div class="card-body p-3 p-md-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <h6 class="text-muted fw-normal mb-2">Declined Items</h6>
-                                        <h3 class="fw-bold mb-0 text-secondary"><?= esc($rejectedItemsCount ?? 0) ?></h3>
+                                        <h6 class="text-muted fw-normal mb-2 stat-label">Declined Items</h6>
+                                        <h3 class="fw-bold mb-0 text-danger stat-number"><?= esc($rejectedItemsCount ?? 0) ?></h3>
                                     </div>
-                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 54px; height: 54px;">
+                                    <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm stat-icon" style="width: 54px; height: 54px;">
                                         <i class="ti ti-x fs-4"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4" data-status-filter="rejected" role="button" tabindex="0">
-                            <div class="card-body p-4">
+
+                    <div class="col-6 col-lg-3 mb-3 mb-lg-0">
+                        <div class="card status-filter-card border-0 shadow-sm h-100 border-bottom border-4 border-secondary rounded-4" data-status-filter="archived" role="button" tabindex="0">
+                            <div class="card-body p-3 p-md-4">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <h6 class="text-muted fw-normal mb-2">Inactive / Archived</h6>
-                                        <h3 class="fw-bold mb-0 text-secondary"><?= esc($archivedItemsCount ?? 0) ?></h3>
+                                        <h6 class="text-muted fw-normal mb-2 stat-label">Archived</h6>
+                                        <h3 class="fw-bold mb-0 text-secondary stat-number"><?= esc($archivedItemsCount ?? 0) ?></h3>
                                     </div>
-                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px;">
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm stat-icon" style="width: 54px; height: 54px;">
                                         <i class="ti ti-archive fs-4"></i>
                                     </div>
                                 </div>
@@ -416,7 +417,23 @@
         </div>
     <?php endforeach; ?>
 <?php endif; ?>
-
+    <style>
+        @media (max-width: 575.98px) {
+            .stat-icon {
+                width: 40px !important;
+                height: 40px !important;
+            }
+            .stat-icon i {
+                font-size: 1.1rem !important;
+            }
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            .stat-number {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
     <script>
         window.scanApiUrl = "<?= base_url('admin/items/check-latest-scan') ?>";
 
