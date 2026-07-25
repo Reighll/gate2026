@@ -202,6 +202,10 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
     <script id="faceApiLib" hx-preserve="true" src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
     <script id="faceModelLoader" hx-preserve="true">
+        // 0. Face Detection Setup
+        // This script tag is marked hx-preserve so it loads the face-detection model
+        // only ONCE per browser session, instead of every time this page is opened via htmx.
+        // Model files must be placed at public/assets/models/ (see notes below the code).
         window.faceModelsReady = window.faceModelsReady || (async function loadFaceModels() {
             const MODEL_URL = '<?= base_url('assets/models') ?>';
             try {
