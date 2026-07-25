@@ -1,6 +1,11 @@
 <div class="modal fade sheet-modal" id="addStudentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered px-2 px-sm-0">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+
+            <div class="d-flex justify-content-center pt-3 pb-1 d-sm-none">
+                <div style="width: 40px; height: 5px; background-color: #dee2e6; border-radius: 10px;"></div>
+            </div>
+
             <form action="<?= base_url('admin/users/createStudent') ?>" method="post" id="addStudentForm">
                 <?= csrf_field() ?>
 
@@ -13,7 +18,7 @@
                     </h5>
                     <div class="d-flex align-items-center gap-2 flex-shrink-0">
                         <button type="button" class="btn-close shadow-none m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-                        <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close" style="background: none; border: none;">
+                        <button type="button" class="mobile-sheet-close d-sm-none" data-bs-dismiss="modal" aria-label="Close" style="background: none; border: none;">
                             <i class="ti ti-x fs-4"></i>
                         </button>
                     </div>
