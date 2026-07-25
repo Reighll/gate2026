@@ -87,10 +87,9 @@ function startOnboardingTour() {
         ];
 
         // Target the entire navigation bar depending on the screen size
-        // IMPORTANT: Replace '.bottom-nav' and '.sidebar' with the actual CSS classes or IDs used in your HTML layout!
         const navTarget = isMobile
             ? document.querySelector('.mobile-bottom-nav')
-            : document.querySelector('.left-sidebar');   // Your desktop sidebar container
+            : document.querySelector('.left-sidebar');
 
         if (navTarget) {
             tourSteps.push({
@@ -100,6 +99,7 @@ function startOnboardingTour() {
                 position: isMobile ? 'top' : 'right'
             });
         }
+
         // Final step for this segment — next stop is Item Registration
         tourSteps.push({
             title: 'Let\'s register your first item!',
@@ -114,21 +114,17 @@ function startOnboardingTour() {
             keyboardNavigation: true,
             nextLabel: 'Next',
             prevLabel: 'Back',
-            doneLabel: 'Next Page <i class="fa-regular fa-rocket"></i>', // Changed the button label
+            doneLabel: 'Next Page <i class="ti ti-rocket"></i>',
             steps: tourSteps
-        }).onbeforechange(function(targetElement) {
+        }).onbeforechange(function (targetElement) {
             if (typeof window.gateTourApplyMobileDock === 'function') {
                 window.gateTourApplyMobileDock(targetElement);
             }
-        }).onafterchange(function(targetElement) {
+        }).onafterchange(function (targetElement) {
             if (typeof window.gateTourPositionPointer === 'function') {
-                requestAnimationFrame(function () {
-                    requestAnimationFrame(function () {
-                        window.gateTourPositionPointer(targetElement);
-                    });
-                });
+                window.gateTourPositionPointer(targetElement);
             }
-        }).oncomplete(function() {
+        }).oncomplete(function () {
             document.body.classList.remove('gate-tour-dock-top');
             if (typeof window.gateTourHidePointer === 'function') window.gateTourHidePointer();
 
@@ -140,7 +136,7 @@ function startOnboardingTour() {
 
             // 3. Hand off via the injected-HTMX-anchor pattern, not a hard redirect
             gateTourNavigate(window.dashboardConfig.itemRegistrationUrl);
-        }).onexit(function() {
+        }).onexit(function () {
             document.body.classList.remove('gate-tour-dock-top');
             if (typeof window.gateTourHidePointer === 'function') window.gateTourHidePointer();
             // Cancelling the tour marks it seen so it won't auto-restart,

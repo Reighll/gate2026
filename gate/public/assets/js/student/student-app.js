@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', updateNavProfileVisibility);
 
 window.addEventListener('load', hideMySkeletons);
 
-document.body.addEventListener('htmx:afterSwap', function(evt) {
+document.body.addEventListener('htmx:afterSwap', function (evt) {
     hideMySkeletons();
 });
 
@@ -136,9 +136,60 @@ function gateTourGetPointerEl() {
 }
 
 function gateTourPositionPointer(targetElement) {
-    if (gateTourPointerEl) {
-        gateTourPointerEl.style.display = 'none';
+    const pointer = gateTourGetPointerEl();
+
+    if (window.innerWidth > 991.98 || !targetElement || targetElement === document.body) {
+        pointer.style.display = 'none';
+        return;
     }
+
+    // Intro.js hides/recreates the tooltip on every step change, and its
+    // rect briefly reports all-zero while it's still hidden mid-transition.
+    // Poll until it actually has real dimensions instead of guessing a
+    // frame count — this can't race the transition regardless of how
+    // long it takes.
+    let attempts = 0;
+    const maxAttempts = 20; // ~20 frames, well past any normal transition
+
+    function tryPosition() {
+        const tooltipEl = document.querySelector('.introjs-tooltip');
+        const tooltipRect = tooltipEl ? tooltipEl.getBoundingClientRect() : null;
+
+        if (!tooltipRect || tooltipRect.width === 0) {
+            attempts++;
+            if (attempts < maxAttempts) {
+                requestAnimationFrame(tryPosition);
+            } else {
+                pointer.style.display = 'none'; // gave up cleanly, no wrong position shown
+            }
+            return;
+        }
+
+        const targetRect = targetElement.getBoundingClientRect();
+        const dockedTop = tooltipRect.top < window.innerHeight / 2;
+
+        const rawX = targetRect.left + targetRect.width / 2;
+        const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
+
+        pointer.style.left = clampedX + 'px';
+        pointer.style.display = 'block';
+
+        if (dockedTop) {
+            // Tooltip is at the top, target is below it — point down, sit
+            // just under the tooltip's bottom edge.
+            pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
+            pointer.style.top = tooltipRect.bottom + 'px';
+            pointer.style.bottom = 'auto';
+        } else {
+            // Tooltip is at the bottom, target is above it — point up, sit
+            // just above the tooltip's top edge.
+            pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
+            pointer.style.top = (tooltipRect.top - 10) + 'px';
+            pointer.style.bottom = 'auto';
+        }
+    }
+
+    tryPosition();
 }
 window.gateTourPositionPointer = gateTourPositionPointer;
 
@@ -160,21 +211,12 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         keyboardNavigation: true,
         nextLabel: 'Next',
         prevLabel: 'Back',
-        doneLabel: doneLabel || 'Next Page <i class="fa-regular fa-rocket"></i>',
+        doneLabel: doneLabel || 'Next Page <i class="ti ti-rocket"></i>',
         steps: steps
     }).onbeforechange(function (targetElement) {
         gateTourApplyMobileDock(targetElement);
     }).onafterchange(function (targetElement) {
-        // Double rAF: wait for the browser to actually finish laying
-        // out and painting the new tooltip before measuring it. A
-        // single frame (or none) can catch it mid-transition, which is
-        // what put the pointer in the wrong place before — reading a
-        // still-settling position instead of the final one.
-        requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-                gateTourPositionPointer(targetElement);
-            });
-        });
+        gateTourPositionPointer(targetElement);
     }).oncomplete(function () {
         document.body.classList.remove('gate-tour-dock-top');
         gateTourHidePointer();
@@ -289,15 +331,15 @@ function checkGateTourHandoff() {
             { element: document.querySelector('#location'), title: 'Last Known Location', intro: 'Tell us where you last had it — this helps guards narrow down where to look.', position: 'top' },
             { title: 'One last stop!', intro: "Next, we'll take you to your Scan History page to finish the tour." }
         ]);
-    } else if (path.includes('item/history')) {
+    } else if (path.includes('items/history')) {
         runGateTourStep('gate_tour_history_pending', null, null, [
             { title: 'Your Scan History', intro: 'Every time your items are tapped at the gate, it shows up here — a full log of your campus entries and exits.' },
             { title: "That's the tour!", intro: 'You now know your way around GATE. You can revisit any of these pages anytime from the menu.' }
-        ], "You're all set! 🎉");
+        ], 'You\'re all set! <i class="ti ti-check"></i>');
     }
 }
 
-document.body.addEventListener('htmx:afterSettle', function(evt) {
+document.body.addEventListener('htmx:afterSettle', function (evt) {
     const currentPath = window.location.pathname;
     const bottomNav = document.querySelector('.mobile-bottom-nav');
     const mobileFab = document.querySelector('.mobile-fab');
