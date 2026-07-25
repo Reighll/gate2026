@@ -222,7 +222,7 @@
             runGateTourStep('gate_tour_history_pending', null, null, [
                 { title: 'Your Scan History', intro: 'Every time your items are tapped at the gate, it shows up here — a full log of your campus entries and exits.' },
                 { title: "That's the tour!", intro: 'You now know your way around GATE. You can revisit any of these pages anytime from the navigation.' }
-            ], 'You\'re all set! <i class="bi bi-check-circle-fill"></i>');
+            ], 'You\'re all set!', '<i class="bi bi-check-circle-fill"></i>');
         }
     }
 
