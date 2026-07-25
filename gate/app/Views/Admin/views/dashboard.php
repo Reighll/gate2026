@@ -225,43 +225,8 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             </div>
         </div>
     </div>
-
-    <style>
-        @media (max-width: 575.98px) {
-            .card .rounded-circle[style*="54px"] {
-                width: 42px !important;
-                height: 42px !important;
-            }
-            .card .rounded-circle[style*="54px"] i {
-                font-size: 1.1rem !important;
-            }
-            .card h6.fw-normal { font-size: 0.78rem; }
-            .card h3.fw-bold { font-size: 1.3rem; }
-            .card .badge.fs-2 {
-                font-size: 0.65rem !important;
-                padding: 0.25rem 0.5rem !important;
-            }
-            .card .d-flex.align-items-center.gap-2 {
-                flex-wrap: wrap;
-            }
-        }
-    </style>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
     <script src="<?= base_url('assets/js/admin.js') ?>"></script>
-    <script>
-        // 5. UPDATED: Standardized HTMX-compatible skeleton script
-        function hideMySkeletons() {
-            setTimeout(() => {
-                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-            }, 600);
-        }
-
-        // Run on normal refresh
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        // Run on HTMX navigation
-        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-    </script>
 <?= $this->endSection() ?>

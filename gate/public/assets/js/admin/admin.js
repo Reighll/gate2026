@@ -109,3 +109,11 @@ if (!window.__dashboardFilterDelegated) {
         }
     });
 }
+function hideMySkeletons() {
+    setTimeout(() => {
+        document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
+        document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
+    }, 600);
+}
+document.addEventListener("DOMContentLoaded", hideMySkeletons);
+document.body.addEventListener('htmx:afterSettle', hideMySkeletons);

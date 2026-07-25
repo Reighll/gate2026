@@ -168,34 +168,8 @@
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
-    <style>
-        @media (max-width: 575.98px) {
-            .card .rounded-circle[style*="45px"] {
-                width: 36px !important;
-                height: 36px !important;
-            }
-            .card .rounded-circle[style*="45px"] i {
-                font-size: 1rem !important;
-            }
-            .card h6.fw-normal { font-size: 0.78rem; }
-            .card h3.fw-bold { font-size: 1.3rem; }
-        }
-    </style>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
     <script src="<?= base_url('assets/js/admin.js') ?>"></script>
-    <script>
-        function hideMySkeletons() {
-            setTimeout(() => {
-                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-            }, 600);
-        }
-
-        // Run on normal refresh
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        // Run on HTMX navigation
-        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-    </script>
 <?= $this->endSection() ?>

@@ -202,17 +202,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'A
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+    <script src="<?= base_url('assets/js/admin.js') ?>"></script>
+    <script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>
     <script>
-        function hideMySkeletons() {
-            setTimeout(() => {
-                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-            }, 600);
-        }
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-
-        // Show/hide password toggle (delegated - works for any .toggle-password-btn on this page)
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.toggle-password-btn');
             if (!btn) return;
@@ -231,5 +223,4 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'A
             }
         });
     </script>
-    <script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>
 <?= $this->endSection() ?>

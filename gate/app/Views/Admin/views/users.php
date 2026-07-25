@@ -263,62 +263,6 @@
             </div>
         </div>
     </div>
-    <style>
-        .mobile-sheet-close {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            min-width: 34px;
-            border-radius: 50%;
-            background: #f1f3f5;
-            border: none;
-            color: #495057;
-            font-size: 1.05rem;
-            padding: 0;
-        }
-        .mobile-sheet-close:active { background: #e9ecef; }
-
-        @media (max-width: 991.98px) {
-            .sheet-modal .modal-dialog {
-                position: fixed;
-                left: 0; right: 0; bottom: 0; top: auto !important;
-                margin: 0; width: 100%; max-width: 100%;
-            }
-            .sheet-modal .modal-dialog.modal-dialog-centered {
-                display: block !important;
-                align-items: initial !important;
-                min-height: 0 !important;
-            }
-            .sheet-modal.fade .modal-dialog {
-                transform: translateY(100%);
-                transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
-            }
-            .sheet-modal.show .modal-dialog { transform: translateY(0); }
-            .sheet-modal .modal-content {
-                border-radius: 24px 24px 0 0 !important;
-                max-height: 92vh;
-                overflow-y: auto;
-            }
-            .sheet-modal .modal-content::before {
-                content: '';
-                display: block;
-                width: 40px; height: 4px;
-                border-radius: 999px;
-                background: #dbe0e6;
-                margin: 10px auto 6px;
-            }
-            .sheet-modal .mobile-sheet-close { display: inline-flex; }
-            .sheet-modal .modal-header .btn-close { display: none; }
-
-            .modal-actions-mobile {
-                flex-direction: column-reverse !important;
-                align-items: stretch !important;
-            }
-            .modal-actions-mobile .btn { width: 100%; }
-        }
-    </style>
 <?= $this->include('Admin/modals/admin/add_student') ?>
 <?= $this->include('Admin/modals/admin/add_guard') ?>
 <?= $this->include('Admin/modals/admin/add_admin') ?>
@@ -326,24 +270,8 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+    <script src="<?= base_url('assets/js/admin.js') ?>"></script>
     <script>
-        // Smooth skeleton loading effect
-        function hideMySkeletons() {
-            setTimeout(() => {
-                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-            }, 600);
-        }
-
-        // Run on normal refresh
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        // Run on HTMX navigation (from your sidebar)
-        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-
-        // ------------------------------------------------------------
-        // Student search bar: filters the students table client-side
-        // by student number, name, or email as the admin types.
-        // ------------------------------------------------------------
         function bindStudentSearch() {
             const searchInput = document.getElementById('studentSearchInput');
             const table = document.getElementById('studentsTable');
@@ -382,24 +310,18 @@
             }
         });
 
-        // This finds EVERY input with the class on the page (Add and Edit!)
         const tuptInputs = document.querySelectorAll('.format-tupt-id');
 
         tuptInputs.forEach(input => {
-            // 1. If they click into an empty box, put TUPT-
             input.addEventListener('focus', function() {
                 if (this.value === '') this.value = 'TUPT-';
             });
 
-            // 2. Strict real-time typing restriction
             input.addEventListener('input', function() {
-                // Strip out everything except numbers
                 let numbers = this.value.replace(/[^0-9]/g, '');
 
-                // Cap at exactly 6 digits
                 numbers = numbers.substring(0, 6);
 
-                // Force format and lock down prefix
                 if (numbers.length === 0) {
                     this.value = 'TUPT-';
                 } else if (numbers.length <= 2) {

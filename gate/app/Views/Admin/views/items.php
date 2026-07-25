@@ -417,34 +417,6 @@
         </div>
     <?php endforeach; ?>
 <?php endif; ?>
-    <style>
-        @media (max-width: 575.98px) {
-            .stat-icon {
-                width: 40px !important;
-                height: 40px !important;
-            }
-            .stat-icon i {
-                font-size: 1.1rem !important;
-            }
-            .stat-label {
-                font-size: 0.8rem;
-            }
-            .stat-number {
-                font-size: 1.4rem;
-            }
-        }
-    </style>
-    <script>
-        window.scanApiUrl = "<?= base_url('admin/items/check-latest-scan') ?>";
-
-        function hideMySkeletons() {
-            setTimeout(() => {
-                document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-            }, 600);
-        }
-        document.addEventListener("DOMContentLoaded", hideMySkeletons);
-        document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-    </script>
-
+    <script>window.scanApiUrl = "<?= base_url('admin/items/check-latest-scan') ?>";</script>
+    <script src="<?= base_url('assets/js/admin.js') ?>"></script>
 <?= $this->endSection() ?>
