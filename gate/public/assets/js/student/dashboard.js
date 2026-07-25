@@ -120,8 +120,13 @@ function startOnboardingTour() {
             if (typeof window.gateTourApplyMobileDock === 'function') {
                 window.gateTourApplyMobileDock(targetElement);
             }
+        }).onafterchange(function(targetElement) {
+            if (typeof window.gateTourPositionPointer === 'function') {
+                window.gateTourPositionPointer(targetElement);
+            }
         }).oncomplete(function() {
             document.body.classList.remove('gate-tour-dock-top');
+            if (typeof window.gateTourHidePointer === 'function') window.gateTourHidePointer();
 
             // 1. Mark the dashboard tour as completed so it doesn't show again
             localStorage.setItem(tourStorageKey, 'true');
@@ -133,6 +138,7 @@ function startOnboardingTour() {
             gateTourNavigate(window.dashboardConfig.itemRegistrationUrl);
         }).onexit(function() {
             document.body.classList.remove('gate-tour-dock-top');
+            if (typeof window.gateTourHidePointer === 'function') window.gateTourHidePointer();
             // Cancelling the tour marks it seen so it won't auto-restart,
             // and does NOT set any handoff flag — the chain simply stops here.
             localStorage.setItem(tourStorageKey, 'true');

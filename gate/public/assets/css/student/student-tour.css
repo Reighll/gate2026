@@ -188,6 +188,36 @@ html[data-bs-theme="dark"] {
     }
 }
 
+/* Dynamic pointer (mobile only): replaces Intro.js's own .introjs-arrow,
+   which is hidden above since it assumed the tooltip was anchored next to
+   the target. This is a single reusable triangle element, positioned
+   entirely via inline styles set by gateTourPositionPointer() in
+   student-app.js on every step — horizontally aligned to the target's
+   center, and pointing up/down depending on which edge the tooltip is
+   currently docked to. */
+.gate-tour-pointer {
+    position: fixed;
+    width: 0;
+    height: 0;
+    z-index: 9999998;
+    display: none;
+    pointer-events: none;
+    transform: translateX(-50%);
+    transition: left 0.25s ease, top 0.25s ease;
+}
+.gate-tour-pointer--up {
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 10px solid var(--tour-bg);
+    filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.08));
+}
+.gate-tour-pointer--down {
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 10px solid var(--tour-bg);
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.08));
+}
+
 /* Tablet: cap the width instead of letting it stretch edge-to-edge */
 @media (min-width: 577px) and (max-width: 991.98px) {
     .introjs-tooltip {

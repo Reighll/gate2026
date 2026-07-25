@@ -116,6 +116,72 @@ function gateTourApplyMobileDock(targetElement) {
 }
 window.gateTourApplyMobileDock = gateTourApplyMobileDock;
 
+// Dynamic pointer: since the tooltip is now docked to a screen edge
+// instead of anchored beside the target, Intro.js's own triangle arrow
+// (which assumed anchored positioning) is hidden in CSS. This is its
+// replacement — a single reusable triangle, fixed-positioned, that's
+// re-measured and re-placed on every step so it keeps pointing at
+// wherever the real target actually is, both horizontally (aligned to
+// the target's center) and directionally (up from a bottom-docked
+// tooltip, down from a top-docked one).
+let gateTourPointerEl = null;
+
+function gateTourGetPointerEl() {
+    if (!gateTourPointerEl) {
+        gateTourPointerEl = document.createElement('div');
+        gateTourPointerEl.className = 'gate-tour-pointer';
+        document.body.appendChild(gateTourPointerEl);
+    }
+    return gateTourPointerEl;
+}
+
+function gateTourPositionPointer(targetElement) {
+    const pointer = gateTourGetPointerEl();
+
+    if (window.innerWidth > 991.98 || !targetElement || targetElement === document.body) {
+        pointer.style.display = 'none';
+        return;
+    }
+
+    const tooltipEl = document.querySelector('.introjs-tooltip');
+    if (!tooltipEl) {
+        pointer.style.display = 'none';
+        return;
+    }
+
+    const targetRect = targetElement.getBoundingClientRect();
+    const tooltipRect = tooltipEl.getBoundingClientRect();
+    const dockedTop = document.body.classList.contains('gate-tour-dock-top');
+
+    // Aim at the target's horizontal center, clamped so the pointer
+    // itself never sits closer than 20px to a screen edge.
+    const rawX = targetRect.left + targetRect.width / 2;
+    const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
+
+    pointer.style.left = clampedX + 'px';
+    pointer.style.display = 'block';
+
+    if (dockedTop) {
+        // Tooltip is at the top, target is below it — point down, sit
+        // just under the tooltip's bottom edge.
+        pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
+        pointer.style.top = tooltipRect.bottom + 'px';
+        pointer.style.bottom = 'auto';
+    } else {
+        // Tooltip is at the bottom, target is above it — point up, sit
+        // just above the tooltip's top edge.
+        pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
+        pointer.style.top = (tooltipRect.top - 10) + 'px';
+        pointer.style.bottom = 'auto';
+    }
+}
+window.gateTourPositionPointer = gateTourPositionPointer;
+
+function gateTourHidePointer() {
+    if (gateTourPointerEl) gateTourPointerEl.style.display = 'none';
+}
+window.gateTourHidePointer = gateTourHidePointer;
+
 function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone) {
     if (typeof introJs === 'undefined') return;
     if (localStorage.getItem(flagKey) !== 'true') return;
@@ -129,12 +195,15 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         keyboardNavigation: true,
         nextLabel: 'Next',
         prevLabel: 'Back',
-        doneLabel: doneLabel || 'Next Page 🚀',
+        doneLabel: doneLabel || 'Next Page <i class="fa-regular fa-rocket"></i>',
         steps: steps
     }).onbeforechange(function (targetElement) {
         gateTourApplyMobileDock(targetElement);
+    }).onafterchange(function (targetElement) {
+        gateTourPositionPointer(targetElement);
     }).oncomplete(function () {
         document.body.classList.remove('gate-tour-dock-top');
+        gateTourHidePointer();
         if (typeof onDone === 'function') onDone();
         if (nextFlagKey && nextUrl) {
             localStorage.setItem(nextFlagKey, 'true');
@@ -142,6 +211,7 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         }
     }).onexit(function () {
         document.body.classList.remove('gate-tour-dock-top');
+        gateTourHidePointer();
         // Cancelled — chain simply stops here, but still clean up any
         // sample placeholder that was injected for this segment.
         if (typeof onDone === 'function') onDone();
