@@ -418,5 +418,4 @@
     <?php endforeach; ?>
 <?php endif; ?>
     <script>window.scanApiUrl = "<?= base_url('admin/items/check-latest-scan') ?>";</script>
-    <script src="<?= base_url('assets/js/admin.js') ?>"></script>
 <?= $this->endSection() ?>

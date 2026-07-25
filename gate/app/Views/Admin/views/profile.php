@@ -202,7 +202,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Admin/layout/htmx' : 'A
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-    <script src="<?= base_url('assets/js/admin.js') ?>"></script>
     <script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>
     <script>
         document.addEventListener('click', function(e) {

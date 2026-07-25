@@ -226,7 +226,3 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         </div>
     </div>
 <?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
-    <script src="<?= base_url('assets/js/admin.js') ?>"></script>
-<?= $this->endSection() ?>

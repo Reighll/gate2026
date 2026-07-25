@@ -270,7 +270,6 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-    <script src="<?= base_url('assets/js/admin.js') ?>"></script>
     <script>
         function bindStudentSearch() {
             const searchInput = document.getElementById('studentSearchInput');
