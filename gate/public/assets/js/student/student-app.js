@@ -106,7 +106,7 @@
             keyboardNavigation: true,
             nextLabel: 'Next',
             prevLabel: 'Back',
-            doneLabel: doneLabel || 'Next Page 🚀',
+            doneLabel: doneLabel || 'Next Page <i class="bi bi-rocket-takeoff"></i>',
             steps: steps
         }).oncomplete(function () {
             if (typeof onDone === 'function') onDone();
@@ -133,7 +133,7 @@
                 {
                     element: document.querySelector('#categorySelect'),
                     title: 'Item Category',
-                    intro: 'Start by choosing what kind of item this is — a laptop, phone, or other equipment.',
+                    intro: 'Start by choosing what kind of item this is — a laptop, any personal computing device, or other equipment.',
                     position: 'bottom'
                 },
                 {
@@ -215,14 +215,14 @@
             runGateTourStep('gate_tour_report_pending', 'gate_tour_history_pending', window.gateTourRoutes.history, [
                 { title: 'Report a Missing Item', intro: 'If your equipment goes missing on campus, report it here right away so security can be alerted.' },
                 { element: document.querySelector('#item_id'), title: 'Select the Item', intro: 'Choose which of your registered items is missing.', position: 'bottom' },
-                { element: document.querySelector('#location'), title: 'Last Known Location', intro: 'Tell us where you last had it — this helps guards narrow down where to look.', position: 'top' },
+                { element: document.querySelector('#location'), title: 'Last Known Location', intro: 'Tell us where you last had it or the key details to identify your item — this helps guards narrow down where or what to look.', position: 'top' },
                 { title: 'One last stop!', intro: "Next, we'll take you to your Scan History page to finish the tour." }
             ]);
         } else if (path.includes('items/history')) {
             runGateTourStep('gate_tour_history_pending', null, null, [
                 { title: 'Your Scan History', intro: 'Every time your items are tapped at the gate, it shows up here — a full log of your campus entries and exits.' },
-                { title: "That's the tour!", intro: 'You now know your way around GATE. You can revisit any of these pages anytime from the menu.' }
-            ], "You're all set! 🎉");
+                { title: "That's the tour!", intro: 'You now know your way around GATE. You can revisit any of these pages anytime from the navigation.' }
+            ], 'You\'re all set! <i class="bi bi-check-circle-fill"></i>');
         }
     }
 

@@ -156,3 +156,43 @@
             }
             .custom-register-tooltip .introjs-arrow { left: auto !important; right: 10px !important; margin-left: 0 !important; }
         }
+/* Tablet: intro.js tooltip sizing + touch-friendly buttons */
+@media (min-width: 577px) and (max-width: 991.98px) {
+    .introjs-tooltip {
+        width: 380px !important;
+        max-width: 70vw !important;
+    }
+}
+
+/* Phone + tablet: shared touch improvements */
+@media (max-width: 991.98px) {
+    /* Larger tap targets for thumbs, not just visual sizing */
+    .introjs-button {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Bullets are easy to mis-tap when tiny — give them more breathing room */
+    .introjs-bullets ul li a {
+        margin: 0 6px !important;
+    }
+    .introjs-bullets ul li {
+        padding: 4px 0;
+    }
+
+    /* Prevent the helper highlight box from ever exceeding the viewport
+       width on narrow screens, which can force horizontal scroll */
+    .introjs-helperLayer {
+        max-width: calc(100vw - 24px) !important;
+    }
+}
+
+/* Phone only: stack tooltip buttons if labels wrap (e.g. longer doneLabel with icon) */
+@media (max-width: 400px) {
+    .introjs-tooltipbuttons {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}

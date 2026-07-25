@@ -70,12 +70,12 @@ function startOnboardingTour() {
         let tourSteps = [
             {
                 title: 'Welcome to GATE!',
-                intro: 'Let us take a quick tour to show you around your new Student Dashboard.'
+                intro: 'Let us take a quick tour to show you around your own Student Dashboard.'
             },
             {
                 element: document.querySelector('#tour-digital-id'),
-                title: 'Your TUPT ID',
-                intro: 'This is your official TUPT ID card. Security personnel may ask to see this when verifying your identity.',
+                title: 'Your Campus Details',
+                intro: 'This is your official Campus Details. Security personnel may ask to see this when verifying your identity.',
                 position: 'bottom'
             },
             {
@@ -89,8 +89,8 @@ function startOnboardingTour() {
         // Target the entire navigation bar depending on the screen size
         // IMPORTANT: Replace '.bottom-nav' and '.sidebar' with the actual CSS classes or IDs used in your HTML layout!
         const navTarget = isMobile
-            ? document.querySelector('.bottom-nav') // Your mobile bottom navigation container
-            : document.querySelector('.sidebar');   // Your desktop sidebar container
+            ? document.querySelector('.mobile-bottom-nav')
+            : document.querySelector('.left-sidebar');
 
         if (navTarget) {
             tourSteps.push({
