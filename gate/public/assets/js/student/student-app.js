@@ -136,51 +136,8 @@ function gateTourGetPointerEl() {
 }
 
 function gateTourPositionPointer(targetElement) {
-    const pointer = gateTourGetPointerEl();
-
-    if (window.innerWidth > 991.98 || !targetElement || targetElement === document.body) {
-        pointer.style.display = 'none';
-        return;
-    }
-
-    const tooltipEl = document.querySelector('.introjs-tooltip');
-    if (!tooltipEl) {
-        pointer.style.display = 'none';
-        return;
-    }
-
-    const targetRect = targetElement.getBoundingClientRect();
-    const tooltipRect = tooltipEl.getBoundingClientRect();
-    // Read the dock direction straight off the tooltip's actual current
-    // position rather than re-checking the body class — that class was
-    // set earlier in onbeforechange, using the target's position BEFORE
-    // Intro.js auto-scrolled it into view, so by the time this runs
-    // (onafterchange, after the scroll) it can be stale even though the
-    // CSS itself already rendered correctly off the same class. Reading
-    // the live tooltip position instead can't desync from what's
-    // actually on screen.
-    const dockedTop = tooltipRect.top < window.innerHeight / 2;
-
-    // Aim at the target's horizontal center, clamped so the pointer
-    // itself never sits closer than 20px to a screen edge.
-    const rawX = targetRect.left + targetRect.width / 2;
-    const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
-
-    pointer.style.left = clampedX + 'px';
-    pointer.style.display = 'block';
-
-    if (dockedTop) {
-        // Tooltip is at the top, target is below it — point down, sit
-        // just under the tooltip's bottom edge.
-        pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
-        pointer.style.top = tooltipRect.bottom + 'px';
-        pointer.style.bottom = 'auto';
-    } else {
-        // Tooltip is at the bottom, target is above it — point up, sit
-        // just above the tooltip's top edge.
-        pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
-        pointer.style.top = (tooltipRect.top - 10) + 'px';
-        pointer.style.bottom = 'auto';
+    if (gateTourPointerEl) {
+        gateTourPointerEl.style.display = 'none';
     }
 }
 window.gateTourPositionPointer = gateTourPositionPointer;
@@ -267,7 +224,7 @@ function checkGateTourHandoff() {
                 intro: 'Next, we\'ll take you to your Registered Items page to continue the tour.'
             }
         ]);
-    } else if (path.includes('registered-items')) {
+    } else if (path.includes('items/registered')) {
         if (localStorage.getItem('gate_tour_items_pending') === 'true') {
             const sampleItemHtml = `
                     <div class="row px-2 px-md-0" id="gateTourSampleItem">
@@ -304,7 +261,7 @@ function checkGateTourHandoff() {
         ], null, function () {
             gateTourRemoveSample('gateTourSampleItem', 'itemsEmptyStateCard');
         });
-    } else if (path.includes('remove-item')) {
+    } else if (path.includes('items/remove')) {
         if (localStorage.getItem('gate_tour_remove_pending') === 'true') {
             const sampleRemoveHtml = `
                     <div class="border rounded p-3 d-flex justify-content-between align-items-center mb-3 border-warning bg-light position-relative" id="gateTourSampleRemoveItem">
@@ -325,14 +282,14 @@ function checkGateTourHandoff() {
         ], null, function () {
             gateTourRemoveSample('gateTourSampleRemoveItem', 'removeItemEmptyState');
         });
-    } else if (path.includes('report-item')) {
+    } else if (path.includes('items/report')) {
         runGateTourStep('gate_tour_report_pending', 'gate_tour_history_pending', window.gateTourRoutes.history, [
             { title: 'Report a Missing Item', intro: 'If your equipment goes missing on campus, report it here right away so security can be alerted.' },
             { element: document.querySelector('#item_id'), title: 'Select the Item', intro: 'Choose which of your registered items is missing.', position: 'bottom' },
             { element: document.querySelector('#location'), title: 'Last Known Location', intro: 'Tell us where you last had it — this helps guards narrow down where to look.', position: 'top' },
             { title: 'One last stop!', intro: "Next, we'll take you to your Scan History page to finish the tour." }
         ]);
-    } else if (path.includes('history')) {
+    } else if (path.includes('item/history')) {
         runGateTourStep('gate_tour_history_pending', null, null, [
             { title: 'Your Scan History', intro: 'Every time your items are tapped at the gate, it shows up here — a full log of your campus entries and exits.' },
             { title: "That's the tour!", intro: 'You now know your way around GATE. You can revisit any of these pages anytime from the menu.' }
