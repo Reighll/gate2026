@@ -143,29 +143,48 @@ html[data-bs-theme="dark"] {
 .introjs-arrow.bottom { border-top-color: var(--tour-arrow) !important; }
 .introjs-arrow.left { border-right-color: var(--tour-arrow) !important; }
 .introjs-arrow.right { border-left-color: var(--tour-arrow) !important; }
-/* Phone + tablet: clamp EVERY tooltip inside the viewport by default.
-   Intro.js calculates `left`/`top` based on the target element's position,
-   and on narrow screens that math can push the box partly off-screen (seen
-   when the target sits near the left/top edge — e.g. the digital ID card,
-   the sample item card). Forcing left+right instead of a fixed width means
-   the box can never overflow, regardless of Intro.js's own inline styles.
-   Placed BEFORE .custom-register-tooltip below so that step's own mobile
-   override (same specificity) still wins for its one special case. */
+/* Phone + tablet: dock EVERY tooltip to the bottom of the screen, like the
+   app's other mobile sheets (reg-sheet-panel, sheet-modal), instead of
+   trying to keep it "attached" near the target element.
+   Why: Intro.js positions the tooltip with `position: absolute` + inline
+   px `left`/`top` computed from the target's bounding box. Anchoring math
+   (whether Intro.js's own, or our own vw-based override) depends on the
+   tooltip's containing block matching the true viewport — and on this app
+   it doesn't line up (something in the page causes horizontal overflow/an
+   offset containing block), so anchored positioning kept overflowing one
+   edge or the other no matter which offsets we tried.
+   `position: fixed` + docking to the bottom sidesteps that entirely: it's
+   viewport-relative by definition and no longer depends on Intro.js's
+   per-target math at all, so it can't go off-screen regardless of where
+   the highlighted element sits.
+   The arrow is hidden on mobile since it visually pointed at the target's
+   position — with the tooltip now bottom-docked instead of attached, a
+   pointer arrow would be aimed at the wrong location. The highlighted
+   element itself is still spotlighted by .introjs-helperLayer, so context
+   isn't lost, just not literally pointed at with an arrow. */
 @media (max-width: 991.98px) {
     .introjs-tooltip {
+        position: fixed !important;
         left: 4vw !important;
         right: 4vw !important;
+        top: auto !important;
+        bottom: max(16px, env(safe-area-inset-bottom)) !important;
         width: auto !important;
         max-width: none !important;
         margin: 0 !important;
     }
+    .introjs-arrow {
+        display: none !important;
+    }
 }
 
-/* Tablet: intro.js tooltip sizing + touch-friendly buttons */
+/* Tablet: cap the width instead of letting it stretch edge-to-edge */
 @media (min-width: 577px) and (max-width: 991.98px) {
     .introjs-tooltip {
         max-width: 380px !important;
-        margin: 0 auto !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
     }
 }
 
@@ -173,15 +192,8 @@ html[data-bs-theme="dark"] {
     .custom-register-tooltip { margin-top: -35px !important; }
     .custom-register-tooltip .introjs-arrow.left { top: 15px !important; margin-top: 0 !important; }
 }
-@media (max-width: 991px) {
-    .custom-register-tooltip {
-        left: auto !important;
-        right: 15px !important;
-        width: calc(100vw - 30px) !important;
-        max-width: 350px !important;
-    }
-    .custom-register-tooltip .introjs-arrow { left: auto !important; right: 10px !important; margin-left: 0 !important; }
-}
+/* Below 992px, .custom-register-tooltip no longer needs its own override —
+   it now gets the same bottom-docked treatment as every other tooltip. */
 
 /* Phone + tablet: shared touch improvements */
 @media (max-width: 991.98px) {
