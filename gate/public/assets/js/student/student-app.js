@@ -124,7 +124,7 @@
     function checkGateTourHandoff() {
         const path = window.location.pathname;
 
-        if (path.includes('item-registration')) {
+        if (path.includes('items/registration')) {
             runGateTourStep('gate_tour_reg_pending', 'gate_tour_items_pending', window.gateTourRoutes.registeredItems, [
                 {
                     title: 'Register Your Equipment',
@@ -153,7 +153,7 @@
                     intro: 'Next, we\'ll take you to your Registered Items page to continue the tour.'
                 }
             ]);
-        } else if (path.includes('registered-items')) {
+        } else if (path.includes('items/registered')) {
             if (localStorage.getItem('gate_tour_items_pending') === 'true') {
                 const sampleItemHtml = `
                     <div class="row px-2 px-md-0" id="gateTourSampleItem">
@@ -190,7 +190,7 @@
             ], null, function () {
                 gateTourRemoveSample('gateTourSampleItem', 'itemsEmptyStateCard');
             });
-        } else if (path.includes('remove-item')) {
+        } else if (path.includes('items/remove')) {
             if (localStorage.getItem('gate_tour_remove_pending') === 'true') {
                 const sampleRemoveHtml = `
                     <div class="border rounded p-3 d-flex justify-content-between align-items-center mb-3 border-warning bg-light position-relative" id="gateTourSampleRemoveItem">
@@ -211,14 +211,14 @@
             ], null, function () {
                 gateTourRemoveSample('gateTourSampleRemoveItem', 'removeItemEmptyState');
             });
-        } else if (path.includes('report-item')) {
+        } else if (path.includes('items/report')) {
             runGateTourStep('gate_tour_report_pending', 'gate_tour_history_pending', window.gateTourRoutes.history, [
                 { title: 'Report a Missing Item', intro: 'If your equipment goes missing on campus, report it here right away so security can be alerted.' },
                 { element: document.querySelector('#item_id'), title: 'Select the Item', intro: 'Choose which of your registered items is missing.', position: 'bottom' },
                 { element: document.querySelector('#location'), title: 'Last Known Location', intro: 'Tell us where you last had it — this helps guards narrow down where to look.', position: 'top' },
                 { title: 'One last stop!', intro: "Next, we'll take you to your Scan History page to finish the tour." }
             ]);
-        } else if (path.includes('history')) {
+        } else if (path.includes('items/history')) {
             runGateTourStep('gate_tour_history_pending', null, null, [
                 { title: 'Your Scan History', intro: 'Every time your items are tapped at the gate, it shows up here — a full log of your campus entries and exits.' },
                 { title: "That's the tour!", intro: 'You now know your way around GATE. You can revisit any of these pages anytime from the menu.' }

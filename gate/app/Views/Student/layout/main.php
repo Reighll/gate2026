@@ -114,10 +114,10 @@
 <script src="<?= base_url('assets/js/drawer.js') ?>"></script>
 <script>
     window.gateTourRoutes = {
-        registeredItems: '<?= base_url('student/registered-items') ?>',
-        removeItem: '<?= base_url('student/remove-item') ?>',
-        reportItem: '<?= base_url('student/report-item') ?>',
-        history: '<?= base_url('student/history') ?>'
+        registeredItems: '<?= base_url('student/items/registered') ?>',
+        removeItem: '<?= base_url('student/items/remove') ?>',
+        reportItem: '<?= base_url('student/items/report') ?>',
+        history: '<?= base_url('student/items/history') ?>'
     };
 </script>
 <script src="<?= base_url('assets/js/student/student-app.js') ?>"></script>
