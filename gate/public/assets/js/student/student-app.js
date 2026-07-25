@@ -208,7 +208,16 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
     }).onbeforechange(function (targetElement) {
         gateTourApplyMobileDock(targetElement);
     }).onafterchange(function (targetElement) {
-        gateTourPositionPointer(targetElement);
+        // Double rAF: wait for the browser to actually finish laying
+        // out and painting the new tooltip before measuring it. A
+        // single frame (or none) can catch it mid-transition, which is
+        // what put the pointer in the wrong place before — reading a
+        // still-settling position instead of the final one.
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                gateTourPositionPointer(targetElement);
+            });
+        });
     }).oncomplete(function () {
         document.body.classList.remove('gate-tour-dock-top');
         gateTourHidePointer();

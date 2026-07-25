@@ -122,7 +122,11 @@ function startOnboardingTour() {
             }
         }).onafterchange(function(targetElement) {
             if (typeof window.gateTourPositionPointer === 'function') {
-                window.gateTourPositionPointer(targetElement);
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        window.gateTourPositionPointer(targetElement);
+                    });
+                });
             }
         }).oncomplete(function() {
             document.body.classList.remove('gate-tour-dock-top');
