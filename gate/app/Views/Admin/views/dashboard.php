@@ -34,10 +34,11 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             </form>
         </div>
 
-        <div class="row skeleton-wrapper">
-            <?php for($i=0; $i<3; $i++): ?>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm h-100">
+    <div class="row skeleton-wrapper">
+        <?php for($i=0; $i<3; $i++): ?>
+        <div class="col-6 col-lg-4 mb-3 mb-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-3 p-md-4">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="w-100">
@@ -56,7 +57,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         </div>
 
         <div class="row real-wrapper d-none">
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-6 col-lg-4 mb-3 mb-lg-4">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between">
@@ -225,6 +226,27 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             </div>
         </div>
     </div>
+
+    <style>
+        @media (max-width: 575.98px) {
+            .card .rounded-circle[style*="54px"] {
+                width: 42px !important;
+                height: 42px !important;
+            }
+            .card .rounded-circle[style*="54px"] i {
+                font-size: 1.1rem !important;
+            }
+            .card h6.fw-normal { font-size: 0.78rem; }
+            .card h3.fw-bold { font-size: 1.3rem; }
+            .card .badge.fs-2 {
+                font-size: 0.65rem !important;
+                padding: 0.25rem 0.5rem !important;
+            }
+            .card .d-flex.align-items-center.gap-2 {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>

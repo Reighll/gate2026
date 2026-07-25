@@ -8,7 +8,7 @@
 
         <div class="row mb-4 skeleton-wrapper">
             <?php for($i=0; $i<2; $i++): ?>
-                <div class="col-lg-6 col-md-6 mb-3 mb-md-4">
+                <div class="col-6 mb-3">
                     <div class="card border-0 shadow-sm h-100 rounded-4">
                         <div class="card-body p-3 p-md-4">
                             <div class="d-flex align-items-center justify-content-between">
@@ -25,7 +25,7 @@
         </div>
 
         <div class="row mb-4 real-wrapper d-none">
-            <div class="col-lg-6 col-md-6 mb-3 mb-md-4">
+            <div class="col-6 mb-3">
                 <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-danger rounded-4">
                     <div class="card-body p-3 p-md-4">
                         <div class="d-flex align-items-center justify-content-between">
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-6 col-md-6 mb-3 mb-md-4">
+            <div class="col-6 mb-3">
                 <div class="card border-0 shadow-sm h-100 border-bottom border-4 border-success rounded-4">
                     <div class="card-body p-3 p-md-4">
                         <div class="d-flex align-items-center justify-content-between">
@@ -168,6 +168,19 @@
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    <style>
+        @media (max-width: 575.98px) {
+            .card .rounded-circle[style*="45px"] {
+                width: 36px !important;
+                height: 36px !important;
+            }
+            .card .rounded-circle[style*="45px"] i {
+                font-size: 1rem !important;
+            }
+            .card h6.fw-normal { font-size: 0.78rem; }
+            .card h3.fw-bold { font-size: 1.3rem; }
+        }
+    </style>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
