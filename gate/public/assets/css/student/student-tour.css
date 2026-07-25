@@ -51,16 +51,23 @@
             box-sizing: border-box !important;
         }
         @media (max-width: 576px) {
-            .introjs-tooltip {
-                left: 5vw !important;
-                right: 5vw !important;
-                width: auto !important;
-            }
             .introjs-tooltip { width: 90vw !important; padding: 18px !important; border-radius: 14px !important; }
             .introjs-tooltiptitle { font-size: 1.15rem !important; }
             .introjs-tooltiptext { font-size: 0.9rem !important; }
             .introjs-button { padding: 6px 16px !important; font-size: 0.85rem !important; }
         }
+@media (max-width: 576px) {
+    /* Force the tooltip into a safe horizontal band no matter where
+       the highlighted target sits — overrides intro.js's inline
+       left/right offset, which can otherwise push the tooltip past
+       the viewport edge when the target is narrow and off-center
+       (e.g. a col-6 card near the left edge). */
+    .introjs-tooltip {
+        left: 5vw !important;
+        right: 5vw !important;
+        width: auto !important;
+    }
+}
         .introjs-overlay {
             background-color: rgba(10, 12, 30, 0.97) !important;
             backdrop-filter: blur(3px) !important;
