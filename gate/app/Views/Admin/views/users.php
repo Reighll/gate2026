@@ -89,7 +89,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                                 <h6 class="fw-semibold mb-0 text-dark">Registered Students</h6>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="input-group input-group-sm" style="width: 200px;">
+                                    <div class="input-group input-group-sm" style="width: 180px;">
                                         <span class="input-group-text bg-white border-end-0 rounded-start-pill">
                                             <i class="ti ti-search text-muted"></i>
                                         </span>
