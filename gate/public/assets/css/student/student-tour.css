@@ -62,7 +62,7 @@ html[data-bs-theme="dark"] {
     background: rgba(0, 0, 0, 0.15) !important;
     border-radius: 12px !important;
     box-shadow: 0 0 0 0 transparent !important;
-    border: 2px solid rgba(255, 255, 255, 0.6) !important;
+    border: 2px solid color-mix(in srgb, var(--tour-next-bg) 70%, transparent) !important;
     z-index: 9999995 !important;
 }
 .introjs-tooltipheader { padding: 0 !important; margin-bottom: 12px !important; }
