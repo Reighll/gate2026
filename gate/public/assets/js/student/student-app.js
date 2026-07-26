@@ -143,6 +143,10 @@ function gateTourPositionPointer(targetElement) {
         return;
     }
 
+    function rectsOverlap(a, b) {
+        return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+    }
+
     function place() {
         const rect = targetElement.getBoundingClientRect();
         const coversViewport = rect.width >= window.innerWidth * 0.95 && rect.height >= window.innerHeight * 0.95;
@@ -151,21 +155,36 @@ function gateTourPositionPointer(targetElement) {
             return;
         }
 
+        const tooltipEl = document.querySelector('.introjs-tooltip');
+        const tooltipRect = tooltipEl ? tooltipEl.getBoundingClientRect() : null;
+
         const dockedTop = document.body.classList.contains('gate-tour-dock-top');
         const rawX = rect.left + rect.width / 2;
         const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
 
-        pointer.style.left = clampedX + 'px';
-        pointer.style.bottom = 'auto';
-        pointer.style.display = 'flex';
+        let pointerTop, arrowClass;
 
         if (dockedTop) {
-            pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
-            pointer.style.top = Math.max(8, rect.top - 44) + 'px';
+            arrowClass = 'gate-tour-pointer--down';
+            pointerTop = Math.max(8, rect.top - 34);
         } else {
-            pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
-            pointer.style.top = Math.min(window.innerHeight - 44, rect.bottom + 10) + 'px';
+            arrowClass = 'gate-tour-pointer--up';
+            pointerTop = Math.min(window.innerHeight - 34, rect.bottom + 10);
         }
+
+        if (tooltipRect) {
+            const pointerRect = { left: clampedX - 14, right: clampedX + 14, top: pointerTop, bottom: pointerTop + 28 };
+            if (rectsOverlap(pointerRect, tooltipRect)) {
+                pointer.style.display = 'none';
+                return;
+            }
+        }
+
+        pointer.style.left = clampedX + 'px';
+        pointer.style.bottom = 'auto';
+        pointer.style.top = pointerTop + 'px';
+        pointer.className = 'gate-tour-pointer ' + arrowClass;
+        pointer.style.display = 'flex';
     }
 
     place();
