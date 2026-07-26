@@ -196,7 +196,6 @@
         let prefetchedHTML = null;
         let prefetchXHR = null;
 
-        // Timer Tracking Variables for Strict Cleanup
         let settleFallbackTimer = null;
         let snapTimer = null;
         let clickTimer = null;
@@ -206,7 +205,6 @@
         let currentGhostStyle = null;
         let originalActiveLink = null;
 
-        // UI State Lock
         let isNavigating = false;
 
         const stage = document.getElementById('swipe-stage');
@@ -234,7 +232,6 @@
         }
 
         function resetStage() {
-            // STRICT CLEANUP: Kill all pending background timers to prevent race conditions
             if (settleFallbackTimer) { clearTimeout(settleFallbackTimer); settleFallbackTimer = null; }
             if (snapTimer) { clearTimeout(snapTimer); snapTimer = null; }
             if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
@@ -252,7 +249,6 @@
             prefetchedHTML = null;
             currentX = 0;
 
-            // Unlock the UI so the user can swipe again
             isNavigating = false;
 
             if (prefetchXHR) { try { prefetchXHR.abort(); } catch (e) {} prefetchXHR = null; }
@@ -328,12 +324,9 @@
             }
         }
 
-        // --- TOUCH EVENT LISTENERS ---
-
         document.addEventListener('touchstart', function (e) {
             if (window.innerWidth >= 992) return;
 
-            // Block new touches if the previous animation or HTMX request is still resolving
             if (isNavigating) return;
 
             if (e.target.closest(IGNORE_SELECTORS)) return;
