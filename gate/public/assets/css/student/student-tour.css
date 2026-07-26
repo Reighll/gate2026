@@ -143,8 +143,12 @@ html[data-bs-theme="dark"] {
         max-width: calc(100vw - 32px) !important;
     }
     .introjs-arrow {
-        border-width: 16px !important;
+        transform: scale(1.6);
     }
+    .introjs-arrow.top { transform-origin: top center; }
+    .introjs-arrow.bottom { transform-origin: bottom center; }
+    .introjs-arrow.left { transform-origin: center left; }
+    .introjs-arrow.right { transform-origin: center right; }
 }
 
 @media (min-width: 577px) and (max-width: 991.98px) {
