@@ -141,10 +141,9 @@ html[data-bs-theme="dark"] {
 @media (max-width: 991.98px) {
     .introjs-tooltip {
         max-width: calc(100vw - 32px) !important;
-        overflow: visible !important;
     }
     .introjs-arrow {
-        transform: scale(3);
+        transform: scale(1.6);
     }
     .introjs-arrow.top { transform-origin: top center; }
     .introjs-arrow.bottom { transform-origin: bottom center; }
