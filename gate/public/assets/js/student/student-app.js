@@ -1,16 +1,3 @@
-/**
- * Student app shell: skeleton loading, bottom-nav/profile-tab visibility,
- * and the GATE onboarding tour dispatcher (page-to-page handoff via
- * localStorage flags + the "sample data" injection helpers).
- *
- * Requires window.gateTourRoutes to be set (see Student/layout/main.php)
- * before this file loads, since the tour hands off between pages using
- * server-rendered URLs.
- *
- * Lives in the global <script> block of the layout (not a per-page
- * 'scripts' section) because per-page script blocks aren't guaranteed to
- * re-execute reliably across htmx swaps — see the note in main.php.
- */
 function updateNavProfileVisibility() {
     const navProfileItem = document.getElementById('navProfileItem');
     if (!navProfileItem) return;
@@ -41,23 +28,6 @@ document.body.addEventListener('htmx:afterSwap', function (evt) {
     hideMySkeletons();
 });
 
-// ================================================================
-// GATE ONBOARDING TOUR — centralized dispatcher.
-//
-// This intentionally does NOT live in each page's own 'scripts'
-// section. Per-page <script> blocks are not guaranteed to
-// re-execute reliably when their markup arrives via an HTMX swap
-// (a well-known browser quirk: <script> elements inserted through
-// innerHTML-style parsing are marked inert unless explicitly
-// recreated — htmx's own swap handling for hx-select'd fragments
-// doesn't always trigger that recreation). That's why the tour
-// previously only "showed up" after a hard refresh.
-//
-// Instead, all catch/handoff logic lives here, driven by the
-// htmx:afterSettle listener below — which is bound exactly once
-// at initial page load and simply re-runs on every swap, the same
-// way nav-highlighting and skeleton-hiding already reliably do.
-// ================================================================
 function gateTourNavigate(url) {
     const link = document.createElement('a');
     link.setAttribute('href', 'javascript:void(0);');
@@ -72,10 +42,6 @@ function gateTourNavigate(url) {
     link.click();
 }
 
-// Temporarily swaps an empty-state block for a labelled "SAMPLE" example
-// during the tour, so the tour can actually show what the real thing
-// looks like even for a brand-new account with no data yet. Cleaned up
-// automatically once the segment finishes or is cancelled.
 function gateTourInjectSample(wrapperId, emptyStateId, sampleId, sampleHtml) {
     const wrapper = document.getElementById(wrapperId);
     if (!wrapper) return;
@@ -93,17 +59,10 @@ function gateTourRemoveSample(sampleId, emptyStateId) {
     if (emptyState) emptyState.classList.remove('d-none');
 }
 
-// Mobile tooltips are fixed-positioned and docked to an edge (see
-// student-tour.css) instead of anchored next to the target — that's
-// what fixes them going off-screen. But a tooltip that's ALWAYS
-// bottom-docked can end up covering its own target if that target is
-// in the lower half of the screen. This flips the dock to the top in
-// that case, via a class toggled on <body> that the CSS keys off of.
 function gateTourApplyMobileDock(targetElement) {
-    if (window.innerWidth > 991.98) return; // desktop keeps normal anchored positioning
+    if (window.innerWidth > 991.98) return;
 
     if (!targetElement || targetElement === document.body) {
-        // No specific target (intro/outro steps) — bottom is always safe.
         document.body.classList.remove('gate-tour-dock-top');
         return;
     }
@@ -116,14 +75,6 @@ function gateTourApplyMobileDock(targetElement) {
 }
 window.gateTourApplyMobileDock = gateTourApplyMobileDock;
 
-// Dynamic pointer: since the tooltip is now docked to a screen edge
-// instead of anchored beside the target, Intro.js's own triangle arrow
-// (which assumed anchored positioning) is hidden in CSS. This is its
-// replacement — a single reusable colored badge, fixed-positioned, that's
-// re-measured and re-placed on every step so it keeps pointing at
-// wherever the real target actually is, both horizontally (aligned to
-// the target's center) and directionally (up from a bottom-docked
-// tooltip, down from a top-docked one).
 let gateTourPointerEl = null;
 
 function gateTourGetPointerEl() {
@@ -208,35 +159,18 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         showBullets: true,
         exitOnOverlayClick: false,
         keyboardNavigation: true,
-        // Smaller highlight cutout on mobile/tablet — the default 10px
-        // padding looks oversized once the target itself is already
-        // narrow (e.g. a col-6 card).
         helperElementPadding: window.innerWidth <= 991.98 ? 4 : 10,
         nextLabel: 'Next',
         prevLabel: 'Back',
         doneLabel: doneLabel || 'Next Page <i class="ti ti-rocket"></i>',
         steps: steps
-    }).onbeforechange(function (targetElement) {
-        // Hide immediately on every transition so the old pointer never
-        // sits stale over the previous step's target while the new one
-        // is still being measured.
-        gateTourHidePointer();
-        gateTourApplyMobileDock(targetElement);
-    }).onafterchange(function (targetElement) {
-        gateTourPositionPointer(targetElement);
     }).oncomplete(function () {
-        document.body.classList.remove('gate-tour-dock-top');
-        gateTourHidePointer();
         if (typeof onDone === 'function') onDone();
         if (nextFlagKey && nextUrl) {
             localStorage.setItem(nextFlagKey, 'true');
             gateTourNavigate(nextUrl);
         }
     }).onexit(function () {
-        document.body.classList.remove('gate-tour-dock-top');
-        gateTourHidePointer();
-        // Cancelled — chain simply stops here, but still clean up any
-        // sample placeholder that was injected for this segment.
         if (typeof onDone === 'function') onDone();
     }).start();
 }
