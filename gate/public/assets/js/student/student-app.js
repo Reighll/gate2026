@@ -162,7 +162,7 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         helperElementPadding: window.innerWidth <= 991.98 ? 4 : 10,
         nextLabel: 'Next',
         prevLabel: 'Back',
-        doneLabel: doneLabel || 'Next Page <i class="ti ti-rocket"></i>',
+        doneLabel: doneLabel || 'Next Page &nbsp;<i class="ti ti-rocket"></i>',
         steps: steps
     }).oncomplete(function () {
         if (typeof onDone === 'function') onDone();
