@@ -83,7 +83,7 @@ function startOnboardingTour() {
             tourSteps.push({
                 element: navTarget,
                 title: 'Exploring Other Pages',
-                intro: 'Use this menu to navigate to your Registered Items list, view your Entry History, and check for any Violation alerts.',
+                intro: 'Use this menu to navigate to your Registered Items list, view your Entry History, and for Report/Remove item.',
                 position: isMobile ? 'top' : 'right'
             });
         }
@@ -102,7 +102,7 @@ function startOnboardingTour() {
             helperElementPadding: window.innerWidth <= 991.98 ? 4 : 10,
             nextLabel: 'Next',
             prevLabel: 'Back',
-            doneLabel: 'Next Page <i class="ti ti-rocket"></i>',
+            doneLabel: 'Next Page   <i class="ti ti-rocket"></i>',
             steps: tourSteps
         }).oncomplete(function () {
             localStorage.setItem(tourStorageKey, 'true');

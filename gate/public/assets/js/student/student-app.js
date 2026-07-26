@@ -187,7 +187,7 @@ function checkGateTourHandoff() {
             {
                 element: document.querySelector('#categorySelect'),
                 title: 'Item Category',
-                intro: 'Start by choosing what kind of item this is — a laptop, phone, or other equipment.',
+                intro: 'Start by choosing what kind of item this is — a laptop, a personal computing device, or other equipment.',
                 position: 'bottom'
             },
             {
@@ -239,7 +239,7 @@ function checkGateTourHandoff() {
 
         runGateTourStep('gate_tour_items_pending', 'gate_tour_remove_pending', window.gateTourRoutes.removeItem, [
             { title: 'Your Equipment Hub', intro: 'Welcome to the Registered Items page! This is where you can manage all the devices you bring into the GATE system.' },
-            { element: document.querySelector('#gateTourSampleItem .card') || document.querySelector('.real-wrapper'), title: 'Item Status', intro: 'You can click on any item card here to view its full details, update its photo, or check its specific RFID status. (This one\'s just an example — yours will show up here once registered.)', position: 'top' },
+            { element: document.querySelector('#gateTourSampleItem .card') || document.querySelector('.real-wrapper'), title: 'Item Status', intro: 'You can click on any item card here to view its full details, update its photo, or check its specific item status. (This one\'s just an example — yours will show up here once registered.)', position: 'top' },
             { title: 'Removing an item', intro: "Next, we'll take you to the Remove Item page in case you ever need to unregister something." }
         ], null, function () {
             gateTourRemoveSample('gateTourSampleItem', 'itemsEmptyStateCard');
@@ -260,7 +260,7 @@ function checkGateTourHandoff() {
 
         runGateTourStep('gate_tour_remove_pending', 'gate_tour_report_pending', window.gateTourRoutes.reportItem, [
             { title: 'Unregistering an Item', intro: 'If you sell, lose, or stop using a device, this is where you request to have it removed from your gate pass.' },
-            { element: document.querySelector('#gateTourSampleRemoveItem') || document.querySelector('.real-wrapper'), title: 'Request Removal', intro: 'Tap "Unregister" on any item card, and an admin will review your request. (This one\'s just an example.)', position: 'top' },
+            { element: document.querySelector('#gateTourSampleRemoveItem') || document.querySelector('.real-wrapper'), title: 'Request Removal', intro: 'Tap "Unregister" on any item card, provide a reason for removing the item, and an admin will review your request. (This one\'s just an example.)', position: 'top' },
             { title: 'Reporting a lost item', intro: "Next, we'll take you to the Report Item page — useful if something goes missing on campus." }
         ], null, function () {
             gateTourRemoveSample('gateTourSampleRemoveItem', 'removeItemEmptyState');
@@ -269,7 +269,7 @@ function checkGateTourHandoff() {
         runGateTourStep('gate_tour_report_pending', 'gate_tour_history_pending', window.gateTourRoutes.history, [
             { title: 'Report a Missing Item', intro: 'If your equipment goes missing on campus, report it here right away so security can be alerted.' },
             { element: document.querySelector('#item_id'), title: 'Select the Item', intro: 'Choose which of your registered items is missing.', position: 'bottom' },
-            { element: document.querySelector('#location'), title: 'Last Known Location', intro: 'Tell us where you last had it — this helps guards narrow down where to look.', position: 'top' },
+            { element: document.querySelector('#location'), title: 'Last Known Location', intro: 'Tell us where you last had it, also use the notes for specific key details — this helps guards narrow down where to look.', position: 'top' },
             { title: 'One last stop!', intro: "Next, we'll take you to your Scan History page to finish the tour." }
         ]);
     } else if (path.includes('items/history')) {
