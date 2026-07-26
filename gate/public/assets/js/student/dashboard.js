@@ -63,8 +63,8 @@ function startOnboardingTour() {
             },
             {
                 element: document.querySelector('#tour-digital-id'),
-                title: 'Your TUPT ID',
-                intro: 'This is your official TUPT ID card. Security personnel may ask to see this when verifying your identity.',
+                title: 'Your Campus Details',
+                intro: 'This is your official Campus Details card. Security personnel may ask to see this when verifying your identity.',
                 position: 'bottom'
             },
             {
