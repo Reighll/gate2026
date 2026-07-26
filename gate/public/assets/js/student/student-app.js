@@ -161,7 +161,7 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         helperElementPadding: window.innerWidth <= 991.98 ? 4 : 10,
         nextLabel: 'Next',
         prevLabel: 'Back',
-        doneLabel: 'Next Page &nbsp;<i class="ti ti-rocket"></i>',
+        doneLabel: doneLabel || 'Next Page &nbsp;<i class="ti ti-rocket"></i>',
         steps: steps
     }).onafterchange(function () {
         const prevBtn = document.querySelector('.introjs-prevbutton');
