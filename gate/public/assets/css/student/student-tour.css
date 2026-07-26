@@ -119,7 +119,7 @@ html[data-bs-theme="dark"] {
     background: var(--tour-next-hover) !important;
     transform: translateY(-2px) !important;
 }
-.introjs-disabled { opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important; }
+.introjs-disabled { opacity: 0.6 !important; cursor: not-allowed !important; pointer-events: none !important; }
 .gate-tour-sample-badge {
     font-size: 0.6rem !important;
     letter-spacing: 0.5px;
