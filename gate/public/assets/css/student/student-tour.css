@@ -1,17 +1,17 @@
 :root {
-    --tour-bg: #ffffff;
+    --tour-bg: #c8d9e6;
     --tour-border: none;
-    --tour-title: #1e4db7;
-    --tour-text: #546269;
-    --tour-btn-top-border: 1px solid #ecf0f2;
-    --tour-prev-color: #777e89;
-    --tour-prev-hover: #11142d;
-    --tour-next-bg: #1e4db7;
+    --tour-title: #2c4a63;
+    --tour-text: #4a6b85;
+    --tour-btn-top-border: 1px solid #b9cedd;
+    --tour-prev-color: #6b8299;
+    --tour-prev-hover: #2c4a63;
+    --tour-next-bg: #4f7ca0;
     --tour-next-color: #ffffff;
-    --tour-next-hover: #183e92;
-    --tour-bullet: #ced4da;
-    --tour-bullet-active: #1e4db7;
-    --tour-arrow: #ffffff;
+    --tour-next-hover: #3a6483;
+    --tour-bullet: #a9c2d4;
+    --tour-bullet-active: #4f7ca0;
+    --tour-arrow: #c8d9e6;
     --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
 }
 html[data-bs-theme="dark"] {
