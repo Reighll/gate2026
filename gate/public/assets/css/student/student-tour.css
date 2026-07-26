@@ -1,14 +1,15 @@
 :root {
     --tour-bg: #f1f2f4;
     --tour-border: 1px solid #c3c7cc;
+    --tour-border-color: #c3c7cc;
     --tour-title: #3a3f47;
     --tour-text: #5a6169;
     --tour-btn-top-border: 1px solid #d5d8db;
     --tour-prev-color: #7d838b;
     --tour-prev-hover: #3a3f47;
-    --tour-next-bg: #6b7280;
+    --tour-next-bg: #4169e1;
     --tour-next-color: #ffffff;
-    --tour-next-hover: #52565c;
+    --tour-next-hover: #2f4fc4;
     --tour-bullet: #d1d5db;
     --tour-bullet-active: #6b7280;
     --tour-arrow: #f1f2f4;
@@ -17,14 +18,15 @@
 html[data-bs-theme="dark"] {
     --tour-bg: #26282c;
     --tour-border: 1px solid #4a4d52;
+    --tour-border-color: #4a4d52;
     --tour-title: #d1d5db;
     --tour-text: #9ca3af;
     --tour-btn-top-border: 1px solid #3a3d42;
     --tour-prev-color: #7d838b;
     --tour-prev-hover: #ffffff;
-    --tour-next-bg: #9ca3af;
-    --tour-next-color: #1a1c1f;
-    --tour-next-hover: #b4bac2;
+    --tour-next-bg: #5b7ce8;
+    --tour-next-color: #ffffff;
+    --tour-next-hover: #7a95f0;
     --tour-bullet: #4a4d52;
     --tour-bullet-active: #9ca3af;
     --tour-arrow: #26282c;
@@ -137,6 +139,15 @@ html[data-bs-theme="dark"] {
 .introjs-arrow.bottom { border-top-color: var(--tour-arrow) !important; }
 .introjs-arrow.left { border-right-color: var(--tour-arrow) !important; }
 .introjs-arrow.right { border-left-color: var(--tour-arrow) !important; }
+
+.introjs-arrow {
+    filter:
+            drop-shadow(1px 0 0 var(--tour-border-color))
+            drop-shadow(-1px 0 0 var(--tour-border-color))
+            drop-shadow(0 1px 0 var(--tour-border-color))
+            drop-shadow(0 -1px 0 var(--tour-border-color))
+    !important;
+}
 
 @media (max-width: 991.98px) {
     .introjs-tooltip {
