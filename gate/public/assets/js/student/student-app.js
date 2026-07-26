@@ -138,28 +138,39 @@ function gateTourGetPointerEl() {
 function gateTourPositionPointer(targetElement) {
     const pointer = gateTourGetPointerEl();
 
-    if (window.innerWidth > 991.98 || !targetElement || targetElement === document.body) {
+    if (window.innerWidth > 991.98 || !targetElement) {
         pointer.style.display = 'none';
         return;
     }
 
-    const dockedTop = document.body.classList.contains('gate-tour-dock-top');
-    const targetRect = targetElement.getBoundingClientRect();
-    const rawX = targetRect.left + targetRect.width / 2;
-    const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
+    function place() {
+        const rect = targetElement.getBoundingClientRect();
+        const coversViewport = rect.width >= window.innerWidth * 0.95 && rect.height >= window.innerHeight * 0.95;
+        if (coversViewport || (rect.width === 0 && rect.height === 0)) {
+            pointer.style.display = 'none';
+            return;
+        }
 
-    pointer.style.left = clampedX + 'px';
-    pointer.style.display = 'flex';
+        const dockedTop = document.body.classList.contains('gate-tour-dock-top');
+        const rawX = rect.left + rect.width / 2;
+        const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
 
-    if (dockedTop) {
-        pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
+        pointer.style.left = clampedX + 'px';
         pointer.style.bottom = 'auto';
-        pointer.style.top = Math.max(8, targetRect.top - 44) + 'px';
-    } else {
-        pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
-        pointer.style.bottom = 'auto';
-        pointer.style.top = Math.min(window.innerHeight - 44, targetRect.bottom + 10) + 'px';
+        pointer.style.display = 'flex';
+
+        if (dockedTop) {
+            pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
+            pointer.style.top = Math.max(8, rect.top - 44) + 'px';
+        } else {
+            pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
+            pointer.style.top = Math.min(window.innerHeight - 44, rect.bottom + 10) + 'px';
+        }
     }
+
+    place();
+    setTimeout(place, 150);
+    setTimeout(place, 400);
 }
 window.gateTourPositionPointer = gateTourPositionPointer;
 function gateTourHidePointer() {
