@@ -143,58 +143,25 @@ function gateTourPositionPointer(targetElement) {
         return;
     }
 
-    // Direction comes from the body class set by gateTourApplyMobileDock()
-    // just before this runs — that's synchronous and always correct,
-    // unlike reading it back off the tooltip's rect (which can still be
-    // mid-transition and briefly report all-zero dimensions).
     const dockedTop = document.body.classList.contains('gate-tour-dock-top');
+    const targetRect = targetElement.getBoundingClientRect();
+    const rawX = targetRect.left + targetRect.width / 2;
+    const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
 
-    function place(tooltipRect) {
-        const targetRect = targetElement.getBoundingClientRect();
-        const rawX = targetRect.left + targetRect.width / 2;
-        const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
+    pointer.style.left = clampedX + 'px';
+    pointer.style.display = 'flex';
 
-        pointer.style.left = clampedX + 'px';
-        pointer.style.display = 'flex';
-
-        if (dockedTop) {
-            pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
-            pointer.style.bottom = 'auto';
-            pointer.style.top = tooltipRect ? (tooltipRect.bottom + 6) + 'px' : '96px';
-        } else {
-            pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
-            if (tooltipRect) {
-                pointer.style.bottom = 'auto';
-                pointer.style.top = (tooltipRect.top - 16) + 'px';
-            } else {
-                pointer.style.top = 'auto';
-                pointer.style.bottom = '108px';
-            }
-        }
+    if (dockedTop) {
+        pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
+        pointer.style.bottom = 'auto';
+        pointer.style.top = Math.max(8, targetRect.top - 44) + 'px';
+    } else {
+        pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
+        pointer.style.bottom = 'auto';
+        pointer.style.top = Math.min(window.innerHeight - 44, targetRect.bottom + 10) + 'px';
     }
-
-    // Fixed, short retries instead of counting animation frames — more
-    // predictable across devices than guessing how many frames a
-    // transition takes. Always ends in a visible pointer either way,
-    // never leaves it stuck invisible.
-    function measure(delay, isLastTry) {
-        setTimeout(function () {
-            const tooltipEl = document.querySelector('.introjs-tooltip');
-            const rect = tooltipEl ? tooltipEl.getBoundingClientRect() : null;
-            const hasRealRect = rect && rect.width > 0 && rect.height > 0;
-
-            if (hasRealRect || isLastTry) {
-                place(hasRealRect ? rect : null);
-            } else {
-                measure(120, true);
-            }
-        }, delay);
-    }
-
-    measure(40, false);
 }
 window.gateTourPositionPointer = gateTourPositionPointer;
-
 function gateTourHidePointer() {
     if (gateTourPointerEl) gateTourPointerEl.style.display = 'none';
 }
