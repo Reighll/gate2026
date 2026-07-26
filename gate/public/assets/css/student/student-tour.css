@@ -12,7 +12,7 @@
     --tour-next-hover: #2f4fc4;
     --tour-bullet: #d1d5db;
     --tour-bullet-active: #6b7280;
-    --tour-arrow: #f1f2f4;
+    --tour-arrow: var(--tour-next-bg);
     --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 html[data-bs-theme="dark"] {
@@ -22,14 +22,14 @@ html[data-bs-theme="dark"] {
     --tour-title: #d1d5db;
     --tour-text: #9ca3af;
     --tour-btn-top-border: 1px solid #3a3d42;
-    --tour-prev-color: #7d838b;
-    --tour-prev-hover: #ffffff;
+    --tour-prev-color: #8890a8;
+    --tour-prev-hover: #c4c9d9;
     --tour-next-bg: #5b7ce8;
     --tour-next-color: #ffffff;
     --tour-next-hover: #7a95f0;
     --tour-bullet: #4a4d52;
     --tour-bullet-active: #9ca3af;
-    --tour-arrow: #26282c;
+    --tour-arrow: var(--tour-next-bg);
     --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
 }
 .introjs-tooltip {
