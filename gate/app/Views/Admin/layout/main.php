@@ -100,6 +100,7 @@
 <script src="<?= base_url('assets/js/theme.js') ?>"></script>
 <script src="<?= base_url('assets/js/initial-loader.js') ?>"></script>
 <script src="<?= base_url('assets/js/drawer.js') ?>"></script>
+<script src="<?= base_url('assets/js/admin/admin-profile.js') ?>"></script>
 <?= $this->renderSection('scripts') ?>
 
 <?= $this->include('Admin/modals/delete_confirm') ?>
