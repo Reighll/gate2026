@@ -100,6 +100,7 @@ function startOnboardingTour() {
             exitOnOverlayClick: false,
             keyboardNavigation: true,
             helperElementPadding: window.innerWidth <= 991.98 ? 4 : 10,
+            hidePrev: true,
             nextLabel: 'Next',
             prevLabel: 'Back',
             doneLabel: 'Next Page &nbsp;<i class="ti ti-rocket"></i>',
