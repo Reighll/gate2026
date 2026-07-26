@@ -1,3 +1,16 @@
+/**
+ * Student app shell: skeleton loading, bottom-nav/profile-tab visibility,
+ * and the GATE onboarding tour dispatcher (page-to-page handoff via
+ * localStorage flags + the "sample data" injection helpers).
+ *
+ * Requires window.gateTourRoutes to be set (see Student/layout/main.php)
+ * before this file loads, since the tour hands off between pages using
+ * server-rendered URLs.
+ *
+ * Lives in the global <script> block of the layout (not a per-page
+ * 'scripts' section) because per-page script blocks aren't guaranteed to
+ * re-execute reliably across htmx swaps — see the note in main.php.
+ */
 function updateNavProfileVisibility() {
     const navProfileItem = document.getElementById('navProfileItem');
     if (!navProfileItem) return;
@@ -27,6 +40,24 @@ window.addEventListener('load', hideMySkeletons);
 document.body.addEventListener('htmx:afterSwap', function (evt) {
     hideMySkeletons();
 });
+
+// ================================================================
+// GATE ONBOARDING TOUR — centralized dispatcher.
+//
+// This intentionally does NOT live in each page's own 'scripts'
+// section. Per-page <script> blocks are not guaranteed to
+// re-execute reliably when their markup arrives via an HTMX swap
+// (a well-known browser quirk: <script> elements inserted through
+// innerHTML-style parsing are marked inert unless explicitly
+// recreated — htmx's own swap handling for hx-select'd fragments
+// doesn't always trigger that recreation). That's why the tour
+// previously only "showed up" after a hard refresh.
+//
+// Instead, all catch/handoff logic lives here, driven by the
+// htmx:afterSettle listener below — which is bound exactly once
+// at initial page load and simply re-runs on every swap, the same
+// way nav-highlighting and skeleton-hiding already reliably do.
+// ================================================================
 function gateTourNavigate(url) {
     const link = document.createElement('a');
     link.setAttribute('href', 'javascript:void(0);');
@@ -40,6 +71,11 @@ function gateTourNavigate(url) {
     htmx.process(link);
     link.click();
 }
+
+// Temporarily swaps an empty-state block for a labelled "SAMPLE" example
+// during the tour, so the tour can actually show what the real thing
+// looks like even for a brand-new account with no data yet. Cleaned up
+// automatically once the segment finishes or is cancelled.
 function gateTourInjectSample(wrapperId, emptyStateId, sampleId, sampleHtml) {
     const wrapper = document.getElementById(wrapperId);
     if (!wrapper) return;
@@ -56,10 +92,18 @@ function gateTourRemoveSample(sampleId, emptyStateId) {
     const emptyState = document.getElementById(emptyStateId);
     if (emptyState) emptyState.classList.remove('d-none');
 }
+
+// Mobile tooltips are fixed-positioned and docked to an edge (see
+// student-tour.css) instead of anchored next to the target — that's
+// what fixes them going off-screen. But a tooltip that's ALWAYS
+// bottom-docked can end up covering its own target if that target is
+// in the lower half of the screen. This flips the dock to the top in
+// that case, via a class toggled on <body> that the CSS keys off of.
 function gateTourApplyMobileDock(targetElement) {
-    if (window.innerWidth > 991.98) return;
+    if (window.innerWidth > 991.98) return; // desktop keeps normal anchored positioning
 
     if (!targetElement || targetElement === document.body) {
+        // No specific target (intro/outro steps) — bottom is always safe.
         document.body.classList.remove('gate-tour-dock-top');
         return;
     }
@@ -71,6 +115,15 @@ function gateTourApplyMobileDock(targetElement) {
     document.body.classList.toggle('gate-tour-dock-top', inLowerHalf);
 }
 window.gateTourApplyMobileDock = gateTourApplyMobileDock;
+
+// Dynamic pointer: since the tooltip is now docked to a screen edge
+// instead of anchored beside the target, Intro.js's own triangle arrow
+// (which assumed anchored positioning) is hidden in CSS. This is its
+// replacement — a single reusable colored badge, fixed-positioned, that's
+// re-measured and re-placed on every step so it keeps pointing at
+// wherever the real target actually is, both horizontally (aligned to
+// the target's center) and directionally (up from a bottom-docked
+// tooltip, down from a top-docked one).
 let gateTourPointerEl = null;
 
 function gateTourGetPointerEl() {
@@ -89,45 +142,56 @@ function gateTourPositionPointer(targetElement) {
         pointer.style.display = 'none';
         return;
     }
+
+    // Direction comes from the body class set by gateTourApplyMobileDock()
+    // just before this runs — that's synchronous and always correct,
+    // unlike reading it back off the tooltip's rect (which can still be
+    // mid-transition and briefly report all-zero dimensions).
     const dockedTop = document.body.classList.contains('gate-tour-dock-top');
 
-    let attempts = 0;
-    const maxAttempts = 30;
-
-    function tryPosition() {
-        const tooltipEl = document.querySelector('.introjs-tooltip');
-        const tooltipRect = tooltipEl ? tooltipEl.getBoundingClientRect() : null;
-        const hasRealRect = tooltipRect && tooltipRect.width > 0 && tooltipRect.height > 0;
-
-        if (!hasRealRect && attempts < maxAttempts) {
-            attempts++;
-            requestAnimationFrame(tryPosition);
-            return;
-        }
+    function place(tooltipRect) {
         const targetRect = targetElement.getBoundingClientRect();
         const rawX = targetRect.left + targetRect.width / 2;
         const clampedX = Math.min(Math.max(rawX, 20), window.innerWidth - 20);
 
         pointer.style.left = clampedX + 'px';
-        pointer.style.display = 'block';
+        pointer.style.display = 'flex';
 
         if (dockedTop) {
             pointer.className = 'gate-tour-pointer gate-tour-pointer--down';
             pointer.style.bottom = 'auto';
-            pointer.style.top = hasRealRect ? (tooltipRect.bottom + 'px') : '90px';
+            pointer.style.top = tooltipRect ? (tooltipRect.bottom + 6) + 'px' : '96px';
         } else {
             pointer.className = 'gate-tour-pointer gate-tour-pointer--up';
-            if (hasRealRect) {
+            if (tooltipRect) {
                 pointer.style.bottom = 'auto';
-                pointer.style.top = (tooltipRect.top - 10) + 'px';
+                pointer.style.top = (tooltipRect.top - 16) + 'px';
             } else {
                 pointer.style.top = 'auto';
-                pointer.style.bottom = '100px';
+                pointer.style.bottom = '108px';
             }
         }
     }
 
-    tryPosition();
+    // Fixed, short retries instead of counting animation frames — more
+    // predictable across devices than guessing how many frames a
+    // transition takes. Always ends in a visible pointer either way,
+    // never leaves it stuck invisible.
+    function measure(delay, isLastTry) {
+        setTimeout(function () {
+            const tooltipEl = document.querySelector('.introjs-tooltip');
+            const rect = tooltipEl ? tooltipEl.getBoundingClientRect() : null;
+            const hasRealRect = rect && rect.width > 0 && rect.height > 0;
+
+            if (hasRealRect || isLastTry) {
+                place(hasRealRect ? rect : null);
+            } else {
+                measure(120, true);
+            }
+        }, delay);
+    }
+
+    measure(40, false);
 }
 window.gateTourPositionPointer = gateTourPositionPointer;
 
@@ -147,11 +211,18 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         showBullets: true,
         exitOnOverlayClick: false,
         keyboardNavigation: true,
+        // Smaller highlight cutout on mobile/tablet — the default 10px
+        // padding looks oversized once the target itself is already
+        // narrow (e.g. a col-6 card).
+        helperElementPadding: window.innerWidth <= 991.98 ? 4 : 10,
         nextLabel: 'Next',
         prevLabel: 'Back',
         doneLabel: doneLabel || 'Next Page <i class="ti ti-rocket"></i>',
         steps: steps
     }).onbeforechange(function (targetElement) {
+        // Hide immediately on every transition so the old pointer never
+        // sits stale over the previous step's target while the new one
+        // is still being measured.
         gateTourHidePointer();
         gateTourApplyMobileDock(targetElement);
     }).onafterchange(function (targetElement) {
@@ -167,6 +238,8 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
     }).onexit(function () {
         document.body.classList.remove('gate-tour-dock-top');
         gateTourHidePointer();
+        // Cancelled — chain simply stops here, but still clean up any
+        // sample placeholder that was injected for this segment.
         if (typeof onDone === 'function') onDone();
     }).start();
 }

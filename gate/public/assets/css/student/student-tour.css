@@ -137,6 +137,7 @@ html[data-bs-theme="dark"] {
 .introjs-arrow.bottom { border-top-color: var(--tour-arrow) !important; }
 .introjs-arrow.left { border-right-color: var(--tour-arrow) !important; }
 .introjs-arrow.right { border-left-color: var(--tour-arrow) !important; }
+
 @media (max-width: 991.98px) {
     .introjs-tooltip {
         position: fixed !important;
@@ -151,32 +152,56 @@ html[data-bs-theme="dark"] {
     .introjs-arrow {
         display: none !important;
     }
+    /* Some Intro.js builds add a decorative notch via pseudo-elements on
+       the tooltip itself, independent of .introjs-arrow — strip those
+       too so nothing faint/stray shows up near the tooltip edge. */
+    .introjs-tooltip::before,
+    .introjs-tooltip::after {
+        display: none !important;
+        content: none !important;
+    }
     body.gate-tour-dock-top .introjs-tooltip {
         top: max(16px, env(safe-area-inset-top)) !important;
         bottom: auto !important;
     }
 }
+
+/* Custom mobile pointer: a small filled, colored badge (not a same-color
+   triangle) so it actually reads clearly against any background — see
+   gateTourPositionPointer() in student-app.js, which measures/places
+   this on every step change. */
 .gate-tour-pointer {
     position: fixed;
-    width: 0;
-    height: 0;
     z-index: 9999998;
     display: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--tour-next-bg);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25), 0 0 0 4px rgba(255, 255, 255, 0.95);
     pointer-events: none;
     transform: translateX(-50%);
     transition: left 0.25s ease, top 0.25s ease;
 }
-.gate-tour-pointer--up {
-    border-left: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-bottom: 10px solid var(--tour-bg);
-    filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.08));
+html[data-bs-theme="dark"] .gate-tour-pointer {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(34, 54, 64, 0.95);
 }
-.gate-tour-pointer--down {
-    border-left: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-top: 10px solid var(--tour-bg);
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.08));
+.gate-tour-pointer::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+}
+.gate-tour-pointer--down::before {
+    border-top: 8px solid var(--tour-next-color);
+    margin-top: 1px;
+}
+.gate-tour-pointer--up::before {
+    border-bottom: 8px solid var(--tour-next-color);
+    margin-bottom: 1px;
 }
 
 @media (min-width: 577px) and (max-width: 991.98px) {
@@ -211,7 +236,6 @@ html[data-bs-theme="dark"] {
         max-width: calc(100vw - 24px) !important;
     }
 }
-
 
 @media (max-width: 400px) {
     .introjs-tooltipbuttons {
