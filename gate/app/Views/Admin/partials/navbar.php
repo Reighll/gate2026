@@ -35,7 +35,7 @@
                             </span>
                         </div>
 
-                        <?php $navPic = session()->get('profile_pic') ?? 'user-1.jpg'; ?>
+                        <?php $navPic = session()->get('admin_profile_pic') ?? 'user-1.jpg'; ?>
                         <img src="<?= base_url('assets/images/profile/' . $navPic) ?>" alt="Profile Picture" width="40" height="40" class="rounded-circle border border-2 border-primary shadow-sm ms-1" style="object-fit: cover;">
 
                     </a>

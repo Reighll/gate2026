@@ -55,7 +55,7 @@ class Auth extends BaseController
                     'guard_id'        => $guard['id'],
                     'guard_name'      => $guard['first_name'] . ' ' . $guard['last_name'],
                     'guard_username'  => $guard['username'],
-                    'profile_pic'      => $guard['profile_pic'],
+                    'guard_profile_pic'      => $guard['profile_pic'],
                     'guard_logged_in' => true,
                 ];
                 $session->set($ses_data);

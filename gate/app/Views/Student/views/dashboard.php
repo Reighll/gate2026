@@ -100,7 +100,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                     <div class="digital-id-header position-relative" style="background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 15px 15px 0 0;">
                         <h5 class="text-white mb-0 opacity-75 fs-5">TECHNOLOGICAL UNIVERSITY OF THE PHILIPPINES</h5>
                         <div class="mt-4 mb-n5 position-relative" style="z-index: 2;">
-                            <?php $pic = session()->get('profile_pic') ?? 'default.png'; ?>
+                            <?php $pic = session()->get('student_profile_pic') ?? 'default.png'; ?>
                             <img src="<?= base_url('uploads/profiles/' . $pic) ?>" alt="Profile" class="rounded-circle border border-4 border-white shadow-sm bg-white" width="120" height="120" style="object-fit: cover;">
                         </div>
                     </div>

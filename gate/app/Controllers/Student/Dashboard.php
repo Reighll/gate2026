@@ -227,7 +227,7 @@ class Dashboard extends BaseController
 
             $file->move($uploadPath, $newName);
 
-            // 🧠 Resize + compress profile image
+            // Resize + compress profile image
             try {
                 \Config\Services::image()
                     ->withFile($filepath)
@@ -272,7 +272,7 @@ class Dashboard extends BaseController
 
         session()->set('student_name', $updateData['first_name'] . ' ' . $updateData['last_name']);
         if (isset($updateData['profile_pic'])) {
-            session()->set('profile_pic', $updateData['profile_pic']);
+            session()->set('student_profile_pic', $updateData['profile_pic']);
         }
 
         return redirect()->to('student/profile')->with('success', 'Your profile details have been successfully updated.');

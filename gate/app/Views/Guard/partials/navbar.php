@@ -27,7 +27,7 @@
                             </span>
                         </div>
 
-                        <?php $navPic = session()->get('profile_pic') ?? 'default.png'; ?>
+                        <?php $navPic = session()->get('guard_profile_pic') ?? 'default.png'; ?>
                         <img src="<?= base_url('uploads/profiles/' . $navPic) ?>" alt="Profile Picture" width="40" height="40" class="rounded-circle border border-2 border-primary shadow-sm ms-1" style="object-fit: cover;">
 
                     </a>
