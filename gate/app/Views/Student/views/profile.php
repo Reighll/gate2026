@@ -69,7 +69,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                             <div class="row mb-4">
                                 <div class="col-md-4 text-center mb-4 mb-md-0">
                                     <?php
-                                    $pic = session()->get('profile_pic') ?? 'default.png';
+                                    $pic = session()->get('student_profile_pic') ?? 'default.png';
                                     ?>
                                     <img src="<?= base_url('uploads/profiles/' . $pic) ?>" alt="Profile Picture" id="profilePicPreview" class="rounded-circle img-fluid border border-3 border-primary shadow-sm mb-3" style="width: 150px; height: 150px; object-fit: cover;">
 
