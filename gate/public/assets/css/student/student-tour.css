@@ -1,33 +1,33 @@
 :root {
-    --tour-bg: #c8d9e6;
-    --tour-border: none;
-    --tour-title: #2c4a63;
-    --tour-text: #4a6b85;
-    --tour-btn-top-border: 1px solid #b9cedd;
-    --tour-prev-color: #6b8299;
-    --tour-prev-hover: #2c4a63;
-    --tour-next-bg: #4f7ca0;
+    --tour-bg: #f1f2f4;
+    --tour-border: 1px solid #c3c7cc;
+    --tour-title: #3a3f47;
+    --tour-text: #5a6169;
+    --tour-btn-top-border: 1px solid #d5d8db;
+    --tour-prev-color: #7d838b;
+    --tour-prev-hover: #3a3f47;
+    --tour-next-bg: #6b7280;
     --tour-next-color: #ffffff;
-    --tour-next-hover: #3a6483;
-    --tour-bullet: #a9c2d4;
-    --tour-bullet-active: #4f7ca0;
-    --tour-arrow: #c8d9e6;
-    --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+    --tour-next-hover: #52565c;
+    --tour-bullet: #d1d5db;
+    --tour-bullet-active: #6b7280;
+    --tour-arrow: #f1f2f4;
+    --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 html[data-bs-theme="dark"] {
-    --tour-bg: #223640;
-    --tour-border: 1px solid #4f5467;
-    --tour-title: #8bb4fa;
-    --tour-text: #f1f9ff;
-    --tour-btn-top-border: 1px solid #4f5467;
-    --tour-prev-color: #a1aab2;
+    --tour-bg: #26282c;
+    --tour-border: 1px solid #4a4d52;
+    --tour-title: #d1d5db;
+    --tour-text: #9ca3af;
+    --tour-btn-top-border: 1px solid #3a3d42;
+    --tour-prev-color: #7d838b;
     --tour-prev-hover: #ffffff;
-    --tour-next-bg: #8bb4fa;
-    --tour-next-color: #11142d;
-    --tour-next-hover: #a5c7ff;
-    --tour-bullet: #4f5467;
-    --tour-bullet-active: #8bb4fa;
-    --tour-arrow: #223640;
+    --tour-next-bg: #9ca3af;
+    --tour-next-color: #1a1c1f;
+    --tour-next-hover: #b4bac2;
+    --tour-bullet: #4a4d52;
+    --tour-bullet-active: #9ca3af;
+    --tour-arrow: #26282c;
     --tour-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
 }
 .introjs-tooltip {
