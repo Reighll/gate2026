@@ -276,7 +276,7 @@ function checkGateTourHandoff() {
         runGateTourStep('gate_tour_history_pending', null, null, [
             { title: 'Your Scan History', intro: 'Every time your items are tapped at the gate, it shows up here — a full log of your campus entries and exits.' },
             { title: "That's the tour!", intro: 'You now know your way around GATE. You can revisit any of these pages anytime from the menu.' }
-        ], 'You\'re all set! <i class="ti ti-check"></i>');
+        ], 'You\'re all set! &nbsp;<i class="ti ti-check"></i>');
     }
 }
 

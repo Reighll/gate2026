@@ -102,7 +102,7 @@ function startOnboardingTour() {
             helperElementPadding: window.innerWidth <= 991.98 ? 4 : 10,
             nextLabel: 'Next',
             prevLabel: 'Back',
-            doneLabel: 'Next Page   <i class="ti ti-rocket"></i>',
+            doneLabel: 'Next Page &nbsp;<i class="ti ti-rocket"></i>',
             steps: tourSteps
         }).oncomplete(function () {
             localStorage.setItem(tourStorageKey, 'true');
