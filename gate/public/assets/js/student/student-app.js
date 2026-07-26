@@ -147,7 +147,6 @@ function gateTourHidePointer() {
     if (gateTourPointerEl) gateTourPointerEl.style.display = 'none';
 }
 window.gateTourHidePointer = gateTourHidePointer;
-
 function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone) {
     if (typeof introJs === 'undefined') return;
     if (localStorage.getItem(flagKey) !== 'true') return;
@@ -163,7 +162,7 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         nextLabel: 'Next',
         prevLabel: 'Back',
         doneLabel: 'Next Page &nbsp;<i class="ti ti-rocket"></i>',
-        steps: tourSteps
+        steps: steps
     }).onafterchange(function () {
         const prevBtn = document.querySelector('.introjs-prevbutton');
         if (prevBtn) {
@@ -179,7 +178,6 @@ function runGateTourStep(flagKey, nextFlagKey, nextUrl, steps, doneLabel, onDone
         if (typeof onDone === 'function') onDone();
     }).start();
 }
-
 function checkGateTourHandoff() {
     const path = window.location.pathname;
 
