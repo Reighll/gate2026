@@ -10,30 +10,22 @@ class ItemReports extends BaseController
     {
         $db = \Config\Database::connect();
 
-        // ---- Missing Items (reported by students, live immediately) ----
-        $missingBuilder = $db->table('student_items');
-        $missingBuilder->select('student_items.*, students.first_name, students.last_name');
-        $missingBuilder->join('students', 'students.id = student_items.student_id', 'left');
-        $missingBuilder->where('student_items.status', 'missing');
-        $missingBuilder->orderBy('student_items.updated_at', 'DESC');
-        $missingReports = $missingBuilder->get()->getResultArray();
+        $builder = $db->table('student_items');
+        $builder->select('student_items.*, students.first_name, students.last_name');
+        $builder->join('students', 'students.id = student_items.student_id', 'left');
+        $builder->groupStart();
+        $builder->where('student_items.status', 'missing');
+        $builder->orWhere('student_items.resolved_at IS NOT NULL', null, false);
+        $builder->groupEnd();
+        $builder->orderBy('student_items.updated_at', 'DESC');
+        $allReports = $builder->get()->getResultArray();
 
-        // ---- Resolved Reports (log of previously-missing items, now cleared) ----
-        $resolvedBuilder = $db->table('student_items');
-        $resolvedBuilder->select('student_items.*, students.first_name, students.last_name');
-        $resolvedBuilder->join('students', 'students.id = student_items.student_id', 'left');
-        $resolvedBuilder->where('student_items.resolved_at IS NOT NULL', null, false);
-        $resolvedBuilder->orderBy('student_items.resolved_at', 'DESC');
-        $resolvedReports = $resolvedBuilder->get()->getResultArray();
-
-        // Calculate Overview Counts for the summary cards
         $activeMissingCount = $db->table('student_items')->where('status', 'missing')->countAllResults();
         $resolvedCount      = $db->table('student_items')->where('resolved_at IS NOT NULL')->countAllResults();
 
         $data = [
             'title'              => 'Reported Items',
-            'missingReports'     => $missingReports,
-            'resolvedReports'    => $resolvedReports,
+            'allReports'         => $allReports,
             'activeMissingCount' => $activeMissingCount,
             'resolvedCount'      => $resolvedCount
         ];

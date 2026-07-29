@@ -64,24 +64,25 @@
             </div>
         <?php endif; ?>
 
-        <!-- ==================== MISSING ITEMS ==================== -->
+        <!-- ==================== ITEM REPORTS ==================== -->
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-3 p-md-4">
-                <h5 class="fw-bold text-dark mb-4"><i class="ti ti-list me-2 text-danger"></i> Currently Missing Items</h5>
+                <h5 class="fw-bold text-dark mb-4"><i class="ti ti-list me-2 text-danger"></i> Missing Items</h5>
                 <div class="table-responsive">
                     <table class="table align-middle text-nowrap mb-0 border-light">
                         <thead style="border-bottom: 2px solid #f0f0f0;">
                         <tr>
-                            <th>Reporter Name</th><th>Item Name</th><th>Date Reported</th><th>Action</th><th>Status</th>
+                            <th>Reporter Name</th><th>Item Name</th><th>Reported On</th><th>Resolved On</th><th>Action</th><th>Status</th>
                         </tr>
                         </thead>
 
-                        <?php $missingSkeletonRows = !empty($missingReports) ? count($missingReports) : 1; ?>
+                        <?php $reportsSkeletonRows = !empty($allReports) ? count($allReports) : 1; ?>
                         <tbody class="skeleton-wrapper">
-                        <?php for($i=0; $i<$missingSkeletonRows; $i++): ?>
+                        <?php for($i=0; $i<$reportsSkeletonRows; $i++): ?>
                             <tr>
                                 <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-text w-50 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-text w-50 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-badge rounded-pill" style="width: 60px; height: 28px;"></div></td>
                                 <td><div class="skeleton skeleton-badge rounded-pill" style="width: 50px; height: 20px;"></div></td>
@@ -90,9 +91,9 @@
                         </tbody>
 
                         <tbody class="real-wrapper d-none">
-                        <?php if(empty($missingReports)): ?>
+                        <?php if(empty($allReports)): ?>
                             <tr>
-                                <td colspan="5" class="text-center">
+                                <td colspan="6" class="text-center">
                                     <div class="d-flex flex-column align-items-center justify-content-center py-5 w-100">
                                         <i class="ti ti-check-circle fs-1 mb-2 text-muted"></i>
                                         <p class="mb-0 text-muted">No missing items reported. All clear!</p>
@@ -100,67 +101,34 @@
                                 </td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach($missingReports as $report): ?>
-                                <tr>
-                                    <td data-label="Reporter Name"><?= esc($report['first_name'] . ' ' . $report['last_name']) ?></td>
-                                    <td data-label="Item Name"><?= esc($report['brand_model'] ?? $report['name'] ?? $report['item_name']) ?></td>
-                                    <td data-label="Date Reported"><?= date('m-d-y', strtotime($report['updated_at'])) ?></td>
-                                    <td data-label="Action"><button class="btn btn-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#viewModalMissing<?= $report['id'] ?>">VIEW</button></td>
-                                    <td data-label="Status"><span class="badge bg-danger rounded-pill">ONGOING</span></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <!-- ==================== RESOLVED REPORTS ==================== -->
-        <div class="card border-0 shadow-sm rounded-4 mt-4">
-            <div class="card-body p-3 p-md-4">
-                <h5 class="fw-bold text-dark mb-4"><i class="ti ti-history me-2 text-success"></i> Resolved Reports</h5>
-                <div class="table-responsive">
-                    <table class="table align-middle text-nowrap mb-0 border-light">
-                        <thead style="border-bottom: 2px solid #f0f0f0;">
-                        <tr>
-                            <th>Reporter Name</th><th>Item Name</th><th>Reported On</th><th>Resolved On</th><th>Status</th>
-                        </tr>
-                        </thead>
-
-                        <?php $resolvedSkeletonRows = !empty($resolvedReports) ? count($resolvedReports) : 1; ?>
-                        <tbody class="skeleton-wrapper">
-                        <?php for($i=0; $i<$resolvedSkeletonRows; $i++): ?>
-                            <tr>
-                                <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
-                                <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
-                                <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
-                                <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
-                                <td><div class="skeleton skeleton-badge rounded-pill" style="width: 60px; height: 20px;"></div></td>
-                            </tr>
-                        <?php endfor; ?>
-                        </tbody>
-
-                        <tbody class="real-wrapper d-none">
-                        <?php if(empty($resolvedReports)): ?>
-                            <tr>
-                                <td colspan="5" class="text-center">
-                                    <div class="d-flex flex-column align-items-center justify-content-center py-5 w-100">
-                                        <i class="ti ti-clock-off fs-1 mb-2 text-muted"></i>
-                                        <p class="mb-0 text-muted">No resolved reports yet.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach($resolvedReports as $report): ?>
+                            <?php foreach($allReports as $report): ?>
+                                <?php $isResolved = !empty($report['resolved_at']); ?>
                                 <tr>
                                     <td data-label="Reporter Name"><?= esc($report['first_name'] . ' ' . $report['last_name']) ?></td>
                                     <td data-label="Item Name"><?= esc($report['brand_model'] ?? $report['name'] ?? $report['item_name']) ?></td>
                                     <td data-label="Reported On"><?= date('m-d-y', strtotime($report['updated_at'])) ?></td>
                                     <td data-label="Resolved On">
-                                        <span class="d-block fw-semibold text-dark" style="font-size: 0.85rem;"><?= date('M d, Y', strtotime($report['resolved_at'])) ?></span>
-                                        <span class="small text-muted"><?= date('h:i A', strtotime($report['resolved_at'])) ?></span>
+                                        <?php if ($isResolved): ?>
+                                            <span class="d-block fw-semibold text-dark" style="font-size: 0.85rem;"><?= date('M d, Y', strtotime($report['resolved_at'])) ?></span>
+                                            <span class="small text-muted"><?= date('h:i A', strtotime($report['resolved_at'])) ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">—</span>
+                                        <?php endif; ?>
                                     </td>
-                                    <td data-label="Status"><span class="badge bg-success rounded-pill">RESOLVED</span></td>
+                                    <td data-label="Action">
+                                        <?php if (!$isResolved): ?>
+                                            <button class="btn btn-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#viewModalMissing<?= $report['id'] ?>">VIEW</button>
+                                        <?php else: ?>
+                                            <span class="text-muted small">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td data-label="Status">
+                                        <?php if ($isResolved): ?>
+                                            <span class="badge bg-success rounded-pill">RESOLVED</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger rounded-pill">ONGOING</span>
+                                        <?php endif; ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -169,8 +137,9 @@
                 </div>
             </div>
         </div>
-        <?php if(!empty($missingReports)): ?>
-            <?php foreach($missingReports as $report): ?>
+        <?php if(!empty($allReports)): ?>
+            <?php foreach($allReports as $report): ?>
+                <?php if (!empty($report['resolved_at'])) continue; ?>
                 <div class="modal fade" id="viewModalMissing<?= $report['id'] ?>" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content border-0 rounded-4 shadow">
