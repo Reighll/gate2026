@@ -240,6 +240,7 @@
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Photo</th>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Item Name</th>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Serial/Brand</th>
+                            <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Registered On</th>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">RFID</th>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Status</th>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Processed By</th>
@@ -257,6 +258,7 @@
                                 <td><div class="skeleton rounded-3" style="..."></div></td>
                                 <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
                                 <td><div class="skeleton skeleton-badge rounded-1" style="..."></div></td>
                                 <td><div class="skeleton skeleton-badge rounded-1" style="..."></div></td>
                                 <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
@@ -268,7 +270,7 @@
                         <tbody class="real-wrapper d-none">
                         <?php if (empty($items)) : ?>
                             <tr class="no-data-row">
-                                <td colspan="10" class="text-center py-5 text-muted">No items found in the system.</td>
+                                <td colspan="11" class="text-center py-5 text-muted">No items found in the system.</td>
                             </tr>
                         <?php else : ?>
                             <?php foreach ($items as $item) : ?>
@@ -289,6 +291,14 @@
                                     </td>
                                     <td data-label="Item Name" class="py-3 text-muted"><?= esc($item['brand_model'] ?? $item['name'] ?? $item['item_name'] ?? 'Unknown Item') ?></td>
                                     <td data-label="Serial/Brand" class="py-3 text-muted"><?= esc($item['serial_number'] ?? 'N/A') ?></td>
+                                    <td data-label="Registered On" class="py-3 text-muted">
+                                        <?php if (!empty($item['created_at'])): ?>
+                                            <span class="d-block fw-semibold text-dark" style="font-size: 0.85rem;"><?= date('M d, Y', strtotime($item['created_at'])) ?></span>
+                                            <span class="small text-muted"><?= date('h:i A', strtotime($item['created_at'])) ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">N/A</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td data-label="RFID" class="py-3">
                                         <?php if (!empty($item['rfid'])): ?>
                                             <span class="badge rounded-1 shadow-sm px-3 py-2 fw-bold text-white" style="background-color: #1fc2ff; font-size: 0.8rem;" title="<?= esc($item['rfid']) ?>">Assigned</span>
