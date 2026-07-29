@@ -105,7 +105,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                 <th class="border-0"><h6 class="fw-semibold mb-0">Date & Time</h6></th>
                                 <th class="border-0"><h6 class="fw-semibold mb-0">Item Details</h6></th>
                                 <th class="border-0"><h6 class="fw-semibold mb-0">Serial Number</h6></th>
-                                <th class="border-0 text-end"><h6 class="fw-semibold mb-0">Action</h6></th>
+                                <th class="border-0 text-end"><h6 class="fw-semibold mb-0">Activity Log</h6></th>
                             </tr>
                             </thead>
                             <tbody>
