@@ -166,8 +166,9 @@ class Items extends BaseController
 
         if ($item) {
             $model->update($itemId, [
-                'status' => 'missing',
-                'notes'  => $notes
+                'status'      => 'missing',
+                'notes'       => $notes,
+                'resolved_at' => null,
             ]);
             return redirect()->to('student/dashboard')->with('success', 'Item reported missing! Guards have been alerted.');
         }
@@ -184,7 +185,10 @@ class Items extends BaseController
         $item = $model->where('id', $id)->where('student_id', session()->get('student_id'))->first();
 
         if ($item && $item['status'] === 'missing') {
-            $model->update($id, ['status' => 'approved']);
+            $model->update($id, [
+                'status'      => 'approved',
+                'resolved_at' => date('Y-m-d H:i:s'),
+            ]);
             return redirect()->to('student/dashboard')->with('success', 'Glad you found it! The missing alert has been cleared.');
         }
 
