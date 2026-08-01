@@ -126,7 +126,7 @@
                                         <?php if ($isResolved): ?>
                                             <span class="badge bg-success rounded-pill">RESOLVED</span>
                                         <?php else: ?>
-                                            <span class="badge bg-danger rounded-pill">ONGOING</span>
+                                            <span class="badge bg-danger rounded-pill">RESOLVED</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
