@@ -231,19 +231,41 @@
                         </div>
                     </div>
 
+                    <style>
+                        @media (min-width: 992px) {
+                            #itemsTable col.col-id       { width: 4%; }
+                            #itemsTable col.col-student  { width: 12%; }
+                            #itemsTable col.col-number   { width: 10%; }
+                            #itemsTable col.col-photo    { width: 6%; }
+                            #itemsTable col.col-item     { width: 12%; }
+                            #itemsTable col.col-serial   { width: 11%; }
+                            #itemsTable col.col-date     { width: 11%; }
+                            #itemsTable col.col-rfid     { width: 8%; }
+                            #itemsTable col.col-status   { width: 8%; }
+                            #itemsTable col.col-processed{ width: 10%; }
+                            #itemsTable col.col-actions  { width: 8%; }
+
+                            #itemsTable th {
+                                white-space: normal;
+                                word-break: keep-all;
+                                overflow-wrap: normal;
+                            }
+                        }
+                    </style>
+
                     <table class="table align-middle mb-0 border-light" id="itemsTable" style="table-layout: fixed; width: 100%;">
                         <colgroup>
-                            <col style="width: 4%;">   <!-- ID -->
-                            <col style="width: 12%;">  <!-- Student Name -->
-                            <col style="width: 10%;">  <!-- Student Number -->
-                            <col style="width: 6%;">   <!-- Photo -->
-                            <col style="width: 12%;">  <!-- Item Name -->
-                            <col style="width: 11%;">  <!-- Serial/Brand -->
-                            <col style="width: 11%;">  <!-- Registered On -->
-                            <col style="width: 8%;">   <!-- RFID -->
-                            <col style="width: 8%;">   <!-- Status -->
-                            <col style="width: 10%;">  <!-- Processed By -->
-                            <col style="width: 8%;">   <!-- Actions -->
+                            <col class="col-id">
+                            <col class="col-student">
+                            <col class="col-number">
+                            <col class="col-photo">
+                            <col class="col-item">
+                            <col class="col-serial">
+                            <col class="col-date">
+                            <col class="col-rfid">
+                            <col class="col-status">
+                            <col class="col-processed">
+                            <col class="col-actions">
                         </colgroup>
                         <thead style="border-bottom: 2px solid #f0f0f0;">
                         <tr>
