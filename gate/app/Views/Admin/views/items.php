@@ -232,6 +232,19 @@
                     </div>
 
                     <table class="table align-middle mb-0 border-light" id="itemsTable" style="table-layout: fixed; width: 100%;">
+                        <colgroup>
+                            <col style="width: 4%;">   <!-- ID -->
+                            <col style="width: 12%;">  <!-- Student Name -->
+                            <col style="width: 10%;">  <!-- Student Number -->
+                            <col style="width: 6%;">   <!-- Photo -->
+                            <col style="width: 12%;">  <!-- Item Name -->
+                            <col style="width: 11%;">  <!-- Serial/Brand -->
+                            <col style="width: 11%;">  <!-- Registered On -->
+                            <col style="width: 8%;">   <!-- RFID -->
+                            <col style="width: 8%;">   <!-- Status -->
+                            <col style="width: 10%;">  <!-- Processed By -->
+                            <col style="width: 8%;">   <!-- Actions -->
+                        </colgroup>
                         <thead style="border-bottom: 2px solid #f0f0f0;">
                         <tr>
                             <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">ID</th>
