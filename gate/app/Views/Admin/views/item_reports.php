@@ -114,7 +114,7 @@
                             <?php foreach($missingReports as $report): ?>
                                 <tr>
                                     <td data-label="Reporter Name"><?= esc($report['first_name'] . ' ' . $report['last_name']) ?></td>
-                                    <td data-label="Item Name"><?= esc($report['brand_model'] ?? $report['name'] ?? $report['item_name']) ?></td>
+                                    <td data-label="Item Name"><?= esc($report['brand_model'] ?? 'N/A') ?></td>
                                     <td data-label="Reported On"><?= date('m-d-y', strtotime($report['updated_at'])) ?></td>
                                     <td data-label="Action">
                                         <button class="btn btn-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#viewModalMissing<?= $report['id'] ?>">VIEW</button>
@@ -179,7 +179,7 @@
                             <?php foreach($resolvedReports as $report): ?>
                                 <tr>
                                     <td data-label="Reporter Name"><?= esc($report['first_name'] . ' ' . $report['last_name']) ?></td>
-                                    <td data-label="Item Name"><?= esc($report['brand_model'] ?? $report['name'] ?? $report['item_name']) ?></td>
+                                    <td data-label="Item Name"><?= esc($report['brand_model'] ?? 'N/A') ?></td>
                                     <td data-label="Resolved On">
                                         <span class="d-block fw-semibold text-dark" style="font-size: 0.85rem;"><?= date('M d, Y', strtotime($report['resolved_at'])) ?></span>
                                         <span class="small text-muted"><?= date('h:i A', strtotime($report['resolved_at'])) ?></span>
@@ -206,7 +206,7 @@
                                 </div>
                                 <div class="row align-items-center">
                                     <div class="col-md-7">
-                                        <p class="mb-2 fs-5"><?= esc($report['brand_model'] ?? $report['name'] ?? $report['item_name']) ?></p>
+                                        <p class="mb-2 fs-5"><?= esc($report['brand_model'] ?? 'N/A') ?></p>
                                         <?php if(!empty($report['specs'])): ?>
                                             <p class="mb-2 text-muted"><?= esc($report['specs']) ?></p>
                                         <?php endif; ?>

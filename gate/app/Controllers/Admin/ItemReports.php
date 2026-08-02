@@ -31,7 +31,7 @@ class ItemReports extends BaseController
 
         // ---- Resolved Items query (from item_logs history) ----
         $resolvedBuilder = $db->table('item_logs');
-        $resolvedBuilder->select('item_logs.id as log_id, item_logs.created_at as resolved_at, student_items.id, student_items.brand_model, student_items.name, student_items.item_name, student_items.serial_number, students.first_name, students.last_name');
+        $resolvedBuilder->select('item_logs.id as log_id, item_logs.created_at as resolved_at, student_items.id, student_items.brand_model, student_items.serial_number, students.first_name, students.last_name');
         $resolvedBuilder->join('student_items', 'student_items.id = item_logs.item_id', 'left');
         $resolvedBuilder->join('students', 'students.id = student_items.student_id', 'left');
         $resolvedBuilder->where('item_logs.action', 'resolved');
