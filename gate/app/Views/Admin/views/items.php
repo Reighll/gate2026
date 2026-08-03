@@ -335,9 +335,7 @@
                             }
                         }
                     </style>
-                    <div id="stickyScrollTrack" style="overflow-x: auto; overflow-y: hidden; height: 14px; margin-bottom: 4px; position: sticky; top: 0; z-index: 10; background: #fff;">
-                        <div id="stickyScrollDummy" style="height: 1px;"></div>
-                    </div>
+
                     <div class="table-scroll-wrapper" style="overflow-x: auto; position: relative;">
                         <table class="table align-middle mb-0 border-light" id="itemsTable" style="table-layout: fixed; width: 100%; min-width: 1250px;">
                             <colgroup>

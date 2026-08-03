@@ -298,7 +298,7 @@ html, body {
     position: relative;
     max-height: 600px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible;
 }
 
 .table-container-fixed table {
