@@ -40,6 +40,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/admin/admin-layout.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/custom-styles.css') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/sidebar.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/initial-loader.css') ?>" />
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/fonts/tabler-icons.woff2" as="font" type="font/woff2" crossorigin>
 
     <script src="https://unpkg.com/htmx.org@1.9.11"></script>

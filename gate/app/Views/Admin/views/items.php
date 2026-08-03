@@ -569,6 +569,13 @@
             wrapper.addEventListener('scroll', () => {
                 track.scrollLeft = wrapper.scrollLeft;
             });
+            document.querySelectorAll('#itemsTable [data-bs-toggle="dropdown"]').forEach(function (el) {
+                new bootstrap.Dropdown(el, {
+                    popperConfig: function (defaultConfig) {
+                        return Object.assign({}, defaultConfig, { strategy: 'fixed' });
+                    }
+                });
+            });
         });
     </script>
 <?= $this->endSection() ?>
