@@ -281,63 +281,133 @@
 
                         /* ---- Mobile: collapse into stacked cards ---- */
                         @media (max-width: 991.98px) {
-                            #itemsTable, #itemsTable thead, #itemsTable tbody,
-                            #itemsTable th, #itemsTable td, #itemsTable tr {
-                                display: block;
-                                width: 100% !important;
-                                position: static !important;
-                            }
-
                             #itemsTable {
                                 table-layout: auto !important;
                                 min-width: 0 !important;
+                                width: 100% !important;
+                            }
+
+                            #itemsTable, #itemsTable thead, #itemsTable tbody {
+                                display: block;
+                                width: 100% !important;
+                                position: static !important;
                             }
 
                             #itemsTable thead {
                                 display: none;
                             }
 
+                            /* ---- Card container ---- */
                             #itemsTable tbody.real-wrapper tr {
+                                display: grid;
+                                grid-template-columns: 56px 1fr auto;
+                                grid-template-areas:
+            "photo itemname id"
+            "photo studentname studentname"
+            "studentnumber studentnumber studentnumber"
+            "serial serial serial"
+            "registered registered registered"
+            "rfid rfid rfid"
+            "processed processed processed"
+            "status status actions";
+                                gap: 0.25rem 0.75rem;
                                 margin-bottom: 1rem;
                                 border: 1px solid #f0f0f0;
-                                border-radius: 12px;
-                                padding: 0.75rem 1rem;
+                                border-radius: 14px;
+                                padding: 1rem;
+                                background-color: #fff;
                                 box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                                position: static !important;
                             }
 
                             #itemsTable td {
+                                display: block;
+                                border: none !important;
+                                padding: 0;
+                                position: static !important;
+                            }
+
+                            /* ---- Header band: photo, item name, ID badge, student name ---- */
+                            #itemsTable td[data-label="Photo"] { grid-area: photo; align-self: start; }
+                            #itemsTable td[data-label="Photo"]::before { display: none; }
+
+                            #itemsTable td[data-label="Item Name"] {
+                                grid-area: itemname;
+                                font-weight: 700;
+                                font-size: 1.02rem;
+                                color: #2a3547;
+                                align-self: end;
+                            }
+                            #itemsTable td[data-label="Item Name"]::before { display: none; }
+
+                            #itemsTable td[data-label="ID"] {
+                                grid-area: id;
+                                justify-self: end;
+                                align-self: start;
+                                font-size: 0.72rem;
+                                font-weight: 700;
+                                color: #94a3b8;
+                                background: #f1f5f9;
+                                border-radius: 999px;
+                                padding: 2px 10px;
+                            }
+                            #itemsTable td[data-label="ID"]::before { display: none; }
+
+                            #itemsTable td[data-label="Student Name"] {
+                                grid-area: studentname;
+                                font-size: 0.85rem;
+                                color: #6c757d;
+                                padding-bottom: 0.5rem;
+                                border-bottom: 1px solid #f6f6f6;
+                                margin-bottom: 0.35rem;
+                            }
+                            #itemsTable td[data-label="Student Name"]::before { display: none; }
+
+                            /* ---- Detail rows: label left, value right ---- */
+                            #itemsTable td[data-label="Student Number"] { grid-area: studentnumber; }
+                            #itemsTable td[data-label="Serial/Brand"]   { grid-area: serial; }
+                            #itemsTable td[data-label="Registered On"]  { grid-area: registered; }
+                            #itemsTable td[data-label="RFID"]           { grid-area: rfid; }
+                            #itemsTable td[data-label="Processed By"]   { grid-area: processed; }
+
+                            #itemsTable td[data-label="Student Number"],
+                            #itemsTable td[data-label="Serial/Brand"],
+                            #itemsTable td[data-label="Registered On"],
+                            #itemsTable td[data-label="RFID"],
+                            #itemsTable td[data-label="Processed By"] {
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                text-align: right;
-                                padding: 0.5rem 0;
-                                border: none !important;
+                                padding: 0.35rem 0;
                                 border-bottom: 1px solid #f6f6f6 !important;
                             }
 
-                            #itemsTable td:last-child {
+                            #itemsTable td[data-label="Processed By"] {
                                 border-bottom: none !important;
                             }
 
                             #itemsTable td::before {
                                 content: attr(data-label);
                                 font-weight: 600;
-                                color: #2a3547;
-                                text-align: left;
-                                margin-right: 1rem;
-                                flex-shrink: 0;
+                                font-size: 0.8rem;
+                                color: #94a3b8;
                             }
+
+                            /* ---- Footer: Status left, Actions right ---- */
+                            #itemsTable td[data-label="Status"] {
+                                grid-area: status;
+                                align-self: center;
+                                padding-top: 0.6rem;
+                            }
+                            #itemsTable td[data-label="Status"]::before { display: none; }
 
                             #itemsTable td[data-label="Actions"] {
-                                justify-content: flex-end;
+                                grid-area: actions;
+                                justify-self: end;
+                                align-self: center;
+                                padding-top: 0.6rem;
                             }
-
-                            #itemsTable td[data-label="Photo"] {
-                                justify-content: flex-start;
-                            }
-                            #itemsTable td[data-label="Photo"]::before {
-                                display: none;
-                            }
+                            #itemsTable td[data-label="Actions"]::before { display: none; }
                         }
                     </style>
 
