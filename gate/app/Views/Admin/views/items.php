@@ -336,7 +336,7 @@
                         }
                     </style>
 
-                    <div class="table-scroll-wrapper" style="overflow-x: auto; position: relative;">
+                    <div class="table-scroll-wrapper" style="max-height: 600px; overflow: auto; position: relative;">
                         <table class="table align-middle mb-0 border-light" id="itemsTable" style="table-layout: fixed; width: 100%; min-width: 1250px;">
                             <colgroup>
                                 <col class="col-id">
@@ -548,39 +548,14 @@
     <script>window.scanApiUrl = "<?= base_url('admin/items/check-latest-scan') ?>";</script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const track = document.getElementById('stickyScrollTrack');
-            const dummy = document.getElementById('stickyScrollDummy');
-            const wrapper = document.getElementById('tableScrollWrapper');
-            const table = document.getElementById('itemsTable');
-
-            if (!track || !wrapper || !table) return;
-
-            function syncDummyWidth() {
-                dummy.style.width = table.scrollWidth + 'px';
-            }
-            syncDummyWidth();
-            window.addEventListener('resize', syncDummyWidth);
-
-            track.addEventListener('scroll', () => {
-                wrapper.scrollLeft = track.scrollLeft;
-            });
-            wrapper.addEventListener('scroll', () => {
-                track.scrollLeft = wrapper.scrollLeft;
-            });
             document.querySelectorAll('#itemsTable [data-bs-toggle="dropdown"]').forEach(function (el) {
-                new bootstrap.Dropdown(el, {
-                    popperConfig: function (defaultConfig) {
-                        return Object.assign({}, defaultConfig, { strategy: 'fixed' });
-                    }
+                const dropdown = new bootstrap.Dropdown(el, {
+                    popperConfig: { strategy: 'fixed' }
                 });
-            });
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('#itemsTable [data-bs-toggle="dropdown"]').forEach(function (el) {
-                new bootstrap.Dropdown(el, {
-                    popperConfig: function (defaultConfig) {
-                        return Object.assign({}, defaultConfig, { strategy: 'fixed' });
-                    }
+
+                el.addEventListener('shown.bs.dropdown', function () {
+                    const menu = el.nextElementSibling;
+                    if (menu) menu.style.zIndex = 99999;
                 });
             });
         });
