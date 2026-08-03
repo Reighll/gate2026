@@ -372,7 +372,6 @@
 
                             #itemsTable td[data-label="Student Number"],
                             #itemsTable td[data-label="Serial/Brand"],
-                            #itemsTable td[data-label="Registered On"],
                             #itemsTable td[data-label="RFID"],
                             #itemsTable td[data-label="Processed By"] {
                                 display: flex;
@@ -380,6 +379,19 @@
                                 align-items: center;
                                 padding: 0.35rem 0;
                                 border-bottom: 1px solid #f6f6f6 !important;
+                            }
+
+                            /* ---- Registered On: stacked date/time, right-aligned ---- */
+                            #itemsTable td[data-label="Registered On"] {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-end;
+                                padding: 0.35rem 0;
+                                border-bottom: 1px solid #f6f6f6 !important;
+                            }
+                            #itemsTable td[data-label="Registered On"]::before {
+                                align-self: flex-start;
+                                margin-top: 0.1rem;
                             }
 
                             #itemsTable td[data-label="Processed By"] {
