@@ -233,22 +233,80 @@
 
                     <style>
                         @media (min-width: 992px) {
-                            #itemsTable col.col-id       { width: 4%; }
-                            #itemsTable col.col-student  { width: 12%; }
-                            #itemsTable col.col-number   { width: 10%; }
-                            #itemsTable col.col-photo    { width: 6%; }
-                            #itemsTable col.col-item     { width: 12%; }
-                            #itemsTable col.col-serial   { width: 11%; }
-                            #itemsTable col.col-date     { width: 11%; }
-                            #itemsTable col.col-rfid     { width: 8%; }
-                            #itemsTable col.col-status   { width: 8%; }
-                            #itemsTable col.col-processed{ width: 10%; }
-                            #itemsTable col.col-actions  { width: 8%; }
+                            #itemsTable col.col-id        { width: 4%; }
+                            #itemsTable col.col-student   { width: 12%; }
+                            #itemsTable col.col-number    { width: 10%; }
+                            #itemsTable col.col-photo     { width: 6%; }
+                            #itemsTable col.col-item      { width: 12%; }
+                            #itemsTable col.col-serial    { width: 11%; }
+                            #itemsTable col.col-date      { width: 11%; }
+                            #itemsTable col.col-rfid      { width: 8%; }
+                            #itemsTable col.col-status    { width: 8%; }
+                            #itemsTable col.col-processed { width: 10%; }
+                            #itemsTable col.col-actions   { width: 8%; }
 
                             #itemsTable th {
                                 white-space: normal;
-                                word-break: keep-all;
                                 overflow-wrap: normal;
+                            }
+                        }
+
+                        /* ---- Mobile: collapse into stacked cards ---- */
+                        @media (max-width: 991.98px) {
+                            #itemsTable, #itemsTable thead, #itemsTable tbody,
+                            #itemsTable th, #itemsTable td, #itemsTable tr {
+                                display: block;
+                                width: 100% !important;
+                            }
+
+                            #itemsTable {
+                                table-layout: auto !important;
+                            }
+
+                            #itemsTable thead {
+                                display: none; /* headers replaced by data-label per cell */
+                            }
+
+                            #itemsTable tbody.real-wrapper tr {
+                                margin-bottom: 1rem;
+                                border: 1px solid #f0f0f0;
+                                border-radius: 12px;
+                                padding: 0.75rem 1rem;
+                                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                            }
+
+                            #itemsTable td {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                text-align: right;
+                                padding: 0.5rem 0;
+                                border: none !important;
+                                border-bottom: 1px solid #f6f6f6 !important;
+                            }
+
+                            #itemsTable td:last-child {
+                                border-bottom: none !important;
+                            }
+
+                            #itemsTable td::before {
+                                content: attr(data-label);
+                                font-weight: 600;
+                                color: #2a3547;
+                                text-align: left;
+                                margin-right: 1rem;
+                                flex-shrink: 0;
+                            }
+
+                            #itemsTable td[data-label="Actions"] {
+                                justify-content: flex-end;
+                            }
+
+                            #itemsTable td[data-label="Photo"] {
+                                justify-content: flex-start;
+                            }
+                            #itemsTable td[data-label="Photo"]::before {
+                                display: none;
                             }
                         }
                     </style>
