@@ -290,6 +290,7 @@
 
                             #itemsTable {
                                 table-layout: auto !important;
+                                min-width: 0 !important;
                             }
 
                             #itemsTable thead {
