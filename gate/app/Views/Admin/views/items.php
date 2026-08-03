@@ -553,13 +553,29 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('#itemsTable [data-bs-toggle="dropdown"]').forEach(function (el) {
+                const menu = el.nextElementSibling;
+                let originalParent = null;
+                let originalNextSibling = null;
+
                 const dropdown = new bootstrap.Dropdown(el, {
                     popperConfig: { strategy: 'fixed' }
                 });
 
                 el.addEventListener('shown.bs.dropdown', function () {
-                    const menu = el.nextElementSibling;
-                    if (menu) menu.style.zIndex = 99999;
+                    originalParent = menu.parentNode;
+                    originalNextSibling = menu.nextSibling;
+                    document.body.appendChild(menu);
+                    menu.style.zIndex = 99999;
+                });
+
+                el.addEventListener('hidden.bs.dropdown', function () {
+                    if (originalParent) {
+                        if (originalNextSibling) {
+                            originalParent.insertBefore(menu, originalNextSibling);
+                        } else {
+                            originalParent.appendChild(menu);
+                        }
+                    }
                 });
             });
         });
