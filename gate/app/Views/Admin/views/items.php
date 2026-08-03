@@ -335,7 +335,9 @@
                             }
                         }
                     </style>
-
+                    <div id="stickyScrollTrack" style="overflow-x: auto; overflow-y: hidden; height: 14px; margin-bottom: 4px; position: sticky; top: 0; z-index: 10; background: #fff;">
+                        <div id="stickyScrollDummy" style="height: 1px;"></div>
+                    </div>
                     <div class="table-scroll-wrapper" style="overflow-x: auto; position: relative;">
                         <table class="table align-middle mb-0 border-light" id="itemsTable" style="table-layout: fixed; width: 100%; min-width: 1250px;">
                             <colgroup>
@@ -476,7 +478,7 @@
                                                         <li>
                                                             <button type="button" class="dropdown-item approve-item py-2" data-bs-toggle="modal" data-bs-target="#approveModal<?= $item['id'] ?>">
                                                                 <div class="d-flex align-items-center">
-                                                                    <div class="icon-box bg-light-success text-success me-3"><i class="ti-id-badge-2"></i></div>
+                                                                    <div class="icon-box bg-light-success text-success me-3"><i class="ti ti-id-badge-2"></i></div>
                                                                     <span class="fw-semibold">Assign</span>
                                                                 </div>
                                                             </button>
@@ -546,4 +548,27 @@
     <?php endforeach; ?>
 <?php endif; ?>
     <script>window.scanApiUrl = "<?= base_url('admin/items/check-latest-scan') ?>";</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const track = document.getElementById('stickyScrollTrack');
+            const dummy = document.getElementById('stickyScrollDummy');
+            const wrapper = document.getElementById('tableScrollWrapper');
+            const table = document.getElementById('itemsTable');
+
+            if (!track || !wrapper || !table) return;
+
+            function syncDummyWidth() {
+                dummy.style.width = table.scrollWidth + 'px';
+            }
+            syncDummyWidth();
+            window.addEventListener('resize', syncDummyWidth);
+
+            track.addEventListener('scroll', () => {
+                wrapper.scrollLeft = track.scrollLeft;
+            });
+            wrapper.addEventListener('scroll', () => {
+                track.scrollLeft = wrapper.scrollLeft;
+            });
+        });
+    </script>
 <?= $this->endSection() ?>
