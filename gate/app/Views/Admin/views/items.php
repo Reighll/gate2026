@@ -273,6 +273,10 @@
                                 background-color: #fff;
                                 z-index: 3;
                             }
+                            #itemsTable thead th.col-id,
+                            #itemsTable thead th.col-actions {
+                                z-index: 4;
+                            }
                         }
 
                         /* ---- Mobile: collapse into stacked cards ---- */
