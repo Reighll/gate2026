@@ -117,3 +117,70 @@ function hideMySkeletons() {
 }
 document.addEventListener("DOMContentLoaded", hideMySkeletons);
 document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
+// ==========================================================================
+// PASSWORD VISIBILITY TOGGLE — delegated on document so it survives
+// htmx swaps regardless of whether the markup lives inside or outside
+// #app-content, and regardless of when it was inserted.
+// ==========================================================================
+if (!window.__passwordToggleDelegated) {
+    window.__passwordToggleDelegated = true;
+
+    document.addEventListener('click', function (e) {
+        // Pattern A: button right after the input (profile, add_guard, edit_* modals)
+        const simpleBtn = e.target.closest('.toggle-password-btn');
+        if (simpleBtn) {
+            const input = simpleBtn.previousElementSibling;
+            const icon = simpleBtn.querySelector('i');
+            if (input && icon) {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                icon.classList.toggle('ti-eye', !isPassword);
+                icon.classList.toggle('ti-eye-off', isPassword);
+            }
+            return;
+        }
+
+        // Pattern B: button inside an input-group (add_student)
+        const groupBtn = e.target.closest('.btn-toggle-pass');
+        if (groupBtn) {
+            const inputGroup = groupBtn.closest('.input-group');
+            const input = inputGroup ? inputGroup.querySelector('input') : null;
+            const icon = groupBtn.querySelector('i');
+            if (input && icon) {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                icon.classList.toggle('ti-eye', !isPassword);
+                icon.classList.toggle('ti-eye-off', isPassword);
+            }
+        }
+    });
+}
+// ==========================================================================
+// ADD STUDENT MODAL — email prefix handling, delegated on document.
+// Was previously wrapped in DOMContentLoaded inside add_student.php, which
+// only fires once per hard load and never again after an htmx swap.
+// ==========================================================================
+if (!window.__addStudentEmailDelegated) {
+    window.__addStudentEmailDelegated = true;
+
+    // Strip any typed/pasted "@" and lowercase as the user types
+    document.addEventListener('input', function (e) {
+        if (!e.target || e.target.id !== 'email_prefix') return;
+
+        if (e.target.value.includes('@')) {
+            e.target.value = e.target.value.split('@')[0];
+        }
+        e.target.value = e.target.value.toLowerCase();
+    });
+
+    // Combine prefix + domain into the hidden field right before submit
+    document.addEventListener('submit', function (e) {
+        if (!e.target || e.target.id !== 'addStudentForm') return;
+
+        const emailPrefix = document.getElementById('email_prefix');
+        const fullEmailInput = document.getElementById('full_email');
+        if (emailPrefix && fullEmailInput && emailPrefix.value) {
+            fullEmailInput.value = emailPrefix.value + '@tup.edu.ph';
+        }
+    });
+}
