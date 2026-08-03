@@ -4,7 +4,7 @@
 
             <div class="modal-header bg-primary text-white border-0 rounded-top-4">
                 <h5 class="modal-title fw-bolder d-flex align-items-center mb-0 text-truncate pe-2">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 40px; height: 40px; background-color: rgba(93, 135, 255, 0.15); color: #5d87ff;">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 40px; height: 40px; background-color: #ffffff; color: #5d87ff;">
                         <i class="ti ti-id-badge me-2"></i>
                     </div>
                     Register New Visitor Pass
