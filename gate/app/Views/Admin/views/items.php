@@ -256,7 +256,7 @@
                                 position: sticky;
                                 left: 0;
                                 z-index: 2;
-                                background-color: #fff;
+                                background-color: var(--bs-body-bg);
                                 box-shadow: 2px 0 4px -2px rgba(0,0,0,0.08);
                             }
 
@@ -265,12 +265,12 @@
                                 position: sticky;
                                 right: 0;
                                 z-index: 2;
-                                background-color: #fff;
+                                background-color: var(--bs-body-bg);
                                 box-shadow: -2px 0 4px -2px rgba(0,0,0,0.08);
                             }
 
                             #itemsTable thead th {
-                                background-color: #fff;
+                                background-color: var(--bs-body-bg);
                                 z-index: 3;
                             }
                             #itemsTable thead th.col-id,
@@ -302,20 +302,20 @@
                                 display: grid;
                                 grid-template-columns: 56px 1fr auto;
                                 grid-template-areas:
-            "photo itemname id"
-            "photo studentname studentname"
-            "studentnumber studentnumber studentnumber"
-            "serial serial serial"
-            "registered registered registered"
-            "rfid rfid rfid"
-            "processed processed processed"
-            "status status actions";
+                                    "photo itemname id"
+                                    "photo studentname studentname"
+                                    "studentnumber studentnumber studentnumber"
+                                    "serial serial serial"
+                                    "registered registered registered"
+                                    "rfid rfid rfid"
+                                    "processed processed processed"
+                                    "status status actions";
                                 gap: 0.25rem 0.75rem;
                                 margin-bottom: 1rem;
                                 border: 1px solid #f0f0f0;
                                 border-radius: 14px;
                                 padding: 1rem;
-                                background-color: #fff;
+                                background-color: var(--bs-body-bg);
                                 box-shadow: 0 1px 3px rgba(0,0,0,0.05);
                                 position: static !important;
                             }

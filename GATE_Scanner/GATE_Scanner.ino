@@ -6,17 +6,17 @@
 // --- PRIMARY Wi-Fi & Server ---
 const char* ssid1 = "Nothing Phone (1)";
 const char* pass1 = "password";
-String server1 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
+String server1 = "https://tuptgate.tech/api/scan"; // 
 
 // --- SECONDARY Wi-Fi & Server ---
-const char* ssid2 = "Converge_2.4GHz_5DE7";
-const char* pass2 = "HEHEHEHEHE";
-String server2 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
+const char* ssid2 = "Piang";
+const char* pass2 = "piajanejao";
+String server2 = "https://tuptgate.tech/api/scan"; //
 
 // --- TERTIARY Wi-Fi & Server ---
-const char* ssid3 = "REDMI Turbo 4 Pro";
-const char* pass3 = "12345678";
-String server3 = "https://tuptgate.tech/api/scan"; // <-- CHANGED TO HTTPS
+const char* ssid3 = "UITC_ADMIN";
+const char* pass3 = "UITCP@ss*2025";
+String server3 = "https://tuptgate.tech/api/scan"; //
 
 // This variable will hold whichever server we actually connect to
 String activeServerName = "";
@@ -34,7 +34,7 @@ int lastButtonState = HIGH;
 // --- NON-BLOCKING BEEP VARIABLES ---
 unsigned long beepStartTime = 0;
 bool isBeeping = false;
-const int BEEP_DURATION = 40; // 40ms quick beep for speed!
+const int BEEP_DURATION = 15; // 15ms quick beep for speed!
 
 Unit_UHF_RFID uhf;
 
@@ -48,15 +48,38 @@ bool isDuplicate(String epc) {
     return false;
 }
 
+// Blocking double-beep used for one-off status events (Wi-Fi connect, etc.)
+void doubleBeep() {
+    for (int i = 0; i < 2; i++) {
+        digitalWrite(BUZZER_PIN, LOW);  // Beep ON (active-low)
+        delay(80);
+        digitalWrite(BUZZER_PIN, HIGH); // Beep OFF
+        delay(80);
+    }
+}
+void singleBeep() {
+    digitalWrite(BUZZER_PIN, LOW);  // Beep ON (active-low)
+    delay(120);
+    digitalWrite(BUZZER_PIN, HIGH); // Beep OFF
+}
+
 void setup() {
+    // --- SILENCE THE BUZZER FIRST, BEFORE ANYTHING ELSE ---
+    // This runs as early as code can possibly run. Note: on power-up/reset,
+    // GPIO13 can float or be briefly toggled by the ESP32 boot ROM *before*
+    // this line executes, which is why you may still hear a tiny blip at
+    // power-on even with this here. If that bothers you, add a physical
+    // 10k pull-up resistor from this pin to 3.3V — that keeps the buzzer
+    // definitively OFF during boot, before the firmware ever takes over.
+    pinMode(BUZZER_PIN, OUTPUT_OPEN_DRAIN); // Fixes the 3.3V vs 5V clash
+    digitalWrite(BUZZER_PIN, HIGH);         // HIGH means OFF for a low-level trigger buzzer
+
     Serial.begin(115200);
     delay(2000);
 
-    // --- Initialize Button & Buzzer ---
+    // --- Initialize Button ---
     pinMode(BUTTON_PIN, INPUT_PULLUP);
-    pinMode(BUZZER_PIN, OUTPUT_OPEN_DRAIN); // Fixes the 3.3V vs 5V clash
-    digitalWrite(BUZZER_PIN, HIGH);         // HIGH means OFF for a low-level trigger buzzer
-    
+
     Serial.println("\n--- Gatepass System Initialization ---");
 
     // --- SMART WI-FI FALLBACK ---
@@ -74,6 +97,7 @@ void setup() {
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("\n[SUCCESS] Connected to Primary Wi-Fi!");
         activeServerName = server1;
+        doubleBeep(); // 2x fast buzz on successful connection
     } else {
         Serial.println("\n[FAILED] Primary Wi-Fi not found.");
         Serial.print("Attempting Secondary Wi-Fi: ");
@@ -93,6 +117,7 @@ void setup() {
         if (WiFi.status() == WL_CONNECTED) {
             Serial.println("\n[SUCCESS] Connected to Secondary Wi-Fi!");
             activeServerName = server2;
+            doubleBeep(); // 2x fast buzz on successful connection
         } else {
             Serial.println("\n[FAILED] Secondary Wi-Fi not found.");
             Serial.print("Switching to Tertiary Wi-Fi: ");
@@ -108,6 +133,7 @@ void setup() {
             }
             Serial.println("\n[SUCCESS] Connected to Tertiary Wi-Fi!");
             activeServerName = server3;
+            doubleBeep(); // 2x fast buzz on successful connection
         }
     }
     
