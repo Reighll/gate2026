@@ -424,7 +424,7 @@
                     </style>
 
                     <div class="table-scroll-wrapper" style="max-height: 600px; overflow: auto; position: relative;">
-                        <table class="table align-middle mb-0 border-light" id="itemsTable" style="table-layout: fixed; width: 100%; min-width: 1250px;">
+                        <table class="table align-middle mb-0 border-light" id="itemsTable" style="table-layout: fixed; width: 100%; min-width: 1350px;">
                             <colgroup>
                                 <col class="col-id">
                                 <col class="col-student">
