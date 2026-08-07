@@ -138,63 +138,106 @@ class Dashboard extends BaseController
             // --- STUDENT ITEM CHECK ---
             $itemModel = new StudentItemModel();
             if ($db->fieldExists('rfid', 'student_items')) {
-                $item = $itemModel->where('rfid', $rfid)->first();
+                // A tag can now be shared across multiple "Others" items for the
+                // same student (Personal Computing Device items always stay 1:1
+                // with their own tag, so this will still only ever return one
+                // row for those — this change is a strict superset of the old
+                // ->first() behavior, nothing about single-item tags changes).
+                $matchingItems = $itemModel->where('rfid', $rfid)->findAll();
 
-                if ($item) {
+                if (!empty($matchingItems)) {
                     $studentModel = new StudentModel();
-                    $student = $studentModel->find($item['student_id']);
+                    $anyBroughtToday = false;
+                    $realItemCount = 0;
 
-                    $itemName = $item['brand_model'] ?? $item['name'] ?? 'Item';
-                    $studentName = $student ? ($student['first_name'] . ' ' . $student['last_name']) : 'Unknown Student';
+                    foreach ($matchingItems as $item) {
+                        $student = $studentModel->find($item['student_id']);
+                        $lastStudent = $student;
 
-                    $lastStudent = $student;
+                        // The Item Pass IS the physical shared tag itself, not a
+                        // real item being carried — it only exists to anchor the
+                        // RFID to the student. It should never appear as a
+                        // scanned "item" or produce its own campus log entry.
+                        if (($item['brand_model'] ?? '') === 'Item Pass') {
+                            continue;
+                        }
 
-                    $item['student_first_name']    = $student['first_name'] ?? null;
-                    $item['student_last_name']      = $student['last_name'] ?? null;
-                    $item['student_number']         = $student['student_number'] ?? null;
-                    $item['student_profile_pic']    = $student['profile_pic'] ?? null;
+                        $realItemCount++;
 
-                    if ($item['status'] === 'missing') {
-                        $lastItem = $item;
-                        $scannedItemsList[] = $item;
-                        $errorMessages[] = "MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
-                        continue;
-                    }
+                        $itemName = $item['brand_model'] ?? $item['name'] ?? 'Item';
+                        $studentName = $student ? ($student['first_name'] . ' ' . $student['last_name']) : 'Unknown Student';
 
-                    if ($item['status'] !== 'approved') {
-                        $lastItem = $item;
-                        $scannedItemsList[] = $item;
+                        $item['student_first_name']    = $student['first_name'] ?? null;
+                        $item['student_last_name']      = $student['last_name'] ?? null;
+                        $item['student_number']         = $student['student_number'] ?? null;
+                        $item['student_profile_pic']    = $student['profile_pic'] ?? null;
 
-                        if (in_array($item['status'], ['pending', 'staged'])) {
-                            $warningMessages[] = "NOT YET CLEARED: {$itemName} ({$studentName}) status is '{$item['status']}'.";
+                        // Missing items are always flagged, regardless of the
+                        // "bringing today" toggle — security takes priority
+                        // over that convenience setting.
+                        if ($item['status'] === 'missing') {
+                            $lastItem = $item;
+                            $scannedItemsList[] = $item;
+                            $errorMessages[] = "MISSING DETECTED: {$itemName} ({$studentName}). Please hold item and verify!";
+                            continue;
+                        }
+
+                        // Everything else on a shared tag only gets processed
+                        // if the student actually marked it as bringing today.
+                        // Items without the column yet (pre-migration rows)
+                        // default to treated-as-bringing.
+                        $isBringing = !isset($item['is_bringing']) || (int) $item['is_bringing'] === 1;
+                        if (!$isBringing) {
+                            continue;
+                        }
+                        $anyBroughtToday = true;
+
+                        if ($item['status'] !== 'approved') {
+                            $lastItem = $item;
+                            $scannedItemsList[] = $item;
+
+                            if (in_array($item['status'], ['pending', 'staged'])) {
+                                $warningMessages[] = "NOT YET CLEARED: {$itemName} ({$studentName}) status is '{$item['status']}'.";
+                            } else {
+                                $errorMessages[] = "DENIED: {$itemName} status is '{$item['status']}'.";
+                            }
+                            continue;
+                        }
+
+                        $logModel = new ItemLogModel();
+                        $timestamp = date('Y-m-d H:i:s');
+
+                        if (isset($item['in_campus']) && $item['in_campus'] == 1) {
+                            $itemModel->update($item['id'], ['in_campus' => 0]);
+                            if ($db->tableExists('item_logs')) {
+                                $logModel->insert(['item_id' => $item['id'], 'guard_id' => session()->get('guard_id'), 'action' => 'time_out', 'created_at' => $timestamp]);
+                            }
+                            $successCount++;
+                            $lastAction = 'TIME-OUT';
+                            $item['action_taken'] = 'TIME-OUT';
                         } else {
-                            $errorMessages[] = "DENIED: {$itemName} status is '{$item['status']}'.";
+                            $itemModel->update($item['id'], ['in_campus' => 1]);
+                            if ($db->tableExists('item_logs')) {
+                                $logModel->insert(['item_id' => $item['id'], 'guard_id' => session()->get('guard_id'), 'action' => 'time_in', 'created_at' => $timestamp]);
+                            }
+                            $successCount++;
+                            $lastAction = 'TIME-IN';
+                            $item['action_taken'] = 'TIME-IN';
                         }
-                        continue;
+                        $scannedItemsList[] = $item;
+                        $lastItem = $item;
                     }
 
-                    $logModel = new ItemLogModel();
-                    $timestamp = date('Y-m-d H:i:s');
-
-                    if (isset($item['in_campus']) && $item['in_campus'] == 1) {
-                        $itemModel->update($item['id'], ['in_campus' => 0]);
-                        if ($db->tableExists('item_logs')) {
-                            $logModel->insert(['item_id' => $item['id'], 'guard_id' => session()->get('guard_id'), 'action' => 'time_out', 'created_at' => $timestamp]);
-                        }
-                        $successCount++;
-                        $lastAction = 'TIME-OUT';
-                        $item['action_taken'] = 'TIME-OUT';
-                    } else {
-                        $itemModel->update($item['id'], ['in_campus' => 1]);
-                        if ($db->tableExists('item_logs')) {
-                            $logModel->insert(['item_id' => $item['id'], 'guard_id' => session()->get('guard_id'), 'action' => 'time_in', 'created_at' => $timestamp]);
-                        }
-                        $successCount++;
-                        $lastAction = 'TIME-IN';
-                        $item['action_taken'] = 'TIME-IN';
+                    if ($realItemCount === 0) {
+                        // This student has nothing registered on this tag besides
+                        // the Item Pass itself — nothing to check in/out at all.
+                        $warningMessages[] = "This tag isn't linked to any registered items yet.";
+                    } elseif (!$anyBroughtToday && empty($errorMessages)) {
+                        // Real items exist, but none were marked as bringing
+                        // today — let the guard know the scan didn't silently
+                        // fail, there's just nothing to log for this tap.
+                        $warningMessages[] = "No items marked as 'bringing' for this tag ({$rfid}).";
                     }
-                    $scannedItemsList[] = $item;
-                    $lastItem = $item;
                 } else {
                     $errorMessages[] = "Unrecognized Card ({$rfid})";
                 }
@@ -226,7 +269,11 @@ class Dashboard extends BaseController
         }
 
         // 3. BATCH SUMMARY RESULTS
-        if (count($rfidArray) == 1) {
+        // Note: count($rfidArray) is how many physical tags were scanned, not
+        // how many items got processed — one shared tag can now expand into
+        // several items, so this must also check scannedItemsList before
+        // taking the single-item summary path below.
+        if (count($rfidArray) == 1 && count($scannedItemsList) <= 1) {
 
             if (!empty($warningMessages)) {
                 session()->setFlashdata('scanned_item', $lastItem);

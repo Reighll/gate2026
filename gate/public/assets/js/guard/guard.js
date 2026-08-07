@@ -139,6 +139,35 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
         }, 1000);
     }
+
+    // Manual RFID entry — reuses the same hidden scan form/input, so it goes
+    // through the exact same guard/check-in flow as a real scan. Lives here
+    // (not as an inline <script> in the view) because this file loads from
+    // the persistent Guard layout — an inline script in the page view would
+    // silently never run after an htmx navigation, same issue we hit on the
+    // Admin side.
+    const manualScanBtn = document.getElementById('manualScanBtn');
+    const manualRfidInput = document.getElementById('manualRfidInput');
+
+    if (manualScanBtn && manualRfidInput && rfidInput && hiddenForm) {
+        manualScanBtn.addEventListener('click', function () {
+            const value = manualRfidInput.value.trim();
+            if (!value) {
+                manualRfidInput.focus();
+                return;
+            }
+
+            rfidInput.value = value;
+            hiddenForm.submit();
+        });
+
+        manualRfidInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                manualScanBtn.click();
+            }
+        });
+    }
 });
 
 // Password Toggle (if you have one on this page)

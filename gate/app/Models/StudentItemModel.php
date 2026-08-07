@@ -25,6 +25,7 @@ class StudentItemModel extends Model
         'updated_at',
         'rfid',
         'in_campus',
+        'is_bringing',
         'resolved_at',
         'approved_by',
         'unregistered_by'

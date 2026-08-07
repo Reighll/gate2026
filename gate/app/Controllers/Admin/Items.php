@@ -17,19 +17,8 @@ class Items extends BaseController
 
         // Fetch all items and join with students table to get their names and numbers
         $builder = $db->table('student_items');
-        $builder->select('
-            student_items.*, 
-            students.first_name, 
-            students.last_name, 
-            students.student_number,
-            approver.first_name AS approved_by_first_name,
-            approver.last_name AS approved_by_last_name,
-            unregister_admin.first_name AS unregistered_by_first_name,
-            unregister_admin.last_name AS unregistered_by_last_name
-        ');
+        $builder->select('student_items.*, students.first_name, students.last_name, students.student_number');
         $builder->join('students', 'students.id = student_items.student_id', 'left');
-        $builder->join('admins AS approver', 'approver.id = student_items.approved_by', 'left');
-        $builder->join('admins AS unregister_admin', 'unregister_admin.id = student_items.unregistered_by', 'left');
         $builder->orderBy('student_items.created_at', 'DESC');
 
         $items = $builder->get()->getResultArray();
@@ -75,10 +64,23 @@ class Items extends BaseController
         }
 
         // 3. Check if this RFID tag is already assigned to another Student Item
+        //
+        // Rule: "Personal Computing Device" items always need their own exclusive tag —
+        // never shared, never reused, regardless of student. Every other category
+        // (Others) may share a single tag, but ONLY within the same student (so one
+        // student's misc items can all tap the same card, while a different
+        // student's items never collide with it).
         if ($db->fieldExists('rfid', 'student_items')) {
             $existingItem = $model->where('rfid', $scannedTag)->where('id !=', $id)->first();
+
             if ($existingItem) {
-                return redirect()->back()->with('error', 'This RFID Tag is already assigned to another student item.');
+                $sameStudent  = $existingItem['student_id'] == $item['student_id'];
+                $bothShareable = ($item['category'] ?? '') !== 'Personal Computing Device' && ($existingItem['category'] ?? '') !== 'Personal Computing Device';
+
+                if (!$sameStudent || !$bothShareable) {
+                    return redirect()->back()->with('error', 'This RFID Tag is already assigned to another student item.');
+                }
+                // Otherwise: same student, both non-PC-device categories — allow the shared tag through.
             }
         }
 
@@ -97,9 +99,8 @@ class Items extends BaseController
 
         // 5. Update the item to 'approved' and link the card
         $model->update($id, [
-            'status'      => 'approved',
-            'rfid'        => $scannedTag,
-            'approved_by' => session()->get('admin_id')
+            'status'  => 'approved',
+            'rfid'    => $scannedTag
         ]);
 
         // ==========================================
@@ -111,6 +112,35 @@ class Items extends BaseController
         if ($student && !empty($student['email'])) {
             $itemName = $item['brand_model'] ?? $item['name'] ?? 'Item';
             $this->_sendItemNotification($student['email'], $student['first_name'], $itemName, 'approved');
+        }
+
+        // 5b. CASCADE: this student may have OTHER "Others" items that were
+        // registered before any shared tag existed, so they were correctly
+        // left pending at the time (Student\Items::store() had nothing to
+        // inherit yet). Now that this approval has established a tag, pull
+        // those pending siblings forward too instead of leaving them stuck
+        // pending forever with no way to auto-resolve on their own.
+        if (($item['category'] ?? '') !== 'Personal Computing Device') {
+            $pendingSiblings = $model
+                ->where('student_id', $item['student_id'])
+                ->where('category !=', 'Personal Computing Device')
+                ->where('status', 'pending')
+                ->where('id !=', $id)
+                ->findAll();
+
+            foreach ($pendingSiblings as $sibling) {
+                $model->update($sibling['id'], [
+                    'status'      => 'approved',
+                    'rfid'        => $scannedTag,
+                    'in_campus'   => 0,
+                    'is_bringing' => 1,
+                ]);
+
+                if ($student && !empty($student['email'])) {
+                    $siblingName = $sibling['brand_model'] ?? $sibling['name'] ?? 'Item';
+                    $this->_sendItemNotification($student['email'], $student['first_name'], $siblingName, 'approved');
+                }
+            }
         }
 
         return redirect()->to('/admin/items')->with('success', 'Item approved and linked to RFID Card.');
@@ -135,7 +165,7 @@ class Items extends BaseController
 
         // 1. Unregistration Requests Flow
         if ($action === 'approve_unregister') {
-            $model->update($id, ['status' => 'archived', 'unregistered_by' => session()->get('admin_id')]);
+            $model->update($id, ['status' => 'archived']);
 
             // 📧 Send Unregistered Email
             if ($student && !empty($student['email'])) {
@@ -161,14 +191,6 @@ class Items extends BaseController
 
         // 3. Force Delete
         elseif ($action === 'delete') {
-            $db = \Config\Database::connect();
-            $db->table('item_logs')
-                ->where('item_id', $id)
-                ->update([
-                    'item_name_fallback' => $item['brand_model'],
-                    'serial_fallback'    => $item['serial_number'],
-                ]);
-
             $model->delete($id);
             return redirect()->back()->with('success', 'Item permanently deleted from database.');
         }

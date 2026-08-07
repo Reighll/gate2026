@@ -26,7 +26,9 @@ class Auth extends BaseController
 
         // --- RATE LIMIT: max 5 failed login attempts per 3-minute window, per IP ---
         $cache = \Config\Services::cache();
-        $cacheKey = 'login_attempts_guard_' . $this->request->getIPAddress();
+        // md5() so IPv6 addresses (which contain ':', a reserved cache-key
+        // character) don't throw InvalidArgumentException on every attempt.
+        $cacheKey = 'login_attempts_guard_' . md5($this->request->getIPAddress());
         $record = $cache->get($cacheKey);
         $now = time();
 

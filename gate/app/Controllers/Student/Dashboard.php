@@ -25,10 +25,47 @@ class Dashboard extends BaseController
     // SIDEBAR PAGE VIEWS
     // ==========================================
 
+    /**
+     * Determines whether the student is currently Inside or Outside campus,
+     * based on their most recent item scan. Shared by index() (the status
+     * badge) and registeredItems() (which needs it to lock the bring/leave
+     * toggle — see toggleBringing()'s matching check in Student\Items).
+     */
+    private function getCampusStatus($studentId)
+    {
+        $db = \Config\Database::connect();
+
+        $latestLog = $db->table('item_logs')
+            ->join('student_items', 'student_items.id = item_logs.item_id')
+            ->where('student_items.student_id', $studentId)
+            ->orderBy('item_logs.created_at', 'DESC')
+            ->get()
+            ->getRowArray();
+
+        $campusStatus = 'Outside Campus';
+        $badgeClass   = 'bg-light-danger text-danger';
+        $isInside     = false;
+
+        if ($latestLog) {
+            $action = strtolower($latestLog['action'] ?? $latestLog['status'] ?? '');
+
+            if (in_array($action, ['time_in', 'in', 'time in', 'entered', '1'])) {
+                $campusStatus = 'Inside Campus';
+                $badgeClass   = 'bg-light-success text-success';
+                $isInside     = true;
+            }
+        }
+
+        return [
+            'status'    => $campusStatus,
+            'badgeClass'=> $badgeClass,
+            'isInside'  => $isInside,
+        ];
+    }
+
     public function index()
     {
         $session = session();
-        log_message('error', 'DASHBOARD HIT - studentId=' . ($session->get('student_id') ?? 'NULL') . ' time=' . date('H:i:s'));
         $studentModel = new StudentModel();
 
         // 1. Get the logged-in student's ID
@@ -50,47 +87,16 @@ class Dashboard extends BaseController
         }
 
         // 3. Check Campus Status logic
-        $db = \Config\Database::connect();
-
-        // Find the most recent log for any item owned by this student
-        $latestLog = $db->table('item_logs')
-            ->join('student_items', 'student_items.id = item_logs.item_id')
-            ->where('student_items.student_id', $studentId)
-            ->orderBy('item_logs.created_at', 'DESC')
-            ->get()
-            ->getRowArray();
-
-        // Default properties for Outside Campus
-        $campusStatus = 'Outside Campus';
-        $badgeClass   = 'bg-light-danger text-danger';
-
-        if ($latestLog) {
-            // Check the action/status of the latest log.
-            $action = strtolower($latestLog['action'] ?? $latestLog['status'] ?? '');
-
-            // Adjust 'time_in' to match whatever string you save in the database when they enter
-            if (in_array($action, ['time_in', 'in', 'time in', 'entered', '1'])) {
-                $campusStatus = 'Inside Campus';
-                $badgeClass   = 'bg-light-success text-success';
-            }
-        }
+        $campus = $this->getCampusStatus($studentId);
 
         // 4. Pass everything to the view
         $data = [
             'title'          => 'Student Dashboard',
             'student'        => $student,     // This passes first_name, last_name, etc. safely
-            'campusStatus'   => $campusStatus,
-            'badgeClass'     => $badgeClass,
+            'campusStatus'   => $campus['status'],
+            'badgeClass'     => $campus['badgeClass'],
             'showTermsModal' => empty($student['terms_accepted'])
         ];
-        /**
-         * This page's content depends on session/account state (terms acceptance,
-         * campus status), so it must never be served from browser cache or bfcache —
-         * otherwise a different account can see a stale snapshot of someone else's state.
-         */
-
-        $this->response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-        $this->response->setHeader('Pragma', 'no-cache');
 
         return view('Student/views/dashboard', $data);
     }
@@ -122,7 +128,12 @@ class Dashboard extends BaseController
         $itemModel = new StudentItemModel();
         $items = $itemModel->where('student_id', $student['id'])->findAll();
 
-        return view('Student/views/registered_items', ['items' => $items]);
+        $campus = $this->getCampusStatus($student['id']);
+
+        return view('Student/views/registered_items', [
+            'items'         => $items,
+            'isInsideCampus'=> $campus['isInside'],
+        ]);
     }
 
     public function removeItem()
@@ -227,7 +238,7 @@ class Dashboard extends BaseController
 
             $file->move($uploadPath, $newName);
 
-            // Resize + compress profile image
+            // 🧠 Resize + compress profile image
             try {
                 \Config\Services::image()
                     ->withFile($filepath)
@@ -272,7 +283,7 @@ class Dashboard extends BaseController
 
         session()->set('student_name', $updateData['first_name'] . ' ' . $updateData['last_name']);
         if (isset($updateData['profile_pic'])) {
-            session()->set('student_profile_pic', $updateData['profile_pic']);
+            session()->set('profile_pic', $updateData['profile_pic']);
         }
 
         return redirect()->to('student/profile')->with('success', 'Your profile details have been successfully updated.');

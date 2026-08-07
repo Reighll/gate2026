@@ -29,7 +29,9 @@ class Auth extends BaseController
 
         // --- RATE LIMIT: max 5 failed login attempts per 3-minute window, per IP ---
         $cache = \Config\Services::cache();
-        $cacheKey = 'login_attempts_student_' . $this->request->getIPAddress();
+        // md5() so IPv6 addresses (which contain ':', a reserved cache-key
+        // character) don't throw InvalidArgumentException on every attempt.
+        $cacheKey = 'login_attempts_student_' . md5($this->request->getIPAddress());
         $record = $cache->get($cacheKey);
         $now = time();
 
@@ -58,7 +60,7 @@ class Auth extends BaseController
                 'student_id'         => $student['id'],
                 'student_name'       => $student['first_name'] . ' ' . $student['last_name'],
                 'student_number'     => $student['student_number'],
-                'student_profile_pic'      => $student['profile_pic'],
+                'profile_pic'      => $student['profile_pic'],
                 'student_logged_in'  => true,
             ];
             session()->set($sessionData);
@@ -198,6 +200,27 @@ class Auth extends BaseController
                 'is_verified'  => 1,
                 'verify_token' => null
             ]);
+
+            // Auto-create the student's "Item Pass" — the Others-category item
+            // that establishes their shared RFID tag once the admin approves it
+            // in person. Guarded against duplicates in case this ever runs twice.
+            $itemModel = new \App\Models\StudentItemModel();
+            $alreadyHasPass = $itemModel
+                ->where('student_id', $student['id'])
+                ->where('brand_model', 'Item Pass')
+                ->first();
+
+            if (!$alreadyHasPass) {
+                $itemModel->insert([
+                    'student_id'    => $student['id'],
+                    'category'      => 'Others',
+                    'brand_model'   => 'Item Pass',
+                    'serial_number' => 'PASS-' . $student['student_number'],
+                    'photo'         => '',
+                    'status'        => 'pending',
+                    'is_bringing'   => 1,
+                ]);
+            }
 
             return redirect()->to('student/login')->with('success', 'Your email has been successfully verified! You may now log in.');
         }
