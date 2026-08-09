@@ -154,11 +154,19 @@ class Dashboard extends BaseController
                         $student = $studentModel->find($item['student_id']);
                         $lastStudent = $student;
 
-                        // The Item Pass IS the physical shared tag itself, not a
-                        // real item being carried — it only exists to anchor the
-                        // RFID to the student. It should never appear as a
-                        // scanned "item" or produce its own campus log entry.
+                        // The Item Pass IS the physical shared tag itself — it never appears
+                        // in scan messaging or counts toward "no items marked as bringing."
+                        // But it's the one thing that always crosses the gate with the
+                        // student, so its own in_campus flag is the ground truth for whether
+                        // the student is currently on campus, independent of whatever real
+                        // items are or aren't marked "bringing" today. Flip it silently,
+                        // every tap, no exceptions, no log row.
                         if (($item['brand_model'] ?? '') === 'Item Pass') {
+                            if (isset($item['in_campus']) && $item['in_campus'] == 1) {
+                                $itemModel->update($item['id'], ['in_campus' => 0]);
+                            } else {
+                                $itemModel->update($item['id'], ['in_campus' => 1]);
+                            }
                             continue;
                         }
 
@@ -249,10 +257,8 @@ class Dashboard extends BaseController
         if ($newVisitorRfid !== null) {
             session()->setFlashdata('visitor_rfid', $newVisitorRfid);
 
-            if (!empty($scannedItemsList) && $lastStudent) {
-                if (count($scannedItemsList) === 1) {
-                    session()->setFlashdata('scanned_item', $scannedItemsList[0]);
-                } else {
+            if ($lastStudent) {
+                if (!empty($scannedItemsList)) {
                     session()->setFlashdata('scanned_items', $scannedItemsList);
                 }
                 session()->setFlashdata('scanned_student', $lastStudent);

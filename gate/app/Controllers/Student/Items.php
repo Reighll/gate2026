@@ -234,19 +234,16 @@ class Items extends BaseController
      */
     private function isStudentInsideCampus($studentId)
     {
-        $db = \Config\Database::connect();
+        $model = new StudentItemModel();
 
-        $latestLog = $db->table('item_logs')
-            ->join('student_items', 'student_items.id = item_logs.item_id')
-            ->where('student_items.student_id', $studentId)
-            ->orderBy('item_logs.created_at', 'DESC')
-            ->get()
-            ->getRowArray();
+        $pass = $model->where('student_id', $studentId)
+            ->where('brand_model', 'Item Pass')
+            ->where('status', 'approved')
+            ->first();
 
-        if (!$latestLog) return false;
+        if (!$pass) return false;
 
-        $action = strtolower($latestLog['action'] ?? $latestLog['status'] ?? '');
-        return in_array($action, ['time_in', 'in', 'time in', 'entered', '1']);
+        return (int) ($pass['in_campus'] ?? 0) === 1;
     }
 
     /**

@@ -339,6 +339,28 @@ $slideIn = (strpos($referrer, 'profile') !== false);
                                 </div>
                             <?php endif; ?>
 
+                        <?php elseif ($scannedStudent): ?>
+
+                            <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4">
+                                <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
+                                    <img src="<?= base_url('uploads/profiles/' . esc($scannedStudent['profile_pic'] ?? 'default.png')) ?>"
+                                         alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm"
+                                         style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
+                                    <div class="d-flex flex-column">
+                                        <span class="text-uppercase fw-bold text-primary">
+                                            <?= esc(trim(($scannedStudent['first_name'] ?? '') . ' ' . ($scannedStudent['last_name'] ?? ''))) ?>
+                                        </span>
+                                        <span class="text-uppercase text-muted small mt-1">
+                                            <?= esc($scannedStudent['student_number'] ?? 'NO ID') ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="alert alert-secondary py-2 px-3 mb-0 d-flex align-items-center shadow-sm">
+                                    <i class="ti ti-info-circle me-2"></i>
+                                    <span class="fw-bold text-uppercase small">No items marked as bringing for this tag</span>
+                                </div>
+                            </div>
+
                         <?php elseif ($departedVisitor): ?>
 
                             <div class="row align-items-center mb-4">

@@ -33,33 +33,19 @@ class Dashboard extends BaseController
      */
     private function getCampusStatus($studentId)
     {
-        $db = \Config\Database::connect();
+        $itemModel = new StudentItemModel();
 
-        $latestLog = $db->table('item_logs')
-            ->join('student_items', 'student_items.id = item_logs.item_id')
-            ->where('student_items.student_id', $studentId)
-            ->orderBy('item_logs.created_at', 'DESC')
-            ->get()
-            ->getRowArray();
+        $pass = $itemModel->where('student_id', $studentId)
+            ->where('brand_model', 'Item Pass')
+            ->where('status', 'approved')
+            ->first();
 
-        $campusStatus = 'Outside Campus';
-        $badgeClass   = 'bg-light-danger text-danger';
-        $isInside     = false;
-
-        if ($latestLog) {
-            $action = strtolower($latestLog['action'] ?? $latestLog['status'] ?? '');
-
-            if (in_array($action, ['time_in', 'in', 'time in', 'entered', '1'])) {
-                $campusStatus = 'Inside Campus';
-                $badgeClass   = 'bg-light-success text-success';
-                $isInside     = true;
-            }
-        }
+        $isInside = $pass && (int) ($pass['in_campus'] ?? 0) === 1;
 
         return [
-            'status'    => $campusStatus,
-            'badgeClass'=> $badgeClass,
-            'isInside'  => $isInside,
+            'status'     => $isInside ? 'Inside Campus' : 'Outside Campus',
+            'badgeClass' => $isInside ? 'bg-light-success text-success' : 'bg-light-danger text-danger',
+            'isInside'   => $isInside,
         ];
     }
 
