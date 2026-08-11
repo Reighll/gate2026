@@ -19,6 +19,7 @@ class Items extends BaseController
         // 2. Validate user input
         $rules = [
             'category'      => 'required',
+            'subcategory'   => 'permit_empty|required_if[category,Personal Computing Device]',
             'brand_model'   => 'required',
             'serial_number' => 'required',
             'photo'         => 'uploaded[photo]|is_image[photo]|max_size[photo,51200]'
@@ -71,6 +72,7 @@ class Items extends BaseController
         $insertData = [
             'student_id'    => session()->get('student_id'),
             'category'      => $category,
+            'subcategory'   => $this->request->getPost('subcategory') ?: null,
             'brand_model'   => $this->request->getPost('brand_model'),
             'serial_number' => $this->request->getPost('serial_number'),
             'photo'         => $photoName,
@@ -173,15 +175,22 @@ class Items extends BaseController
 
         $item = $model->where('id', $id)->where('student_id', session()->get('student_id'))->first();
 
-        if ($item) {
-            $model->update($id, [
-                'status' => 'staged',
-                'reason' => $reason
-            ]);
-            return redirect()->to('student/dashboard')->with('success', 'Unregistration request submitted. Awaiting Admin approval.');
+        if (!$item) {
+            return redirect()->to('student/dashboard')->with('error', 'Item not found.');
         }
 
-        return redirect()->to('student/dashboard')->with('error', 'Item not found.');
+        // The Item Pass is issued to every student as part of the system itself —
+        // it's not something they registered and can't be given up. Blocked here,
+        // not just hidden in the view, in case someone posts to this route directly.
+        if (($item['brand_model'] ?? '') === 'Item Pass') {
+            return redirect()->to('student/dashboard')->with('error', 'The Item Pass cannot be unregistered.');
+        }
+
+        $model->update($id, [
+            'status' => 'staged',
+            'reason' => $reason
+        ]);
+        return redirect()->to('student/dashboard')->with('success', 'Unregistration request submitted. Awaiting Admin approval.');
     }
 
     public function report()

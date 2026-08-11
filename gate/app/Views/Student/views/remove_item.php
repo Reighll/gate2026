@@ -17,7 +17,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                 <?php
                 $approvedItems = array_filter($items, function($item) {
-                    return $item['status'] === 'approved';
+                    return $item['status'] === 'approved' && ($item['brand_model'] ?? '') !== 'Item Pass';
                 });
                 ?>
 

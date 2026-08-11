@@ -28,15 +28,72 @@ window.showInlineAlert = function(message, type = 'danger') {
     }
 };
 
-window.toggleOtherCategory = function(select) {
-    const wrapper = document.getElementById('otherCategoryWrapper');
-    const input = document.getElementById('categoryOtherInput');
-    const isOthers = select.value === 'Others';
+window.handleCategoryChange = function(select) {
+    const category = select.value;
+    const isPCD = category === 'Personal Computing Device';
+    const isOthers = category === 'Others';
 
-    wrapper.classList.toggle('d-none', !isOthers);
-    input.required = isOthers;
-    if (!isOthers) input.value = '';
+    const subWrapper = document.getElementById('subcategoryWrapper');
+    const subSelect = document.getElementById('subcategorySelect');
+
+    subWrapper.classList.toggle('d-none', !isPCD);
+    subSelect.required = isPCD;
+    if (!isPCD) subSelect.value = '';
+
+    applyDetailFieldState(isPCD, isOthers, subSelect.value);
 };
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('categorySelect');
+    if (!categorySelect) return; // form fragment not on this page load
+
+    const subSelect = document.getElementById('subcategorySelect');
+    const category = categorySelect.value;
+    const isPCD = category === 'Personal Computing Device';
+    const isOthers = category === 'Others';
+
+    if (subSelect) {
+        subSelect.required = isPCD;
+    }
+
+    applyDetailFieldState(isPCD, isOthers, subSelect ? subSelect.value : '');
+});
+
+window.handleSubcategoryChange = function(select) {
+    const categorySelect = document.getElementById('categorySelect');
+    const isPCD = categorySelect.value === 'Personal Computing Device';
+    applyDetailFieldState(isPCD, false, select.value);
+};
+
+function applyDetailFieldState(isPCD, isOthers, subcategoryValue) {
+    const detailWrapper = document.getElementById('detailFieldsWrapper');
+    const brandModelLabel = document.getElementById('brandModelLabel');
+    const brandModelInput = document.getElementById('brandModelInput');
+    const serialLabel = document.getElementById('serialNumberLabel');
+    const serialInput = document.getElementById('serialNumberInput');
+    const serialHelp = document.getElementById('serialNumberHelp');
+    const photoInput = document.querySelector('#detailFieldsWrapper input[name="photo"]');
+
+    // Others: fields show as soon as that's picked. PCD: fields wait
+    // until a subcategory is also picked — category alone isn't enough.
+    const showDetails = isOthers || (isPCD && subcategoryValue !== '');
+
+    detailWrapper.classList.toggle('d-none', !showDetails);
+    brandModelInput.required = showDetails;
+    serialInput.required = showDetails;
+    if (photoInput) photoInput.required = showDetails;
+
+    if (isOthers) {
+        brandModelLabel.textContent = 'Item';
+        brandModelInput.placeholder = 'e.g., Umbrella, Backpack, Violin';
+        serialLabel.textContent = 'Unique Identifier';
+        serialHelp.textContent = 'Any distinguishing mark, engraving, or feature that identifies this specific item.';
+    } else if (isPCD) {
+        brandModelLabel.textContent = 'Brand & Model';
+        brandModelInput.placeholder = 'e.g., Acer Predator Helios 300';
+        serialLabel.textContent = 'Unique Identifier/Serial Number';
+        serialHelp.textContent = 'Found on the bottom of laptops or back of devices.';
+    }
+}
 
 window.submitRegistration = async function(e, form) {
     e.preventDefault();

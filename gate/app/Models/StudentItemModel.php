@@ -15,6 +15,7 @@ class StudentItemModel extends Model
     protected $allowedFields    = [
         'student_id',
         'category',
+        'subcategory',
         'brand_model',
         'serial_number',
         'photo',

@@ -71,34 +71,47 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                             <div class="mb-3">
                                 <label class="form-label">Item Category</label>
-                                <select class="form-select" name="category" id="categorySelect" required onchange="window.toggleOtherCategory(this)">
+                                <select class="form-select" name="category" id="categorySelect" required onchange="window.handleCategoryChange(this)">
                                     <option value="" disabled <?= empty(old('category')) ? 'selected' : '' ?>>Select a category...</option>
                                     <option value="Personal Computing Device" <?= old('category') == 'Personal Computing Device' ? 'selected' : '' ?>>Personal Computing Device</option>
                                     <option value="Others" <?= old('category') == 'Others' ? 'selected' : '' ?>>Others</option>
                                 </select>
+                            </div>
 
-                                <div id="otherCategoryWrapper" class="mt-2 <?= old('category') == 'Others' ? '' : 'd-none' ?>">
-                                    <input type="text" class="form-control" name="category_other" id="categoryOtherInput"
-                                           value="<?= old('category_other') ?>" placeholder="Please specify the category"
-                                            <?= old('category') == 'Others' ? 'required' : '' ?>>
+                            <?php
+                            $oldCategory = old('category');
+                            $isPCDOld = $oldCategory === 'Personal Computing Device';
+                            $isOthersOld = $oldCategory === 'Others';
+                            $showDetailsInitially = $isOthersOld || ($isPCDOld && !empty(old('subcategory')));
+                            ?>
+
+                            <div id="subcategoryWrapper" class="mb-3 <?= $isPCDOld ? '' : 'd-none' ?>">
+                                <label class="form-label">Device Type</label>
+                                <select class="form-select" name="subcategory" id="subcategorySelect" onchange="window.handleSubcategoryChange(this)">
+                                    <option value="" disabled <?= empty(old('subcategory')) ? 'selected' : '' ?>>Select a device type...</option>
+                                    <?php foreach (['Laptop', 'Tablet', 'Camera', 'Handheld Gaming Device', 'E-Reader'] as $type): ?>
+                                        <option value="<?= $type ?>" <?= old('subcategory') == $type ? 'selected' : '' ?>><?= $type ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div id="detailFieldsWrapper" class="<?= $showDetailsInitially ? '' : 'd-none' ?>">
+                                <div class="mb-3">
+                                    <label class="form-label" id="brandModelLabel">Brand & Model</label>
+                                    <input type="text" class="form-control" name="brand_model" id="brandModelInput" value="<?= old('brand_model') ?>" placeholder="e.g., Acer Predator Helios 300">
                                 </div>
-                            </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Brand & Model</label>
-                                <input type="text" class="form-control" name="brand_model" value="<?= old('brand_model') ?>" placeholder="e.g., Acer Predator Helios 300" required>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="form-label" id="serialNumberLabel">Unique Identifier/Serial Number</label>
+                                    <input type="text" class="form-control" name="serial_number" id="serialNumberInput" value="<?= old('serial_number') ?>" placeholder="Required for verification">
+                                    <div class="form-text" id="serialNumberHelp">Found on the bottom of laptops or back of devices.</div>
+                                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Serial Number / Unique Identifier</label>
-                                <input type="text" class="form-control" name="serial_number" value="<?= old('serial_number') ?>" placeholder="Required for verification" required>
-                                <div class="form-text">Found on the bottom of laptops or back of devices.</div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label">Item Photo</label>
-                                <input class="form-control" type="file" name="photo" accept="image/*" required>
-                                <div class="form-text text-muted">Max file size: 50MB. Clear photo of the item.</div>
+                                <div class="mb-4">
+                                    <label class="form-label">Item Photo</label>
+                                    <input class="form-control" type="file" name="photo" accept="image/*">
+                                    <div class="form-text text-muted">Max file size: 50MB. Clear photo of the item.</div>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100 py-2 fs-5 fw-bold shadow-sm">Submit Registration</button>
