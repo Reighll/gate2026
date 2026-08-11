@@ -108,15 +108,16 @@ class Dashboard extends BaseController
                                         // LOGGING THE VISITOR OUT
                                         $updateData = ['time_out' => date('Y-m-d H:i:s')];
                                         if (in_array('status', $logFields)) {
-                                            // Change 'outside' to 'completed'
                                             $updateData['status'] = 'completed';
                                         }
 
                                         $db->table('visitor_logs')->where('id', $activeVisit['id'])->update($updateData);
+
+                                        $db->table('visitor_tags')->where($visitorColumn, $rfid)->update(['status' => 'available']);
+
                                         $successCount++;
                                         $isVisitorHandled = true;
 
-                                        // Capture the name AND id photo for the success banner
                                         $lastVisitorName  = $activeVisit['name'] ?? 'Visitor';
                                         $lastVisitorPhoto = $activeVisit['id_photo'] ?? null;
                                     }
@@ -427,6 +428,7 @@ class Dashboard extends BaseController
             if (in_array('status', $logFields)) $insertData['status'] = 'active';
 
             $db->table('visitor_logs')->insert($insertData);
+            $db->table('visitor_tags')->where($tagColumn, $rfid)->update(['status' => 'in_use']);
         }
 
         return redirect()->to('guard/dashboard')->with('success', 'VISITOR LOGGED IN: ' . esc($name));

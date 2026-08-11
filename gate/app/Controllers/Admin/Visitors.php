@@ -151,13 +151,26 @@ class Visitors extends BaseController
     public function forceCheckout($id)
     {
         $logModel = new VisitorLogModel();
+        $tagModel = new VisitorTagModel();
+        $db = \Config\Database::connect();
 
-        // Verify the log exists
-        if ($logModel->find($id)) {
+        $log = $logModel->find($id);
+
+        if ($log) {
             $logModel->update($id, [
                 'time_out' => date('Y-m-d H:i:s'),
-                'status'   => 'checked_out' // Changes it from 'active' to checked out
+                'status'   => 'checked_out'
             ]);
+
+            // Free up the tag now that this visitor has been checked out —
+            // mirrors the normal tap-out flow in Guard\Dashboard::checkIn().
+            $logFields = $db->getFieldNames('visitor_logs');
+            $logRfidColumn = in_array('rfid_uid', $logFields) ? 'rfid_uid' : (in_array('rfid', $logFields) ? 'rfid' : null);
+            $logRfid = $logRfidColumn ? ($log[$logRfidColumn] ?? null) : null;
+
+            if ($logRfid) {
+                $tagModel->where('rfid_uid', $logRfid)->set(['status' => 'available'])->update();
+            }
 
             return redirect()->to('admin/visitors')->with('success', 'Visitor has been manually checked out.');
         }
