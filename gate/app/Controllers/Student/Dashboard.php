@@ -223,12 +223,11 @@ class Dashboard extends BaseController
             $uploadPath = FCPATH . 'uploads/profiles/';
 
             $file->move($uploadPath, $newName);
-
-            // 🧠 Resize + compress profile image
+            $filepath = $uploadPath . $newName;
             try {
                 \Config\Services::image()
                     ->withFile($filepath)
-                    ->resize(300, 300, true, 'auto') // good for avatars
+                    ->resize(300, 300, true, 'auto')
                     ->save($filepath, 75);           // balanced quality
 
                 $updateData['profile_pic'] = $newName;
@@ -269,7 +268,7 @@ class Dashboard extends BaseController
 
         session()->set('student_name', $updateData['first_name'] . ' ' . $updateData['last_name']);
         if (isset($updateData['profile_pic'])) {
-            session()->set('profile_pic', $updateData['profile_pic']);
+            session()->set('student_profile_pic', $updateData['profile_pic']);
         }
 
         return redirect()->to('student/profile')->with('success', 'Your profile details have been successfully updated.');
