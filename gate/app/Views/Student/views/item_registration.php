@@ -28,6 +28,13 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             </div>
 
             <div id="itemRegFormFragment">
+                <style>
+                    #itemRegFormFragment #subcategoryWrapper,
+                    #itemRegFormFragment #detailFieldsWrapper {
+                        transition: max-height 0.3s ease, opacity 0.25s ease;
+                    }
+                </style>
+
                 <div id="alertContainer">
                     <?php if (session()->getFlashdata('error')) : ?>
                         <div class="alert alert-dismissible fade show shadow-sm rounded-3 mb-4 d-flex align-items-center bg-danger-subtle text-danger border border-danger-subtle" role="alert" style="padding: 1rem 1.25rem;">
@@ -83,6 +90,8 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                             $isPCDOld = $oldCategory === 'Personal Computing Device';
                             $isOthersOld = $oldCategory === 'Others';
                             $showDetailsInitially = $isOthersOld || ($isPCDOld && !empty(old('subcategory')));
+
+                            $materialOptions = ['Wooden', 'Plastic', 'Metal', 'Conductive Metal', 'Ceramic', 'Carbon Fiber'];
                             ?>
 
                             <div id="subcategoryWrapper" class="mb-3 <?= $isPCDOld ? '' : 'd-none' ?>">
@@ -103,8 +112,17 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 
                                 <div class="mb-3">
                                     <label class="form-label" id="serialNumberLabel">Unique Identifier/Serial Number</label>
-                                    <input type="text" class="form-control" name="serial_number" id="serialNumberInput" value="<?= old('serial_number') ?>" placeholder="Required for verification">
-                                    <div class="form-text" id="serialNumberHelp">Found on the bottom of laptops or back of devices.</div>
+
+                                    <input type="text" class="form-control <?= $isOthersOld ? 'd-none' : '' ?>" name="serial_number" id="serialNumberInput" value="<?= old('serial_number') ?>" placeholder="Required for verification" <?= $isOthersOld ? 'disabled' : '' ?>>
+
+                                    <select class="form-select <?= $isOthersOld ? '' : 'd-none' ?>" name="serial_number" id="materialSelect" <?= $isOthersOld ? '' : 'disabled' ?>>
+                                        <option value="" disabled <?= empty(old('serial_number')) ? 'selected' : '' ?>>Select a material...</option>
+                                        <?php foreach ($materialOptions as $material): ?>
+                                            <option value="<?= $material ?>" <?= old('serial_number') == $material ? 'selected' : '' ?>><?= $material ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+
+                                    <div class="form-text" id="serialNumberHelp"><?= $isOthersOld ? 'Select the material this item is primarily made of.' : 'Found on the bottom of laptops or back of devices.' ?></div>
                                 </div>
 
                                 <div class="mb-4">
@@ -122,13 +140,4 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
         </div>
     </div>
 
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
-    <script>
-        window.itemRegistrationConfig = {
-            dashboardUrl: '<?= base_url('student/dashboard') ?>'
-        };
-    </script>
-    <script src="<?= base_url('assets/js/student/item-registration.js') ?>"></script>
 <?= $this->endSection() ?>

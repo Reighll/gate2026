@@ -36,7 +36,7 @@ window.handleCategoryChange = function(select) {
     const subWrapper = document.getElementById('subcategoryWrapper');
     const subSelect = document.getElementById('subcategorySelect');
 
-    subWrapper.classList.toggle('d-none', !isPCD);
+    toggleCollapse(subWrapper, isPCD);
     subSelect.required = isPCD;
     if (!isPCD) subSelect.value = '';
 
@@ -55,7 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
         subSelect.required = isPCD;
     }
 
-    applyDetailFieldState(isPCD, isOthers, subSelect ? subSelect.value : '');
+    // false = snap to the correct starting state instantly, no animation,
+    // so a page reload with an old() value doesn't visibly "grow" on load
+    applyDetailFieldState(isPCD, isOthers, subSelect ? subSelect.value : '', false);
 });
 
 window.handleSubcategoryChange = function(select) {
@@ -64,12 +66,105 @@ window.handleSubcategoryChange = function(select) {
     applyDetailFieldState(isPCD, false, select.value);
 };
 
-function applyDetailFieldState(isPCD, isOthers, subcategoryValue) {
+// Animates an element between display:none and its natural height by
+// measuring scrollHeight and transitioning max-height. Skips the
+// animation (and any DOM writes) if the element is already in the
+// requested state, so re-selecting the same option is a no-op.
+function toggleCollapse(el, show, animate = true) {
+    if (!el) return;
+    const isHidden = el.classList.contains('d-none');
+    if (show === !isHidden) return; // already in the requested state
+
+    if (!animate) {
+        el.classList.toggle('d-none', !show);
+        el.style.maxHeight = '';
+        el.style.opacity = '';
+        el.style.overflow = '';
+        return;
+    }
+
+    el.classList.add('field-collapse-animating');
+
+    if (show) {
+        el.classList.remove('d-none');
+        el.style.overflow = 'hidden';
+        el.style.maxHeight = '0px';
+        el.style.opacity = '0';
+        void el.offsetHeight; // force reflow so the transition starts from 0
+        const target = el.scrollHeight;
+        el.style.maxHeight = target + 'px';
+        el.style.opacity = '1';
+        el.addEventListener('transitionend', function handler(e) {
+            if (e.target !== el || e.propertyName !== 'max-height') return;
+            el.style.maxHeight = '';
+            el.style.overflow = '';
+            el.style.opacity = '';
+            el.classList.remove('field-collapse-animating');
+            el.removeEventListener('transitionend', handler);
+        });
+    } else {
+        const startHeight = el.scrollHeight;
+        el.style.overflow = 'hidden';
+        el.style.maxHeight = startHeight + 'px';
+        el.style.opacity = '1';
+        void el.offsetHeight; // force reflow so it animates from the full height, not 0
+        el.style.maxHeight = '0px';
+        el.style.opacity = '0';
+        el.addEventListener('transitionend', function handler(e) {
+            if (e.target !== el || e.propertyName !== 'max-height') return;
+            el.classList.add('d-none');
+            el.style.maxHeight = '';
+            el.style.overflow = '';
+            el.style.opacity = '';
+            el.classList.remove('field-collapse-animating');
+            el.removeEventListener('transitionend', handler);
+        });
+    }
+}
+
+// Crossfades between the free-text serial input (PCD) and the material
+// dropdown (Others) — same slot, so this fades opacity rather than
+// animating height.
+function swapField(showEl, hideEl, animate) {
+    if (!showEl || !hideEl) return;
+    hideEl.disabled = true;
+    showEl.disabled = false;
+
+    if (!animate) {
+        hideEl.classList.add('d-none');
+        showEl.classList.remove('d-none');
+        showEl.style.opacity = '';
+        return;
+    }
+
+    if (hideEl.classList.contains('d-none') && !showEl.classList.contains('d-none')) return; // already swapped
+
+    hideEl.style.transition = 'opacity 0.15s ease';
+    hideEl.style.opacity = '0';
+    setTimeout(function() {
+        hideEl.classList.add('d-none');
+        hideEl.style.transition = '';
+        hideEl.style.opacity = '';
+
+        showEl.classList.remove('d-none');
+        showEl.style.opacity = '0';
+        showEl.style.transition = 'opacity 0.15s ease';
+        void showEl.offsetHeight;
+        showEl.style.opacity = '1';
+        setTimeout(function() {
+            showEl.style.transition = '';
+            showEl.style.opacity = '';
+        }, 160);
+    }, 160);
+}
+
+function applyDetailFieldState(isPCD, isOthers, subcategoryValue, animate = true) {
     const detailWrapper = document.getElementById('detailFieldsWrapper');
     const brandModelLabel = document.getElementById('brandModelLabel');
     const brandModelInput = document.getElementById('brandModelInput');
     const serialLabel = document.getElementById('serialNumberLabel');
     const serialInput = document.getElementById('serialNumberInput');
+    const materialSelect = document.getElementById('materialSelect');
     const serialHelp = document.getElementById('serialNumberHelp');
     const photoInput = document.querySelector('#detailFieldsWrapper input[name="photo"]');
 
@@ -77,16 +172,29 @@ function applyDetailFieldState(isPCD, isOthers, subcategoryValue) {
     // until a subcategory is also picked — category alone isn't enough.
     const showDetails = isOthers || (isPCD && subcategoryValue !== '');
 
-    detailWrapper.classList.toggle('d-none', !showDetails);
+    toggleCollapse(detailWrapper, showDetails, animate);
     brandModelInput.required = showDetails;
-    serialInput.required = showDetails;
     if (photoInput) photoInput.required = showDetails;
+
+    // The "Unique Identifier" slot is either a free-text serial number
+    // (PCD) or a material dropdown (Others) — only one of the two is
+    // ever visible, required, or submitted at a time. Disabling the
+    // hidden one keeps it out of the FormData payload.
+    if (materialSelect) {
+        if (isOthers) {
+            swapField(materialSelect, serialInput, animate);
+        } else {
+            swapField(serialInput, materialSelect, animate);
+        }
+        serialInput.required = showDetails && !isOthers;
+        materialSelect.required = showDetails && isOthers;
+    }
 
     if (isOthers) {
         brandModelLabel.textContent = 'Item';
-        brandModelInput.placeholder = 'e.g., Umbrella, Backpack, Violin';
-        serialLabel.textContent = 'Unique Identifier';
-        serialHelp.textContent = 'Any distinguishing mark, engraving, or feature that identifies this specific item.';
+        brandModelInput.placeholder = 'e.g., Power Tools, Cookware, Heavy Equipment';
+        serialLabel.textContent = 'Material Identifier';
+        serialHelp.textContent = 'Select the material this item is primarily made of.';
     } else if (isPCD) {
         brandModelLabel.textContent = 'Brand & Model';
         brandModelInput.placeholder = 'e.g., Acer Predator Helios 300';

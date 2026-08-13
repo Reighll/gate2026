@@ -28,17 +28,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const x = rect.left + rect.width / 2;
         const y = rect.top + rect.height / 2;
 
-        // Radius big enough to reach the furthest screen corner
+        // Radius that exactly reaches the furthest screen corner —
+        // no padding multiplier, since animating extra unseen pixels
+        // past the corner only adds paint cost for no visual benefit.
         const endRadius = Math.hypot(
             Math.max(x, window.innerWidth - x),
             Math.max(y, window.innerHeight - y)
-        ) * 1.15;
+        );
 
         htmlElement.style.setProperty('--theme-x', `${x}px`);
         htmlElement.style.setProperty('--theme-y', `${y}px`);
         htmlElement.style.setProperty('--theme-r', `${endRadius}px`);
 
-        document.startViewTransition(applyTheme);
+        const transition = document.startViewTransition(applyTheme);
+
+        // The mobile bottom nav / FAB use `transition: all` for their own
+        // normal animations (active-pill expand, tap feedback). That also
+        // catches the background-color/color flip the dark-mode stylesheet
+        // applies on toggle, so without this they'd run their own ~0.4s
+        // transition *at the same time* as the view transition reveal above
+        // — two competing animations fighting for the same frame budget,
+        // which is what was causing the extra lag on mobile specifically
+        // (that nav only exists there). Freeze them for the duration.
+        htmlElement.classList.add('theme-switching');
+        transition.finished.finally(() => {
+            htmlElement.classList.remove('theme-switching');
+        });
     });
 
     function updateIcon(theme) {

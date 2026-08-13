@@ -420,6 +420,35 @@
                                 padding-top: 0.6rem;
                             }
                             #itemsTable td[data-label="Actions"]::before { display: none; }
+
+                            /* ---- Dark mode: these use raw hex above (not
+                               Bootstrap classes), so the global dark-mode
+                               stylesheet's class-based selectors can't
+                               reach them — override explicitly here. ---- */
+                            [data-bs-theme="dark"] #itemsTable td[data-label="Item Name"] {
+                                color: #f1f9ff;
+                            }
+                            [data-bs-theme="dark"] #itemsTable td[data-label="Student Name"] {
+                                color: #a1aab2;
+                            }
+                            [data-bs-theme="dark"] #itemsTable td[data-label="ID"] {
+                                color: #8bb4fa;
+                                background: rgba(139, 180, 250, 0.15);
+                            }
+                        }
+                    </style>
+
+                    <!-- Dark mode: row/thead separators below are set via
+                         inline style="border-bottom: ...", which needs
+                         !important here to win over that inline value.
+                         .table already catches every table on this page
+                         (skeletons, unregister requests, itemsTable). -->
+                    <style>
+                        [data-bs-theme="dark"] .table thead {
+                            border-bottom-color: #4f5467 !important;
+                        }
+                        [data-bs-theme="dark"] .table tbody tr {
+                            border-bottom-color: #4f5467 !important;
                         }
                     </style>
 
@@ -537,7 +566,9 @@
                                         </td>
                                         <td class="col-actions py-3" data-label="Actions">
                                             <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-primary bg-white shadow-sm dropdown-toggle fw-semibold rounded-2 px-3 py-1" style="border-color: #5d87ff; color: #5d87ff;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="btn btn-sm dropdown-toggle fw-semibold rounded-2 px-3 py-1"
+                                                        style="border: 1px solid #5d87ff; color: #5d87ff; background-color: var(--bs-body-bg);"
+                                                        type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                     Actions
                                                 </button>
                                                 <ul class="dropdown-menu custom-dropdown shadow-lg border-0 rounded-4 p-2">

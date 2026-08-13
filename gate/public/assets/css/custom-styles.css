@@ -9,19 +9,19 @@
     min-height: 85px;
     background-color: #2563eb;
     background:
-        linear-gradient(110deg,
-        transparent 65%,
-        rgba(255, 255, 255, 0.08) 65%, rgba(255, 255, 255, 0.08) 72%, /* 7% width */
-        rgba(255, 255, 255, 0.15) 72%, rgba(255, 255, 255, 0.15) 79%, /* 7% width */
-        rgba(255, 255, 255, 0.05) 79%, rgba(255, 255, 255, 0.05) 86%, /* 7% width */
-        transparent 86%
-        ),
-            /* Base: Smooth blue color fade */
-        linear-gradient(110deg,
-        #1e40af 0%,
-        #2563eb 50%,
-        #3b82f6 100%
-        );
+            linear-gradient(110deg,
+            transparent 65%,
+            rgba(255, 255, 255, 0.08) 65%, rgba(255, 255, 255, 0.08) 72%, /* 7% width */
+            rgba(255, 255, 255, 0.15) 72%, rgba(255, 255, 255, 0.15) 79%, /* 7% width */
+            rgba(255, 255, 255, 0.05) 79%, rgba(255, 255, 255, 0.05) 86%, /* 7% width */
+            transparent 86%
+            ),
+                /* Base: Smooth blue color fade */
+            linear-gradient(110deg,
+            #1e40af 0%,
+            #2563eb 50%,
+            #3b82f6 100%
+            );
 
     z-index: 1100;
 }
@@ -206,21 +206,37 @@
     z-index: 2;
     animation: theme-reveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 
-    mask-image: radial-gradient(
-            circle at var(--theme-x, 50%) var(--theme-y, 50%),
-            black calc(var(--wave-r) - 70px),
-            transparent var(--wave-r)
-    );
-    -webkit-mask-image: radial-gradient(
-            circle at var(--theme-x, 50%) var(--theme-y, 50%),
-            black calc(var(--wave-r) - 70px),
-            transparent var(--wave-r)
-    );
+    /* clip-path instead of mask-image: a radial-gradient mask has to be
+       re-rasterized on every animation frame, which is expensive on
+       mobile GPUs/WebViews. clip-path: circle() is a vector shape the
+       browser can animate much more cheaply — same visual reveal,
+       far less per-frame paint cost. */
+    clip-path: circle(var(--wave-r) at var(--theme-x, 50%) var(--theme-y, 50%));
+    -webkit-clip-path: circle(var(--wave-r) at var(--theme-x, 50%) var(--theme-y, 50%));
+}
+
+@media (max-width: 768px) {
+    /* Slightly shorter on mobile: less time spent mid-transition on
+       weaker GPUs, without feeling abrupt. */
+    ::view-transition-new(root) {
+        animation-duration: 0.45s;
+    }
 }
 
 @keyframes theme-reveal {
     from { --wave-r: 0px; }
     to   { --wave-r: var(--theme-r, 150%); }
+}
+
+/* Freeze animations that would otherwise run concurrently with the
+   view-transition reveal above (see theme.js) — mainly the mobile
+   bottom nav's `transition: all`, which fires its own separate
+   background-color/color animation the instant data-bs-theme flips. */
+html.theme-switching .mobile-bottom-nav,
+html.theme-switching .mobile-bottom-nav *,
+html.theme-switching .mobile-fab {
+    transition: none !important;
+    animation: none !important;
 }
 /* ==========================================
    PREVENT HEADER FLICKER DURING PAGE SLIDE TRANSITIONS
