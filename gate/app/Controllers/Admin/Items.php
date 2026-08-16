@@ -17,8 +17,10 @@ class Items extends BaseController
 
         // Fetch all items and join with students table to get their names and numbers
         $builder = $db->table('student_items');
-        $builder->select('student_items.*, students.first_name, students.last_name, students.student_number');
+        $builder->select('student_items.*, students.first_name, students.last_name, students.student_number, approver.first_name AS approved_by_first_name, approver.last_name AS approved_by_last_name, unregisterer.first_name AS unregistered_by_first_name, unregisterer.last_name AS unregistered_by_last_name');
         $builder->join('students', 'students.id = student_items.student_id', 'left');
+        $builder->join('admins AS approver', 'approver.id = student_items.approved_by', 'left');
+        $builder->join('admins AS unregisterer', 'unregisterer.id = student_items.unregistered_by', 'left');
         $builder->orderBy('student_items.created_at', 'DESC');
 
         $items = $builder->get()->getResultArray();
@@ -100,7 +102,8 @@ class Items extends BaseController
         // 5. Update the item to 'approved' and link the card
         $model->update($id, [
             'status'  => 'approved',
-            'rfid'    => $scannedTag
+            'rfid'    => $scannedTag,
+            'approved_by' => session()->get('admin_id')
         ]);
 
         // ==========================================
@@ -134,6 +137,7 @@ class Items extends BaseController
                     'rfid'        => $scannedTag,
                     'in_campus'   => 0,
                     'is_bringing' => 1,
+                    'approved_by' => session()->get('admin_id')
                 ]);
 
                 if ($student && !empty($student['email'])) {
@@ -165,7 +169,10 @@ class Items extends BaseController
 
         // 1. Unregistration Requests Flow
         if ($action === 'approve_unregister') {
-            $model->update($id, ['status' => 'archived']);
+            $model->update($id, [
+                'status' => 'archived',
+                'unregistered_by' => session()->get('admin_id')
+            ]);
 
             // 📧 Send Unregistered Email
             if ($student && !empty($student['email'])) {
