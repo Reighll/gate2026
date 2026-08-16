@@ -3,6 +3,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
 ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Registered Items | Student Portal<?= $this->endSection() ?>
+<?= $this->section('styles') ?>
+    <link rel="stylesheet" href="<?= base_url('assets/css/student/registered-items.css') ?>">
+<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 
     <div class=" page-transition-container pt-5 mt-4">
@@ -148,7 +151,6 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                 </div>
                             </div>
 
-                            <!-- Modal: Item Details / Edit -->
                             <div class="modal fade" id="itemModal<?= $item['id'] ?>" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-lg">
                                     <div class="modal-content border-0 rounded-4 shadow">
@@ -157,75 +159,181 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                 <h5 class="fw-bold mb-0">
                                                     <?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?>
                                                 </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <?php if ($item['status'] === 'pending'): ?>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 d-none" id="cancelBtn<?= $item['id'] ?>"
+                                                                onclick="window.toggleEditMode('<?= $item['id'] ?>')">
+                                                            Cancel
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-3" id="editBtn<?= $item['id'] ?>"
+                                                                onclick="window.toggleEditMode('<?= $item['id'] ?>')">
+                                                            <i class="ti ti-pencil"></i> Edit
+                                                        </button>
+                                                    <?php endif; ?>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
+                                                        <i class="ti ti-x"></i>
+                                                    </button>
+                                                </div>
                                             </div>
 
-                                            <div class="row align-items-center">
-                                                <div class="col-md-5 text-center mb-4 mb-md-0">
-                                                    <?php if (!empty($item['photo'])): ?>
-                                                        <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm" alt="Item Photo" style="max-height: 220px; object-fit: contain;">
-                                                    <?php else: ?>
-                                                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height:180px;">
-                                                            <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
+                                            <div id="modeContainer<?= $item['id'] ?>" class="item-mode-container">
+
+                                                <div id="viewMode<?= $item['id'] ?>" class="item-mode-panel">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-5 text-center mb-4 mb-md-0">
+                                                            <?php if (!empty($item['photo'])): ?>
+                                                                <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" class="img-fluid rounded-3 shadow-sm" alt="Item Photo" style="max-height: 220px; object-fit: contain;">
+                                                            <?php else: ?>
+                                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height:180px;">
+                                                                    <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
+                                                                </div>
+                                                            <?php endif; ?>
                                                         </div>
-                                                    <?php endif; ?>
-                                                </div>
 
-                                                <div class="col-md-7">
-                                                    <?php
-                                                    $badge2 = 'bg-secondary';
-                                                    if ($item['status'] === 'approved') $badge2 = 'bg-success';
-                                                    if ($item['status'] === 'missing') $badge2 = 'bg-danger';
-                                                    if ($item['status'] === 'pending') $badge2 = 'bg-warning text-dark';
-                                                    if ($item['status'] === 'rejected') $badge2 = 'bg-danger';
-                                                    if ($item['status'] === 'staged') $badge2 = 'bg-warning text-dark';
-                                                    if ($item['status'] === 'archived') $badge2 = 'bg-dark';
-                                                    ?>
-                                                    <span class="badge <?= $badge2 ?> px-2 py-1 text-uppercase mb-3 d-inline-block" style="font-size: 0.7rem; letter-spacing: 0.5px;">
-                                                        <?= esc($item['status']) ?>
-                                                    </span>
-
-                                                    <p class="text-muted fw-semibold mb-2">Serial Number: <span class="fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
-                                                    <p class="text-muted fw-semibold mb-2">Category: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
-                                                    <p class="text-muted fw-semibold mb-2">
-                                                        RFID Tag:
-                                                        <?php if ($item['status'] === 'approved' && !empty($item['rfid'])): ?>
-                                                            <span class="fw-normal text-dark"><?= esc($item['rfid']) ?></span>
-                                                        <?php else: ?>
-                                                            <span class="fw-normal text-muted">Unassigned</span>
-                                                        <?php endif; ?>
-                                                    </p>
-                                                    <p class="text-muted fw-semibold mb-3">
-                                                        Campus Status:
-                                                        <span class="fw-normal text-dark">
-                                                            <?= (isset($item['in_campus']) && $item['in_campus'] == 1 && $item['status'] === 'approved') ? 'Inside Campus' : 'Outside Campus' ?>
-                                                        </span>
-                                                    </p>
-
-                                                    <?php if ($item['status'] === 'approved' && ($item['brand_model'] ?? '') !== 'Item Pass'): ?>
-                                                        <p class="text-muted fw-semibold mb-3">
-                                                            Bringing:
-                                                            <span class="fw-normal text-dark">
-                                                                <?= (isset($item['is_bringing']) && (int) $item['is_bringing'] === 1) ? 'Yes' : 'No — left at home' ?>
+                                                        <div class="col-md-7">
+                                                            <?php
+                                                            $badge2 = 'bg-secondary';
+                                                            if ($item['status'] === 'approved') $badge2 = 'bg-success';
+                                                            if ($item['status'] === 'missing') $badge2 = 'bg-danger';
+                                                            if ($item['status'] === 'pending') $badge2 = 'bg-warning text-dark';
+                                                            if ($item['status'] === 'rejected') $badge2 = 'bg-danger';
+                                                            if ($item['status'] === 'staged') $badge2 = 'bg-warning text-dark';
+                                                            if ($item['status'] === 'archived') $badge2 = 'bg-dark';
+                                                            ?>
+                                                            <span class="badge <?= $badge2 ?> px-2 py-1 text-uppercase mb-3 d-inline-block" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                                                                <?= esc($item['status']) ?>
                                                             </span>
-                                                        </p>
-                                                    <?php endif; ?>
 
-                                                    <?php if (!empty($item['notes'])): ?>
-                                                        <h6 class="fw-bold">Notes:</h6>
-                                                        <div class="bg-light rounded-3 p-3 text-muted fst-italic">
-                                                            <?= esc($item['notes']) ?>
+                                                            <p class="text-muted fw-semibold mb-2">Serial Number: <span class="fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
+                                                            <p class="text-muted fw-semibold mb-2">Category: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
+                                                            <p class="text-muted fw-semibold mb-2">
+                                                                RFID Tag:
+                                                                <?php if ($item['status'] === 'approved' && !empty($item['rfid'])): ?>
+                                                                    <span class="fw-normal text-dark"><?= esc($item['rfid']) ?></span>
+                                                                <?php else: ?>
+                                                                    <span class="fw-normal text-muted">Unassigned</span>
+                                                                <?php endif; ?>
+                                                            </p>
+                                                            <p class="text-muted fw-semibold mb-3">
+                                                                Campus Status:
+                                                                <span class="fw-normal text-dark">
+                                                                    <?= (isset($item['in_campus']) && $item['in_campus'] == 1 && $item['status'] === 'approved') ? 'Inside Campus' : 'Outside Campus' ?>
+                                                                </span>
+                                                            </p>
+
+                                                            <?php if ($item['status'] === 'approved' && ($item['brand_model'] ?? '') !== 'Item Pass'): ?>
+                                                                <p class="text-muted fw-semibold mb-3">
+                                                                    Bringing:
+                                                                    <span class="fw-normal text-dark">
+                                                                        <?= (isset($item['is_bringing']) && (int) $item['is_bringing'] === 1) ? 'Yes' : 'No — left at home' ?>
+                                                                    </span>
+                                                                </p>
+                                                            <?php endif; ?>
+
+                                                            <?php if (!empty($item['notes'])): ?>
+                                                                <h6 class="fw-bold">Notes:</h6>
+                                                                <div class="bg-light rounded-3 p-3 text-muted fst-italic">
+                                                                    <?= esc($item['notes']) ?>
+                                                                </div>
+                                                            <?php endif; ?>
+
+                                                            <?php if ($item['status'] === 'missing'): ?>
+                                                                <a href="<?= base_url('student/items/mark-found/' . $item['id']) ?>"
+                                                                   class="btn btn-success w-100 fw-bold py-2 rounded-3 mt-3"
+                                                                   onclick="return confirm('Mark this item as found? This clears the missing alert for guards.');">
+                                                                    <i class="ti ti-circle-check me-1"></i> Mark as Found
+                                                                </a>
+                                                            <?php endif; ?>
                                                         </div>
-                                                    <?php endif; ?>
-
-                                                    <?php if ($item['status'] === 'missing'): ?>
-                                                        <a href="<?= base_url('student/items/mark-found/' . $item['id']) ?>"
-                                                           class="btn btn-success w-100 fw-bold py-2 rounded-3 mt-3"
-                                                           onclick="return confirm('Mark this item as found? This clears the missing alert for guards.');">
-                                                            <i class="ti ti-circle-check me-1"></i> Mark as Found
-                                                        </a>
-                                                    <?php endif; ?>
+                                                    </div>
                                                 </div>
+
+                                                <?php if ($item['status'] === 'pending'): ?>
+                                                    <div id="editMode<?= $item['id'] ?>" class="item-mode-panel d-none">
+                                                        <form id="editForm<?= $item['id'] ?>" action="<?= base_url('student/items/update/' . $item['id']) ?>" method="post" enctype="multipart/form-data" class="bg-light rounded-3 p-3">
+                                                            <?= csrf_field() ?>
+
+                                                            <?php
+                                                            $editIsPCD = ($item['category'] ?? '') === 'Personal Computing Device';
+                                                            $editIsOthers = ($item['category'] ?? '') === 'Others';
+                                                            $editShowDetails = $editIsOthers || ($editIsPCD && !empty($item['subcategory']));
+                                                            ?>
+
+                                                            <div class="text-center mb-3">
+                                                                <div id="photoPlaceholder<?= $item['id'] ?>" class="bg-light border rounded-3 d-flex align-items-center justify-content-center mx-auto <?= !empty($item['photo']) ? 'd-none' : '' ?>" style="height:140px; width:140px;">
+                                                                    <i class="ti ti-device-laptop fs-1 text-muted opacity-50"></i>
+                                                                </div>
+                                                                <img id="photoPreview<?= $item['id'] ?>"
+                                                                     src="<?= !empty($item['photo']) ? base_url('uploads/items/' . esc($item['photo'])) : '' ?>"
+                                                                     data-original-src="<?= !empty($item['photo']) ? base_url('uploads/items/' . esc($item['photo'])) : '' ?>"
+                                                                     class="img-fluid rounded-3 shadow-sm mx-auto d-block <?= empty($item['photo']) ? 'd-none' : '' ?>"
+                                                                     alt="Item Photo" style="max-height: 140px; object-fit: contain;">
+                                                            </div>
+
+                                                            <div class="mb-2">
+                                                                <label class="form-label small fw-semibold mb-1">Category</label>
+                                                                <select class="form-select form-select-sm" name="category" id="editCategory<?= $item['id'] ?>"
+                                                                        onchange="window.handleEditCategoryChange('<?= $item['id'] ?>')">
+                                                                    <option value="Personal Computing Device" <?= $editIsPCD ? 'selected' : '' ?>>Personal Computing Device</option>
+                                                                    <option value="Others" <?= $editIsOthers ? 'selected' : '' ?>>Others</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="mb-2 <?= $editIsPCD ? '' : 'd-none' ?>" id="editSubcategoryWrap<?= $item['id'] ?>">
+                                                                <label class="form-label small fw-semibold mb-1">Device Type</label>
+                                                                <select class="form-select form-select-sm" name="subcategory" id="editSubcategory<?= $item['id'] ?>"
+                                                                        onchange="window.handleEditSubcategoryChange('<?= $item['id'] ?>')" <?= $editIsPCD ? 'required' : '' ?>>
+                                                                    <option value="">Select a device type...</option>
+                                                                    <?php foreach (['Laptop', 'Tablet', 'Camera', 'Handheld Gaming Device', 'E-Reader'] as $type): ?>
+                                                                        <option value="<?= $type ?>" <?= ($item['subcategory'] ?? '') === $type ? 'selected' : '' ?>><?= $type ?></option>
+                                                                    <?php endforeach; ?>
+                                                                </select>
+                                                            </div>
+
+                                                            <div id="editDetailWrap<?= $item['id'] ?>" class="<?= $editShowDetails ? '' : 'd-none' ?>">
+                                                                <div class="mb-2">
+                                                                    <label class="form-label small fw-semibold mb-1" id="editBrandModelLabel<?= $item['id'] ?>">
+                                                                        <?= $editIsOthers ? 'Item' : 'Brand & Model' ?>
+                                                                    </label>
+                                                                    <input type="text" class="form-control form-control-sm" name="brand_model" id="editBrandModelInput<?= $item['id'] ?>"
+                                                                           value="<?= esc(old('brand_model', $item['brand_model'] ?? '')) ?>"
+                                                                           placeholder="<?= $editIsOthers ? 'e.g., Power Tools, Cookware, Heavy Equipment' : 'e.g., Acer Predator Helios 300' ?>" required>
+                                                                </div>
+
+                                                                <div class="mb-2">
+                                                                    <label class="form-label small fw-semibold mb-1" id="editSerialLabel<?= $item['id'] ?>">
+                                                                        <?= $editIsOthers ? 'Material Identifier' : 'Unique Identifier/Serial Number' ?>
+                                                                    </label>
+
+                                                                    <input type="text" class="form-control form-control-sm <?= $editIsOthers ? 'd-none' : '' ?>" name="serial_number" id="editSerialInput<?= $item['id'] ?>"
+                                                                           value="<?= esc(old('serial_number', $item['serial_number'] ?? '')) ?>" <?= $editIsOthers ? 'disabled' : 'required' ?>>
+
+                                                                    <select class="form-select form-select-sm <?= $editIsOthers ? '' : 'd-none' ?>" name="serial_number" id="editMaterialSelect<?= $item['id'] ?>" <?= $editIsOthers ? 'required' : 'disabled' ?>>
+                                                                        <option value="" disabled <?= empty($item['serial_number']) ? 'selected' : '' ?>>Select a material...</option>
+                                                                        <?php foreach (['Wooden', 'Plastic', 'Metal', 'Ceramic', 'Carbon Fiber'] as $material): ?>
+                                                                            <option value="<?= $material ?>" <?= ($item['serial_number'] ?? '') === $material ? 'selected' : '' ?>><?= $material ?></option>
+                                                                        <?php endforeach; ?>
+                                                                    </select>
+
+                                                                    <div class="form-text" id="editSerialHelp<?= $item['id'] ?>" style="font-size: 0.7rem;">
+                                                                        <?= $editIsOthers ? 'Select the material this item is primarily made of.' : 'Found on the bottom of laptops or back of devices.' ?>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label class="form-label small fw-semibold mb-1">Photo</label>
+                                                                    <input type="file" class="form-control form-control-sm" name="photo" accept="image/*"
+                                                                           onchange="window.previewItemPhoto(this, '<?= $item['id'] ?>')">
+                                                                    <div class="form-text" style="font-size: 0.7rem;">Leave blank to keep the current photo.</div>
+                                                                </div>
+                                                            </div>
+
+                                                            <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">Save Changes</button>
+                                                        </form>
+                                                    </div>
+                                                <?php endif; ?>
+
                                             </div>
 
                                         </div>
@@ -239,17 +347,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
             <?php endif; ?>
         </div>
 
-        <script>
-            function hideMySkeletons() {
-                setTimeout(() => {
-                    document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
-                    document.querySelectorAll('.real-wrapper').forEach(el => el.classList.remove('d-none'));
-                }, 600);
-            }
-
-            document.addEventListener("DOMContentLoaded", hideMySkeletons);
-            document.body.addEventListener('htmx:afterSettle', hideMySkeletons);
-        </script>
+        <script src="<?= base_url('assets/js/student/registered-items.js') ?>"></script>
 
     </div>
 

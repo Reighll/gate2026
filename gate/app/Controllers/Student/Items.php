@@ -60,13 +60,6 @@ class Items extends BaseController
         }
 
         // 4. Save to Database
-        //
-        // "Personal Computing Device" items always go through the normal pending
-        // -> admin scan flow, unchanged. "Others" items can skip straight to
-        // approved if this student already has an established shared tag (from
-        // their Item Pass or any other previously-approved Others item) — they
-        // just inherit that same tag. If no shared tag exists yet, it stays
-        // pending exactly like before; there's nothing to auto-attach.
         $category = $this->request->getPost('category');
 
         $insertData = [
@@ -125,7 +118,16 @@ class Items extends BaseController
             return redirect()->to('student/dashboard')->with('error', 'Item not found.');
         }
 
-        $rules = ['serial_number' => 'required'];
+        if ($item['status'] !== 'pending') {
+            return redirect()->to('student/items/registered')->with('error', 'This item can no longer be edited.');
+        }
+
+        $rules = [
+            'category'      => 'required',
+            'subcategory'   => 'permit_empty|required_if[category,Personal Computing Device]',
+            'brand_model'   => 'required',
+            'serial_number' => 'required',
+        ];
         $photo = $this->request->getFile('photo');
         if ($photo && $photo->isValid()) {
             $rules['photo'] = 'is_image[photo]|max_size[photo,51200]';
@@ -136,6 +138,9 @@ class Items extends BaseController
         }
 
         $updateData = [
+            'category'      => $this->request->getPost('category'),
+            'subcategory'   => $this->request->getPost('subcategory') ?: null,
+            'brand_model'   => $this->request->getPost('brand_model'),
             'serial_number' => $this->request->getPost('serial_number'),
         ];
 
@@ -162,7 +167,7 @@ class Items extends BaseController
 
         $model->update($id, $updateData);
 
-        return redirect()->to('student/registered-items')->with('success', 'Item updated successfully.');
+        return redirect()->to('student/items/registered')->with('success', 'Item updated successfully.');
     }
 
     public function requestUnregister($id)
@@ -179,9 +184,6 @@ class Items extends BaseController
             return redirect()->to('student/dashboard')->with('error', 'Item not found.');
         }
 
-        // The Item Pass is issued to every student as part of the system itself —
-        // it's not something they registered and can't be given up. Blocked here,
-        // not just hidden in the view, in case someone posts to this route directly.
         if (($item['brand_model'] ?? '') === 'Item Pass') {
             return redirect()->to('student/dashboard')->with('error', 'The Item Pass cannot be unregistered.');
         }
@@ -235,12 +237,6 @@ class Items extends BaseController
         return redirect()->to('student/dashboard')->with('error', 'Unable to update item status.');
     }
 
-    /**
-     * True only while the student's most recent scan was a time_in with no
-     * time_out after it. Mirrors Student\Dashboard::getCampusStatus() — kept
-     * as its own copy here rather than shared, since these are two separate
-     * controllers and this is a small, self-contained check.
-     */
     private function isStudentInsideCampus($studentId)
     {
         $model = new StudentItemModel();
@@ -255,21 +251,6 @@ class Items extends BaseController
         return (int) ($pass['in_campus'] ?? 0) === 1;
     }
 
-    /**
-     * Flip whether the student is bringing this item onto campus.
-     * Only meaningful for approved items — this is what Guard\Dashboard::checkIn()
-     * checks when multiple items share one RFID tag, so it knows which of them
-     * to actually log for that scan.
-     *
-     * Locked to only be changeable while the student is currently Inside
-     * Campus. Without this: leave an item at school (toggle it off before
-     * exiting, so the exit scan correctly skips it — its in_campus flag
-     * stays "1", correctly still reflecting it's still there), then later
-     * flip it back on from home before actually walking back in. The next
-     * entry scan would then read that item's stale in_campus=1 as a reason
-     * to log a time_out for it — the exact opposite of what's happening.
-     * Restricting changes to while-inside makes that sequence impossible.
-     */
     public function toggleBringing($id)
     {
         if (!session()->get('student_logged_in')) return redirect()->to('student/login');
@@ -285,21 +266,10 @@ class Items extends BaseController
             return redirect()->to('student/items/registered')->with('error', 'Only approved items can be toggled.');
         }
 
-        // The Item Pass IS the shared physical tag — it doesn't make sense to
-        // mark "not bringing" the card itself, so it's always treated as
-        // bringing. Blocked here too, not just hidden in the view, in case
-        // someone posts to this route directly.
         if (($item['brand_model'] ?? '') === 'Item Pass') {
             return redirect()->to('student/items/registered')->with('error', 'The Item Pass tag itself cannot be toggled.');
         }
 
-        // Locked only when THIS item is currently recorded as still at school
-        // (in_campus=1) while the student is Outside — that's the one
-        // combination that would create a scan-direction mismatch if the
-        // toggle got flipped back on remotely. An item that's already
-        // in_campus=0 (i.e. it left with the student) stays freely
-        // toggleable no matter where the student currently is, and
-        // everything is freely toggleable while the student is inside.
         $itemStillAtSchool = (int) ($item['in_campus'] ?? 0) === 1;
         if ($itemStillAtSchool && !$this->isStudentInsideCampus(session()->get('student_id'))) {
             return redirect()->to('student/items/registered')->with('error', 'You can only change this once you\'re back inside campus — this item is currently marked as left at school.');
