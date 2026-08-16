@@ -100,8 +100,6 @@ class Items extends BaseController
         }
 
         // 5. Update the item to 'approved' and link the card
-        return redirect()->back()->with('error', 'DEBUG admin_id = ' . var_export(session()->get('admin_id'), true));
-
         $model->update($id, [
             'status'      => 'approved',
             'rfid'        => $scannedTag,
