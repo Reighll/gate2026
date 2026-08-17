@@ -19,24 +19,22 @@ class Items extends BaseController
         // 2. Validate user input
         $rules = [
             'category'      => 'required',
-            'subcategory'   => 'permit_empty|required_if[category,Personal Computing Device]',
+            'subcategory'   => 'permit_empty',
             'brand_model'   => 'required',
             'serial_number' => 'required',
-            'photo'         => 'uploaded[photo]|is_image[photo]|max_size[photo,51200]'
         ];
+        $photo = $this->request->getFile('photo');
+        if ($photo && $photo->isValid()) {
+            $rules['photo'] = 'is_image[photo]|max_size[photo,51200]';
+        }
 
         if (!$this->validate($rules)) {
-            $errorString = implode('<br>', $this->validator->getErrors());
+            return redirect()->back()->with('error', implode('<br>', $this->validator->getErrors()));
+        }
 
-            // THE FIX: Respond with clean JSON if the background script is listening
-            if ($this->request->isAJAX()) {
-                return $this->response->setJSON([
-                    'status' => 'error',
-                    'message' => $errorString
-                ]);
-            }
-
-            return redirect()->to('student/dashboard')->withInput()->with('error', $errorString);
+        if ($this->request->getPost('category') === 'Personal Computing Device'
+            && empty($this->request->getPost('subcategory'))) {
+            return redirect()->back()->with('error', 'Device Type is required for Personal Computing Devices.');
         }
 
         // 3. Handle the Image Upload & Compression
