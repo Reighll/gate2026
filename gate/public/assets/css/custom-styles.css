@@ -206,18 +206,11 @@
     z-index: 2;
     animation: theme-reveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 
-    /* clip-path instead of mask-image: a radial-gradient mask has to be
-       re-rasterized on every animation frame, which is expensive on
-       mobile GPUs/WebViews. clip-path: circle() is a vector shape the
-       browser can animate much more cheaply — same visual reveal,
-       far less per-frame paint cost. */
     clip-path: circle(var(--wave-r) at var(--theme-x, 50%) var(--theme-y, 50%));
     -webkit-clip-path: circle(var(--wave-r) at var(--theme-x, 50%) var(--theme-y, 50%));
 }
 
 @media (max-width: 768px) {
-    /* Slightly shorter on mobile: less time spent mid-transition on
-       weaker GPUs, without feeling abrupt. */
     ::view-transition-new(root) {
         animation-duration: 0.45s;
     }
@@ -228,10 +221,6 @@
     to   { --wave-r: var(--theme-r, 150%); }
 }
 
-/* Freeze animations that would otherwise run concurrently with the
-   view-transition reveal above (see theme.js) — mainly the mobile
-   bottom nav's `transition: all`, which fires its own separate
-   background-color/color animation the instant data-bs-theme flips. */
 html.theme-switching .mobile-bottom-nav,
 html.theme-switching .mobile-bottom-nav *,
 html.theme-switching .mobile-fab {

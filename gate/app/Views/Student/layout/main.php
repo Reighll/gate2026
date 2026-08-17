@@ -111,13 +111,6 @@
 </script>
 <script src="<?= base_url('assets/js/student/student-app.js') ?>"></script>
 <script>
-    // Needed globally, not just on the item-registration page itself:
-    // the mobile FAB opens this form inside a modal via
-    // hx-select="#itemRegFormFragment", which pulls the form markup
-    // out of item_registration.php's response but leaves its
-    // <?= $this->section('scripts') ?> block behind. So this config +
-    // the item-registration.js include below have to live here instead,
-    // where every page (including the dashboard the FAB sits on) loads them.
     window.itemRegistrationConfig = {
         dashboardUrl: '<?= base_url('student/dashboard') ?>'
     };

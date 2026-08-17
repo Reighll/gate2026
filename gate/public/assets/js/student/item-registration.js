@@ -1,16 +1,3 @@
-/**
- * Item Registration page: inline alert helper, the "Others" category
- * text-field toggle, and the AJAX form submit that closes whichever
- * container it was opened in (modal or standalone sheet) and hands off
- * to the dashboard with a success banner.
- *
- * Requires window.itemRegistrationConfig.dashboardUrl to be set by
- * item_registration.php before this file loads.
- *
- * (The skeleton-hider that used to live in this page's own <script>
- * block has been removed — it's a duplicate of the one already global
- * in student-app.js.)
- */
 window.showInlineAlert = function(message, type = 'danger') {
     const alertContainer = document.getElementById('alertContainer');
     if (alertContainer) {
@@ -55,8 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
         subSelect.required = isPCD;
     }
 
-    // false = snap to the correct starting state instantly, no animation,
-    // so a page reload with an old() value doesn't visibly "grow" on load
     applyDetailFieldState(isPCD, isOthers, subSelect ? subSelect.value : '', false);
 });
 
@@ -66,10 +51,6 @@ window.handleSubcategoryChange = function(select) {
     applyDetailFieldState(isPCD, false, select.value);
 };
 
-// Animates an element between display:none and its natural height by
-// measuring scrollHeight and transitioning max-height. Skips the
-// animation (and any DOM writes) if the element is already in the
-// requested state, so re-selecting the same option is a no-op.
 function toggleCollapse(el, show, animate = true) {
     if (!el) return;
     const isHidden = el.classList.contains('d-none');
@@ -122,9 +103,6 @@ function toggleCollapse(el, show, animate = true) {
     }
 }
 
-// Crossfades between the free-text serial input (PCD) and the material
-// dropdown (Others) — same slot, so this fades opacity rather than
-// animating height.
 function swapField(showEl, hideEl, animate) {
     if (!showEl || !hideEl) return;
     hideEl.disabled = true;
@@ -168,18 +146,12 @@ function applyDetailFieldState(isPCD, isOthers, subcategoryValue, animate = true
     const serialHelp = document.getElementById('serialNumberHelp');
     const photoInput = document.querySelector('#detailFieldsWrapper input[name="photo"]');
 
-    // Others: fields show as soon as that's picked. PCD: fields wait
-    // until a subcategory is also picked — category alone isn't enough.
     const showDetails = isOthers || (isPCD && subcategoryValue !== '');
 
     toggleCollapse(detailWrapper, showDetails, animate);
     brandModelInput.required = showDetails;
     if (photoInput) photoInput.required = showDetails;
 
-    // The "Unique Identifier" slot is either a free-text serial number
-    // (PCD) or a material dropdown (Others) — only one of the two is
-    // ever visible, required, or submitted at a time. Disabling the
-    // hidden one keeps it out of the FormData payload.
     if (materialSelect) {
         if (isOthers) {
             swapField(materialSelect, serialInput, animate);

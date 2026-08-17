@@ -91,7 +91,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                             $isOthersOld = $oldCategory === 'Others';
                             $showDetailsInitially = $isOthersOld || ($isPCDOld && !empty(old('subcategory')));
 
-                            $materialOptions = ['Wooden', 'Plastic', 'Metal', 'Conductive Metal', 'Ceramic', 'Carbon Fiber'];
+                            $materialOptions = ['Wooden', 'Plastic', 'Fabric','Conductive Metal', 'Metal', 'Ceramic', 'Carbon Fiber'];
                             ?>
 
                             <div id="subcategoryWrapper" class="mb-3 <?= $isPCDOld ? '' : 'd-none' ?>">
