@@ -168,6 +168,28 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
+
+    // ==========================================
+    // 3. LOG A VISITOR MODAL
+    // ==========================================
+    // Lives here for the same reason as the manual RFID entry above — an
+    // inline <script> in the dashboard view would silently never run after
+    // an htmx navigation to that page.
+    const visitorLogForm = document.getElementById('visitorLogForm');
+    visitorLogForm?.addEventListener('submit', function(e) {
+        const webcamInput = document.getElementById('webcamPhotoInput')?.value;
+        const manualInput = document.getElementById('manualPhotoInput')?.files.length;
+
+        if (!webcamInput && !manualInput) {
+            e.preventDefault();
+            alert("SECURITY ALERT: An ID Photo is mandatory. Please snap a picture or upload an image before logging this visitor.");
+        }
+    });
+
+    const logVisitorModalEl = document.getElementById('logVisitorModal');
+    if (logVisitorModalEl && logVisitorModalEl.dataset.autoOpen === '1' && window.bootstrap) {
+        bootstrap.Modal.getOrCreateInstance(logVisitorModalEl).show();
+    }
 });
 
 // Password Toggle (if you have one on this page)

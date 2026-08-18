@@ -3,6 +3,9 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Guard/layout/htmx' : 'G
 
 $referrer = service('request')->getHeaderLine('HX-Current-URL');
 $slideIn = (strpos($referrer, 'profile') !== false);
+
+$visitorRfid = session()->getFlashdata('visitor_rfid') ?? '';
+$autoOpenVisitorModal = !empty($visitorRfid);
 ?>
 <?= $this->extend($layout) ?>
 <?= $this->section('title') ?>Scanner | Guard Portal<?= $this->endSection() ?>
@@ -35,34 +38,7 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         <?php endif; ?>
 
         <div class="row g-4 pb-5 skeleton-wrapper">
-            <div class="col-6 col-lg-5">
-                <div class="card shadow-sm border-0 rounded-4 mb-4 h-auto">
-                    <div class="card-body p-3 p-md-4">
-                        <div class="skeleton skeleton-title w-50 mb-4" style="height: 18px;"></div>
-                        <div class="row">
-                            <div class="col-12 col-xl-5 text-center d-flex flex-column mt-2 mt-xl-0">
-                                <div class="skeleton skeleton-text w-50 mb-2 text-start d-none d-xl-block"></div>
-                                <div class="skeleton rounded-3 w-100 mb-3" style="height: 140px;"></div>
-                                <div class="skeleton rounded-2 w-100" style="height: 40px;"></div>
-                            </div>
-                            <div class="col-12 col-xl-7 mt-3 mt-xl-0">
-                                <div class="mb-3"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
-                                <div class="mb-3"><div class="skeleton skeleton-text w-25 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
-                                <div class="mb-4"><div class="skeleton skeleton-text w-50 mb-2"></div><div class="skeleton rounded-2 w-100" style="height: 38px;"></div></div>
-                                <div class="skeleton rounded-2 w-100" style="height: 40px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-body p-3 p-md-4 text-center">
-                        <div class="skeleton skeleton-title w-75 mb-3 mx-auto" style="height: 18px;"></div>
-                        <div class="skeleton w-25 mt-2 mb-0 mx-auto" style="height: 60px;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-7">
+            <div class="col-12">
                 <div class="card shadow-sm border-0 rounded-4 h-100">
                     <div class="card-body p-3 p-md-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -80,82 +56,21 @@ $slideIn = (strpos($referrer, 'profile') !== false);
         </div>
 
         <div class="row g-4 pb-5 real-wrapper d-none">
-            <div class="col-6 col-lg-5">
-                <div class="card shadow-sm border-0 rounded-4 mb-4 h-auto">
-                    <div class="card-body p-3 p-md-4">
-                        <h5 class="guard-card-title">LOG A VISITOR</h5>
-
-                        <form id="visitorLogForm" action="<?= base_url('guard/log-visitor') ?>" method="POST" enctype="multipart/form-data">
-                            <?= csrf_field() ?>
-                            <input type="hidden" name="rfid" value="<?= esc(session()->getFlashdata('visitor_rfid') ?? '') ?>">
-
-                            <div class="row">
-                                <div class="col-12 col-xl-5 text-center d-flex flex-column mt-2 mt-xl-0">
-                                    <label class="form-label small fw-bold text-muted mb-1 text-start d-none d-xl-block">ID Photo:</label>
-
-                                    <div class="image-placeholder-box mb-3 flex-grow-1" id="cameraBox">
-                                        <i class="ti ti-id fs-1 text-muted opacity-50" id="cameraIcon" style="font-size: 5rem !important;"></i>
-                                        <video id="webcamVideo" autoplay playsinline style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"></video>
-                                        <img id="photoPreview" style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2;" />
-                                        <canvas id="photoCanvas" style="display:none;"></canvas>
-
-                                        <button type="button" id="switchCameraBtn" class="camera-switch-overlay" style="display:none;" title="Switch Camera">
-                                            <i class="ti ti-refresh"></i>
-                                        </button>
-                                    </div>
-
-                                    <div class="d-flex flex-column gap-2 mt-auto">
-                                        <button type="button" id="startCameraBtn" class="btn btn-blue w-100 py-2">
-                                            <i class="ti ti-camera me-1"></i> START CAMERA
-                                        </button>
-
-                                        <button type="button" id="takePhotoBtn" class="btn btn-success w-100 py-2 shadow-sm" style="display:none;">
-                                            SNAP PHOTO
-                                        </button>
-
-                                        <button type="button" id="retakePhotoBtn" class="btn btn-warning w-100 py-2" style="display:none;">
-                                            <i class="ti ti-reload me-1"></i> RETAKE
-                                        </button>
-                                    </div>
-                                    <input type="hidden" name="webcam_photo" id="webcamPhotoInput">
-                                </div>
-
-                                <div class="col-12 col-xl-7">
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold text-muted mb-1">Visitor Name:</label>
-                                        <input type="text" class="form-control input-grey" name="visitor_name" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold text-muted mb-1">Purpose:</label>
-                                        <input type="text" class="form-control input-grey" name="purpose" required>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="form-label small fw-bold text-muted mb-1">Items: <span class="fw-normal fst-italic">(Optional)</span></label>
-                                        <input type="text" class="form-control input-grey" name="items" placeholder="">
-                                    </div>
-                                    <button type="submit" class="btn btn-blue w-100 py-2 mb-3 mb-xl-0">LOG VISITOR</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-body p-3 p-md-4 text-center">
-                        <h5 class="guard-card-title mb-0 border-0">VISITOR SLOTS REMAINING:</h5>
-                        <h1 class="display-3 fw-light text-muted mt-2 mb-0" style="font-family: 'Courier New', Courier, monospace; letter-spacing: -2px;">
-                            <?= esc($slotsAvailable ?? 0) ?>
-                        </h1>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-7">
+            <div class="col-12">
                 <div class="card shadow-sm border-0 rounded-4 h-100">
                     <div class="card-body p-3 p-md-4">
 
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                             <h5 class="guard-card-title mb-0">SCANNER</h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-muted small fw-semibold text-uppercase">
+                                    Visitor slots left:
+                                    <span class="fw-bold text-dark"><?= esc($slotsAvailable ?? 0) ?></span>
+                                </span>
+                                <button type="button" class="btn btn-blue btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#logVisitorModal">
+                                    <i class="ti ti-user-plus me-1"></i> Log a Visitor
+                                </button>
+                            </div>
                         </div>
 
                         <form id="hiddenScanForm" action="<?= base_url('guard/check-in') ?>" method="POST" data-check-url="<?= base_url('guard/check-latest-scan') ?>">
@@ -396,18 +311,73 @@ $slideIn = (strpos($referrer, 'profile') !== false);
             </div>
         </div>
     </div>
+
+    <!-- LOG A VISITOR MODAL -->
+    <div class="modal fade" id="logVisitorModal" tabindex="-1" aria-labelledby="logVisitorModalLabel" aria-hidden="true"<?= $autoOpenVisitorModal ? ' data-auto-open="1"' : '' ?>>
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="guard-card-title mb-0" id="logVisitorModalLabel">LOG A VISITOR</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <form id="visitorLogForm" action="<?= base_url('guard/log-visitor') ?>" method="POST" enctype="multipart/form-data">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="rfid" value="<?= esc($visitorRfid) ?>">
+
+                        <div class="row">
+                            <div class="col-12 col-xl-5 text-center d-flex flex-column mt-2 mt-xl-0">
+                                <label class="form-label small fw-bold text-muted mb-1 text-start d-none d-xl-block">ID Photo:</label>
+
+                                <div class="image-placeholder-box mb-3 flex-grow-1" id="cameraBox">
+                                    <i class="ti ti-id fs-1 text-muted opacity-50" id="cameraIcon" style="font-size: 5rem !important;"></i>
+                                    <video id="webcamVideo" autoplay playsinline style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"></video>
+                                    <img id="photoPreview" style="display:none; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2;" />
+                                    <canvas id="photoCanvas" style="display:none;"></canvas>
+
+                                    <button type="button" id="switchCameraBtn" class="camera-switch-overlay" style="display:none;" title="Switch Camera">
+                                        <i class="ti ti-refresh"></i>
+                                    </button>
+                                </div>
+
+                                <div class="d-flex flex-column gap-2 mt-auto">
+                                    <button type="button" id="startCameraBtn" class="btn btn-blue w-100 py-2">
+                                        <i class="ti ti-camera me-1"></i> START CAMERA
+                                    </button>
+
+                                    <button type="button" id="takePhotoBtn" class="btn btn-success w-100 py-2 shadow-sm" style="display:none;">
+                                        SNAP PHOTO
+                                    </button>
+
+                                    <button type="button" id="retakePhotoBtn" class="btn btn-warning w-100 py-2" style="display:none;">
+                                        <i class="ti ti-reload me-1"></i> RETAKE
+                                    </button>
+                                </div>
+                                <input type="hidden" name="webcam_photo" id="webcamPhotoInput">
+                            </div>
+
+                            <div class="col-12 col-xl-7">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted mb-1">Visitor Name:</label>
+                                    <input type="text" class="form-control input-grey" name="visitor_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted mb-1">Purpose:</label>
+                                    <input type="text" class="form-control input-grey" name="purpose" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label small fw-bold text-muted mb-1">Items: <span class="fw-normal fst-italic">(Optional)</span></label>
+                                    <input type="text" class="form-control input-grey" name="items" placeholder="">
+                                </div>
+                                <button type="submit" class="btn btn-blue w-100 py-2">LOG VISITOR</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-    <script>
-        document.getElementById('visitorLogForm')?.addEventListener('submit', function(e) {
-            const webcamInput = document.getElementById('webcamPhotoInput').value;
-            const manualInput = document.getElementById('manualPhotoInput').files.length;
-
-            if (!webcamInput && manualInput === 0) {
-                e.preventDefault(); // Stop the form from submitting
-                alert("SECURITY ALERT: An ID Photo is mandatory. Please snap a picture or upload an image before logging this visitor.");
-            }
-        });
-    </script>
 <?= $this->endSection() ?>
