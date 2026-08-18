@@ -110,6 +110,7 @@
                                     <th>Visitor</th>
                                     <th>ID Proof</th>
                                     <th>Tag Used</th>
+                                    <th>Items</th>
                                     <th>Time In</th>
                                     <th>Time Out</th>
                                     <th>Status</th>
@@ -134,6 +135,7 @@
                                         <td><div class="skeleton skeleton-badge rounded-pill" style="width: 70px; height: 24px;"></div></td>
                                         <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                         <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                         <td><div class="skeleton skeleton-badge rounded-pill" style="width: 60px; height: 22px;"></div></td>
                                         <td><div class="skeleton skeleton-badge rounded-2" style="width: 110px; height: 30px;"></div></td>
                                     </tr>
@@ -143,7 +145,7 @@
                                 <tbody class="real-wrapper d-none">
                                 <?php if(empty($logs)): ?>
                                     <tr>
-                                        <td colspan="7" class="text-center border-0 py-5">
+                                        <td colspan="8" class="text-center border-0 py-5">
                                             <div class="d-flex flex-column align-items-center justify-content-center text-muted my-3 opacity-75">
                                                 <span class="fw-medium fs-6">No visitor history yet.</span>
                                                 <small class="mt-1">Logs will appear here once visitors are recorded.</small>
@@ -177,6 +179,13 @@
                                                 </div>
                                             </td>
                                             <td data-label="Tag Used"><span class="badge bg-light-secondary text-secondary font-monospace"><?= esc($log['tag_id']) ?></span></td>
+                                            <td data-label="Items">
+                                                <?php if (!empty($log['items'])): ?>
+                                                    <span class="fw-normal fs-2"><?= esc($log['items']) ?></span>
+                                                <?php else: ?>
+                                                    <span class="text-muted small">—</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td data-label="Time In">
                                                 <div class="d-flex flex-column">
                                                     <span class="fw-semibold text-dark"><?= date('h:i A', strtotime($log['time_in'])) ?></span>

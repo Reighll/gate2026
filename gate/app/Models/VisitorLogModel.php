@@ -10,7 +10,7 @@ class VisitorLogModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useTimestamps    = false; // We manage time_in/out manually
+    protected $useTimestamps    = false;
 
     protected $allowedFields    = [
         'name',

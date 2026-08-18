@@ -343,6 +343,7 @@ class Dashboard extends BaseController
         $rfid    = $this->request->getPost('rfid');
         $name    = $this->request->getPost('visitor_name');
         $purpose = $this->request->getPost('purpose');
+        $items   = $this->request->getPost('items');
 
         // 2. VALIDATION: Check if RFID is empty
         if (empty($rfid)) {
@@ -424,6 +425,7 @@ class Dashboard extends BaseController
             ];
 
             if (in_array('tag_id', $logFields)) $insertData['tag_id'] = $passName;
+            if (in_array('items', $logFields)) $insertData['items'] = $items;
             if ($photoName && in_array('id_photo', $logFields)) $insertData['id_photo'] = $photoName;
             if (in_array('status', $logFields)) $insertData['status'] = 'active';
 
