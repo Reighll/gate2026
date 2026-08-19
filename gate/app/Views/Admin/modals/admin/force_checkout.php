@@ -52,7 +52,7 @@
                 document.getElementById('forceCheckoutModalConfirmBtn').setAttribute('href', targetUrl);
 
                 if (targetMessage) {
-                    document.getElementById('forceCheckoutModalMessage').textContent = targetMessage;
+                    document.getElementById('forceCheckoutModalMessage').innerHTML = targetMessage;
                 }
             });
         }

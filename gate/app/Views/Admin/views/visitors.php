@@ -224,17 +224,17 @@
                                             <td data-label="Action">
                                                 <?php if ($isInside): ?>
                                                     <a href="javascript:void(0)"
-                                                       class="btn btn-sm btn-outline-danger shadow-sm me-1"
+                                                       class="btn btn-sm btn-outline-dark shadow-sm me-1"
                                                        data-bs-toggle="modal"
                                                        data-bs-target="#forceCheckoutModal"
                                                        data-bs-url="<?= base_url('admin/visitors/force-checkout/' . $log['id']) ?>"
-                                                       data-bs-message="Force checkout <?= esc($log['name']) ?>? They'll be marked as checked out and their pass freed up.">
+                                                       data-bs-message="Force checkout <strong><?= esc($log['name']) ?></strong>? They'll be marked as checked out and their pass freed up.">
                                                         <i class="ti ti-logout"></i>
                                                     </a>
                                                 <?php endif; ?>
 
                                                 <a href="javascript:void(0)"
-                                                   class="btn btn-sm btn-outline-dark shadow-sm"
+                                                   class="btn btn-sm btn-outline-danger shadow-sm"
                                                    data-bs-toggle="modal"
                                                    data-bs-target="#deleteConfirmModal"
                                                    data-bs-url="<?= base_url('admin/visitors/delete-log/'.$log['id']) ?>"
