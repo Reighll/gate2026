@@ -109,6 +109,49 @@ if (!window.__dashboardFilterDelegated) {
         }
     });
 }
+// ==========================================================================
+// ITEMS TABLE: Actions dropdown reposition fix. The table uses sticky
+// columns + a scrolling wrapper, so Bootstrap's default (non-fixed) popper
+// positioning gets clipped — this reparents the open menu to <body> with
+// position:fixed while it's open, then puts it back on close. Was
+// previously an inline <script> in items.php bound to DOMContentLoaded
+// only, so it silently stopped running after an htmx nav to that page
+// (looked fine only on a hard refresh). Bound to htmx:afterSettle too so
+// it re-initializes on every swap, same as hideMySkeletons below.
+// ==========================================================================
+function initItemsDropdownFix() {
+    document.querySelectorAll('#itemsTable [data-bs-toggle="dropdown"]').forEach(function (el) {
+        const menu = el.nextElementSibling;
+        if (!menu || el.dataset.dropdownFixBound === '1') return;
+        el.dataset.dropdownFixBound = '1';
+
+        let originalParent = null;
+        let originalNextSibling = null;
+
+        bootstrap.Dropdown.getOrCreateInstance(el, {
+            popperConfig: { strategy: 'fixed' }
+        });
+
+        el.addEventListener('shown.bs.dropdown', function () {
+            originalParent = menu.parentNode;
+            originalNextSibling = menu.nextSibling;
+            document.body.appendChild(menu);
+            menu.style.zIndex = 99999;
+        });
+
+        el.addEventListener('hidden.bs.dropdown', function () {
+            if (originalParent) {
+                if (originalNextSibling) {
+                    originalParent.insertBefore(menu, originalNextSibling);
+                } else {
+                    originalParent.appendChild(menu);
+                }
+            }
+        });
+    });
+}
+document.addEventListener('DOMContentLoaded', initItemsDropdownFix);
+document.body.addEventListener('htmx:afterSettle', initItemsDropdownFix);
 function hideMySkeletons() {
     setTimeout(() => {
         document.querySelectorAll('.skeleton-wrapper').forEach(el => el.classList.add('d-none'));
