@@ -52,6 +52,7 @@ class Dashboard extends BaseController
         $lastStudent     = null;
         $lastAction      = '';
         $scannedItemsList = [];
+        $passAction      = null;
 
         // NEW: Track visitor states for the UI messages
         $lastVisitorName  = null;
@@ -168,8 +169,10 @@ class Dashboard extends BaseController
                         if (($item['brand_model'] ?? '') === 'Item Pass') {
                             if (isset($item['in_campus']) && $item['in_campus'] == 1) {
                                 $itemModel->update($item['id'], ['in_campus' => 0]);
+                                $passAction = 'TIME-OUT';
                             } else {
                                 $itemModel->update($item['id'], ['in_campus' => 1]);
+                                $passAction = 'TIME-IN';
                             }
                             continue;
                         }
@@ -288,6 +291,7 @@ class Dashboard extends BaseController
             if (!empty($warningMessages)) {
                 session()->setFlashdata('scanned_item', $lastItem);
                 session()->setFlashdata('scanned_student', $lastStudent);
+                session()->setFlashdata('pass_action', $passAction);
                 return redirect()->to('guard/dashboard')->with('warning', implode('<br>', $warningMessages));
 
             } elseif ($isVisitorHandled && $successCount > 0) {
