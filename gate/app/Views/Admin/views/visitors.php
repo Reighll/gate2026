@@ -223,7 +223,12 @@
                                             </td>
                                             <td data-label="Action">
                                                 <?php if ($isInside): ?>
-                                                    <a href="<?= base_url('admin/visitors/force-checkout/' . $log['id']) ?>" class="btn btn-sm btn-outline-danger shadow-sm me-1" onclick="return confirm('Force checkout this visitor?');">
+                                                    <a href="javascript:void(0)"
+                                                       class="btn btn-sm btn-outline-danger shadow-sm me-1"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#forceCheckoutModal"
+                                                       data-bs-url="<?= base_url('admin/visitors/force-checkout/' . $log['id']) ?>"
+                                                       data-bs-message="Force checkout <?= esc($log['name']) ?>? They'll be marked as checked out and their pass freed up.">
                                                         <i class="ti ti-logout"></i>
                                                     </a>
                                                 <?php endif; ?>
@@ -318,6 +323,7 @@
 
 <?= $this->include('Admin/modals/admin/add_pass') ?>
 <?= $this->include('Admin/modals/admin/delete_confirm') ?>
+<?= $this->include('Admin/modals/admin/force_checkout') ?>
 
     <div class="modal fade" id="idModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
