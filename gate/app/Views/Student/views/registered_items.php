@@ -127,7 +127,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                     $itemStillAtSchool = (int) ($item['in_campus'] ?? 0) === 1;
                                     $toggleLocked = $itemStillAtSchool && empty($isInsideCampus);
                                     ?>
-                                    <?php if ($item['status'] === 'approved' && ($item['brand_model'] ?? '') !== 'Item Pass'): ?>
+                                    <?php if ($item['status'] === 'approved' && ($item['brand_model'] ?? '') !== 'Item Pass' && ($item['category'] ?? '') !== 'Personal Computing Device'): ?>
                                         <form action="<?= base_url('student/items/toggle-bringing/' . $item['id']) ?>" method="POST"
                                               class="mt-2 d-flex align-items-center justify-content-between bg-light rounded-3 px-3 py-2"
                                               onclick="event.stopPropagation();">
@@ -222,7 +222,7 @@ $layout = service('request')->hasHeader('HX-Request') ? 'Student/layout/htmx' : 
                                                                 </span>
                                                             </p>
 
-                                                            <?php if ($item['status'] === 'approved' && ($item['brand_model'] ?? '') !== 'Item Pass'): ?>
+                                                            <?php if ($item['status'] === 'approved' && ($item['brand_model'] ?? '') !== 'Item Pass' && ($item['category'] ?? '') !== 'Personal Computing Device'): ?>
                                                                 <p class="text-muted fw-semibold mb-3">
                                                                     Bringing:
                                                                     <span class="fw-normal text-dark">

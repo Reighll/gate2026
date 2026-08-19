@@ -268,6 +268,10 @@ class Items extends BaseController
             return redirect()->to('student/items/registered')->with('error', 'The Item Pass tag itself cannot be toggled.');
         }
 
+        if (($item['category'] ?? '') === 'Personal Computing Device') {
+            return redirect()->to('student/items/registered')->with('error', 'Personal Computing Device items are always considered bringing and cannot be toggled.');
+        }
+
         $itemStillAtSchool = (int) ($item['in_campus'] ?? 0) === 1;
         if ($itemStillAtSchool && !$this->isStudentInsideCampus(session()->get('student_id'))) {
             return redirect()->to('student/items/registered')->with('error', 'You can only change this once you\'re back inside campus — this item is currently marked as left at school.');
