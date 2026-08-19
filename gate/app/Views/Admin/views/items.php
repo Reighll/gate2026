@@ -238,6 +238,7 @@
                             #itemsTable col.col-number    { width: 130px; }
                             #itemsTable col.col-photo     { width: 80px; }
                             #itemsTable col.col-item      { width: 160px; }
+                            #itemsTable col.col-category  { width: 120px; }
                             #itemsTable col.col-serial    { width: 140px; }
                             #itemsTable col.col-date      { width: 140px; }
                             #itemsTable col.col-rfid      { width: 110px; }
@@ -305,6 +306,7 @@
                                     "photo itemname id"
                                     "photo studentname studentname"
                                     "studentnumber studentnumber studentnumber"
+                                    "category category category"
                                     "serial serial serial"
                                     "registered registered registered"
                                     "rfid rfid rfid"
@@ -365,12 +367,14 @@
 
                             /* ---- Detail rows: label left, value right ---- */
                             #itemsTable td[data-label="Student Number"] { grid-area: studentnumber; }
+                            #itemsTable td[data-label="Category"]       { grid-area: category; }
                             #itemsTable td[data-label="Serial/Brand"]   { grid-area: serial; }
                             #itemsTable td[data-label="Registered On"]  { grid-area: registered; }
                             #itemsTable td[data-label="RFID"]           { grid-area: rfid; }
                             #itemsTable td[data-label="Processed By"]   { grid-area: processed; }
 
                             #itemsTable td[data-label="Student Number"],
+                            #itemsTable td[data-label="Category"],
                             #itemsTable td[data-label="Serial/Brand"],
                             #itemsTable td[data-label="RFID"],
                             #itemsTable td[data-label="Processed By"] {
@@ -460,6 +464,7 @@
                                 <col class="col-number">
                                 <col class="col-photo">
                                 <col class="col-item">
+                                <col class="col-category">
                                 <col class="col-serial">
                                 <col class="col-date">
                                 <col class="col-rfid">
@@ -474,6 +479,7 @@
                                 <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Student Number</th>
                                 <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Photo</th>
                                 <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Item Name</th>
+                                <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Category</th>
                                 <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Serial/Brand</th>
                                 <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">Registered On</th>
                                 <th class="border-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">RFID</th>
@@ -493,6 +499,7 @@
                                     <td><div class="skeleton rounded-3" style="width: 45px; height: 45px;"></div></td>
                                     <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
                                     <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                    <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                     <td><div class="skeleton skeleton-text w-100 mb-0"></div></td>
                                     <td><div class="skeleton skeleton-badge rounded-1" style="width: 80px; height: 24px;"></div></td>
                                     <td><div class="skeleton skeleton-badge rounded-1" style="width: 80px; height: 24px;"></div></td>
@@ -505,7 +512,7 @@
                             <tbody class="real-wrapper d-none">
                             <?php if (empty($items)) : ?>
                                 <tr class="no-data-row">
-                                    <td colspan="11" class="text-center py-5 text-muted">No items found in the system.</td>
+                                    <td colspan="12" class="text-center py-5 text-muted">No items found in the system.</td>
                                 </tr>
                             <?php else : ?>
                                 <?php foreach ($items as $item) : ?>
@@ -525,6 +532,7 @@
                                             <?php endif; ?>
                                         </td>
                                         <td data-label="Item Name" class="py-3 text-muted"><?= esc($item['brand_model'] ?? $item['name'] ?? $item['item_name'] ?? 'Unknown Item') ?></td>
+                                        <td data-label="Category" class="py-3 text-muted"><?= esc($item['category'] ?? 'N/A') ?></td>
                                         <td data-label="Serial/Brand" class="py-3 text-muted"><?= esc($item['serial_number'] ?? 'N/A') ?></td>
                                         <td data-label="Registered On" class="py-3 text-muted">
                                             <?php if (!empty($item['created_at'])): ?>
