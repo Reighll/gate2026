@@ -110,6 +110,9 @@ class Dashboard extends BaseController
                                         if (in_array('status', $logFields)) {
                                             $updateData['status'] = 'completed';
                                         }
+                                        if (in_array('guard_out', $logFields)) {
+                                            $updateData['guard_out'] = session()->get('guard_name');
+                                        }
 
                                         $db->table('visitor_logs')->where('id', $activeVisit['id'])->update($updateData);
 
@@ -428,6 +431,7 @@ class Dashboard extends BaseController
             if (in_array('items', $logFields)) $insertData['items'] = $items;
             if ($photoName && in_array('id_photo', $logFields)) $insertData['id_photo'] = $photoName;
             if (in_array('status', $logFields)) $insertData['status'] = 'active';
+            if (in_array('guard_in', $logFields)) $insertData['guard_in'] = session()->get('guard_name');
 
             $db->table('visitor_logs')->insert($insertData);
             $db->table('visitor_tags')->where($tagColumn, $rfid)->update(['status' => 'in_use']);

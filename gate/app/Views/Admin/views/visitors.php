@@ -113,6 +113,7 @@
                                     <th>Items</th>
                                     <th>Time In</th>
                                     <th>Time Out</th>
+                                    <th>Scanned By</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -136,6 +137,7 @@
                                         <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                         <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
                                         <td><div class="skeleton skeleton-text w-75 mb-0"></div></td>
+                                        <td><div class="skeleton skeleton-text w-50 mb-0"></div></td>
                                         <td><div class="skeleton skeleton-badge rounded-pill" style="width: 60px; height: 22px;"></div></td>
                                         <td><div class="skeleton skeleton-badge rounded-2" style="width: 110px; height: 30px;"></div></td>
                                     </tr>
@@ -145,7 +147,7 @@
                                 <tbody class="real-wrapper d-none">
                                 <?php if(empty($logs)): ?>
                                     <tr>
-                                        <td colspan="8" class="text-center border-0 py-5">
+                                        <td colspan="9" class="text-center border-0 py-5">
                                             <div class="d-flex flex-column align-items-center justify-content-center text-muted my-3 opacity-75">
                                                 <span class="fw-medium fs-6">No visitor history yet.</span>
                                                 <small class="mt-1">Logs will appear here once visitors are recorded.</small>
@@ -200,6 +202,16 @@
                                                     </div>
                                                 <?php else: ?>
                                                     <span class="badge bg-warning">Active</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td data-label="Scanned By">
+                                                <?php if (!empty($log['guard_in'])): ?>
+                                                    <span class="fw-normal fs-2"><?= esc($log['guard_in']) ?></span>
+                                                    <?php if (!empty($log['guard_out']) && $log['guard_out'] !== $log['guard_in']): ?>
+                                                        <div class="text-muted small">Out: <?= esc($log['guard_out']) ?></div>
+                                                    <?php endif; ?>
+                                                <?php else: ?>
+                                                    <span class="text-muted small">—</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td data-label="Status">

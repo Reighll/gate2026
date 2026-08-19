@@ -157,14 +157,20 @@ class Visitors extends BaseController
         $log = $logModel->find($id);
 
         if ($log) {
-            $logModel->update($id, [
+            $updateData = [
                 'time_out' => date('Y-m-d H:i:s'),
                 'status'   => 'checked_out'
-            ]);
+            ];
+
+            $logFields = $db->getFieldNames('visitor_logs');
+            if (in_array('guard_out', $logFields)) {
+                $updateData['guard_out'] = 'Admin (manual)';
+            }
+
+            $logModel->update($id, $updateData);
 
             // Free up the tag now that this visitor has been checked out —
             // mirrors the normal tap-out flow in Guard\Dashboard::checkIn().
-            $logFields = $db->getFieldNames('visitor_logs');
             $logRfidColumn = in_array('rfid_uid', $logFields) ? 'rfid_uid' : (in_array('rfid', $logFields) ? 'rfid' : null);
             $logRfid = $logRfidColumn ? ($log[$logRfidColumn] ?? null) : null;
 

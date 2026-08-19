@@ -9,8 +9,8 @@ const char* pass1 = "password";
 String server1 = "https://tuptgate.tech/api/scan"; // 
 
 // --- SECONDARY Wi-Fi & Server ---
-const char* ssid2 = "Piang";
-const char* pass2 = "piajanejao";
+const char* ssid2 = "Converge_2.4GHz_5DE7";
+const char* pass2 = "HEHEHEHEHE";
 String server2 = "https://tuptgate.tech/api/scan"; //
 
 // --- TERTIARY Wi-Fi & Server ---
