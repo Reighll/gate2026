@@ -53,8 +53,8 @@ class Dashboard extends BaseController
         $lastAction      = '';
         $scannedItemsList = [];
         $passAction      = null;
+        $noItemStudents = [];
 
-        // NEW: Track visitor states for the UI messages
         $lastVisitorName  = null;
         $lastVisitorPhoto = null;
         $isVisitorHandled = false;
@@ -65,6 +65,9 @@ class Dashboard extends BaseController
             if (empty($rfid)) continue;
 
             $isVisitorHandled = false;
+            $tagPassAction = null;
+            $itemsBeforeThisTag = count($scannedItemsList);
+            $studentForThisTag = null;
 
             // --- VISITOR CHECK ---
             // --- VISITOR CHECK ---
@@ -158,6 +161,7 @@ class Dashboard extends BaseController
                     foreach ($matchingItems as $item) {
                         $student = $studentModel->find($item['student_id']);
                         $lastStudent = $student;
+                        $studentForThisTag = $student;
 
                         // The Item Pass IS the physical shared tag itself — it never appears
                         // in scan messaging or counts toward "no items marked as bringing."
@@ -174,6 +178,7 @@ class Dashboard extends BaseController
                                 $itemModel->update($item['id'], ['in_campus' => 1]);
                                 $passAction = 'TIME-IN';
                             }
+                            $tagPassAction = $passAction;
                             continue;
                         }
 
@@ -253,6 +258,9 @@ class Dashboard extends BaseController
                         // fail, there's just nothing to log for this tap.
                         $warningMessages[] = "No items marked as 'bringing' for this tag ({$rfid}).";
                     }
+                    if (count($scannedItemsList) === $itemsBeforeThisTag && $studentForThisTag) {
+                        $noItemStudents[] = ['student' => $studentForThisTag, 'pass_action' => $tagPassAction];
+                    }
                 } else {
                     $errorMessages[] = "Unrecognized Card ({$rfid})";
                 }
@@ -331,8 +339,11 @@ class Dashboard extends BaseController
             }
 
             if (!empty($scannedItemsList) && $lastStudent) {
-                session()->setFlashdata('scanned_items', $scannedItemsList); // <-- CHANGED TO ARRAY
+                session()->setFlashdata('scanned_items', $scannedItemsList);
                 session()->setFlashdata('scanned_student', $lastStudent);
+            }
+            if (!empty($noItemStudents)) {
+                session()->setFlashdata('no_item_students', $noItemStudents);   // NEW
             }
             return redirect()->to('guard/dashboard');
         }
@@ -450,7 +461,7 @@ class Dashboard extends BaseController
         // a poll landing between a scan's redirect and the dashboard's actual
         // page render can silently consume/expire flashdata meant for that page.
         session()->keepFlashdata([
-            'scanned_item', 'scanned_items', 'scanned_student',
+            'scanned_item', 'scanned_items', 'scanned_student', 'pass_action', 'no_item_students',
             'departed_visitor', 'success', 'error', 'warning', 'info', 'visitor_rfid'
         ]);
 

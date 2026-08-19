@@ -254,6 +254,37 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                 </div>
                             <?php endif; ?>
 
+                            <?php $noItemStudents = session()->getFlashdata('no_item_students') ?? []; ?>
+                            <?php foreach ($noItemStudents as $entry): ?>
+                                <?php $nStudent = $entry['student']; $nPassAction = $entry['pass_action']; ?>
+                                <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4">
+                                    <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom">
+                                        <div class="d-flex align-items-center">
+                                            <img src="<?= base_url('uploads/profiles/' . esc($nStudent['profile_pic'] ?? 'default.png')) ?>"
+                                                 alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm"
+                                                 style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
+                                            <div class="d-flex flex-column">
+                                                <span class="text-uppercase fw-bold text-primary">
+                                                    <?= esc(trim(($nStudent['first_name'] ?? '') . ' ' . ($nStudent['last_name'] ?? ''))) ?>
+                                                </span>
+                                                <span class="text-uppercase text-muted small mt-1">
+                                                    <?= esc($nStudent['student_number'] ?? 'NO ID') ?>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <?php if ($nPassAction): ?>
+                                            <span class="badge <?= $nPassAction === 'TIME-IN' ? 'bg-success' : 'bg-secondary' ?> fs-6 px-3 py-2">
+                                                <?= $nPassAction === 'TIME-IN' ? 'TIME IN' : 'TIME OUT' ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="alert alert-secondary py-2 px-3 mb-0 d-flex align-items-center shadow-sm">
+                                        <i class="ti ti-info-circle me-2"></i>
+                                        <span class="fw-bold text-uppercase small">No items marked as bringing for this tag</span>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
                         <?php elseif ($scannedStudent): ?>
                             <?php $passAction = session()->getFlashdata('pass_action'); ?>
                             <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4">
