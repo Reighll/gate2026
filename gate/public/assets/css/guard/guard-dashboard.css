@@ -1,20 +1,30 @@
 /* ==========================================
    CAMERA BOX - ALWAYS A TRUE 1:1 SQUARE
    ========================================== */
-/* .image-placeholder-box sets an explicit height (180px base, 150px on
-   mobile below) — an explicit height always wins over aspect-ratio for
-   that dimension, so without this override the box was never truly
-   square, just "boxy" by coincidence of flex-grow on wide screens.
-   #cameraBox is inside #logVisitorModal, which is a SIBLING of
-   #dashboard-container in the markup (not nested inside it) — so this
-   must stay scoped to the plain ID, not #dashboard-container #cameraBox.
-   An ID selector alone already outweighs the class-based rules below on
-   specificity; !important is added for safety against future edits. */
 #cameraBox {
     height: auto !important;
     aspect-ratio: 1 / 1 !important;
     flex-grow: 0 !important;
     width: 100%;
+}
+
+/* ==========================================
+   LOG A VISITOR MODAL - VISIBLE CLOSE BUTTON
+   ========================================== */
+#logVisitorModal .modal-header {
+    padding-right: 1.25rem;
+}
+#logVisitorModal .btn-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f1f3f8;
+    background-size: 14px;
+    opacity: 1;
+    transition: background-color 0.15s ease-in-out;
+}
+#logVisitorModal .btn-close:hover {
+    background-color: #e3e7f0;
 }
 
 .guard-card-title {
