@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const manualPhotoInput = document.getElementById('manualPhotoInput');
 
     let videoStream = null;
-    let currentFacingMode = 'user';
+    let currentFacingMode = 'environment';
 
     async function initCamera(facingMode) {
         if (videoStream) {
