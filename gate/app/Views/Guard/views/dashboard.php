@@ -11,24 +11,6 @@ $autoOpenVisitorModal = !empty($visitorRfid);
 <?= $this->section('title') ?>Scanner | Guard Portal<?= $this->endSection() ?>
 <?= $this->section('styles') ?>
     <link rel="stylesheet" href="<?= base_url('assets/css/guard/guard-dashboard.css') ?>" />
-    <style>
-        /* Camera box has no intrinsic height of its own — on desktop the
-           two-column layout gives flex-grow-1 room to stretch it tall, but
-           on mobile/tablet (stacked single column) there's no extra space
-           to grow into, so it collapses to the video stream's native 16:9
-           shape. Force a proper square box below the xl breakpoint instead. */
-        #cameraBox {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-        }
-        @media (min-width: 1200px) {
-            #cameraBox {
-                aspect-ratio: auto;
-            }
-        }
-    </style>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
