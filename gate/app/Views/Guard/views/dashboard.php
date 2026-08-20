@@ -129,10 +129,10 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                 <?php $isMissingSingle = (($item['status'] ?? '') === 'missing'); ?>
                                 <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4 <?= $isMissingSingle ? 'bg-danger-subtle border-danger' : '' ?>">
                                     <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
-                                        <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 48px; height: 48px; object-fit: cover; flex-shrink: 0;">
+                                        <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 56px; height: 56px; object-fit: cover; flex-shrink: 0;">
                                         <div class="d-flex flex-column">
-                                            <span class="text-uppercase fw-bold text-primary"><?= esc(trim(($item['student_first_name'] ?? '') . ' ' . ($item['student_last_name'] ?? '')) ?: ($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name'])) ?></span>
-                                            <span class="text-uppercase text-muted small mt-1"><?= esc($item['student_number'] ?? $scannedStudent['student_number'] ?? 'NO ID') ?></span>
+                                            <span class="text-uppercase fw-bold text-primary fs-3"><?= esc(trim(($item['student_first_name'] ?? '') . ' ' . ($item['student_last_name'] ?? '')) ?: ($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name'])) ?></span>
+                                            <span class="text-uppercase text-muted mt-1" style="font-size: 0.95rem;"><?= esc($item['student_number'] ?? $scannedStudent['student_number'] ?? 'NO ID') ?></span>
                                         </div>
                                     </div>
                                     <div class="row align-items-center">
@@ -142,16 +142,16 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                             ?>
                                             <div class="mb-3">
                                                 <?php if ($isTimeIn): ?>
-                                                    <span class="badge bg-success text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
-                                                <i class="ti ti-login me-2 fs-5"></i> TIME IN
+                                                    <span class="badge bg-success text-white fw-bold px-3 py-2 fs-3 rounded-3 shadow-sm d-inline-flex align-items-center">
+                                                <i class="ti ti-login me-2 fs-4"></i> TIME IN
                                             </span>
                                                 <?php else: ?>
-                                                    <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-4 rounded-3 shadow-sm d-inline-flex align-items-center">
-                                                <i class="ti ti-logout me-2 fs-5"></i> TIME OUT
+                                                    <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-3 rounded-3 shadow-sm d-inline-flex align-items-center">
+                                                <i class="ti ti-logout me-2 fs-4"></i> TIME OUT
                                             </span>
                                                 <?php endif; ?>
                                             </div>
-                                            <h4 class="fw-bold text-dark mb-3 fs-4 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h4>
+                                            <h4 class="fw-bold text-dark mb-3 text-uppercase" style="font-size: 1.75rem;"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h4>
 
                                             <?php
                                             $itemStatus = $item['status'] ?? 'unknown';
@@ -165,13 +165,13 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                             ];
                                             $alertInfo = $statusAlerts[$itemStatus] ?? ['class' => 'secondary', 'icon' => 'ti-help-circle', 'text' => 'Unknown Status'];
                                             ?>
-                                            <div class="alert alert-<?= $alertInfo['class'] ?> py-2 px-3 mb-3 d-flex align-items-center shadow-sm">
-                                                <i class="ti <?= $alertInfo['icon'] ?> me-2"></i>
-                                                <span class="fw-bold text-uppercase small"><?= esc($alertInfo['text']) ?></span>
+                                            <div class="alert alert-<?= $alertInfo['class'] ?> py-3 px-3 mb-3 d-flex align-items-center shadow-sm">
+                                                <i class="ti <?= $alertInfo['icon'] ?> me-2 fs-4"></i>
+                                                <span class="fw-bold text-uppercase" style="font-size: 1.05rem;"><?= esc($alertInfo['text']) ?></span>
                                             </div>
 
-                                            <p class="text-muted fw-semibold mb-2">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
-                                            <p class="text-muted fw-semibold mb-0">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
+                                            <p class="text-muted fw-semibold mb-2" style="font-size: 1.1rem;">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
+                                            <p class="text-muted fw-semibold mb-0" style="font-size: 1.1rem;">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
                                         </div>
                                         <div class="col-md-6 order-1 order-md-2">
                                             <div class="image-placeholder-box p-3 h-100 bg-white border" style="min-height: 200px; border-radius: 12px;">
@@ -186,11 +186,11 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                 </div>
 
                             <?php else: ?>
-                                <h6 class="fw-bold text-muted mb-3 d-flex align-items-center">
+                                <h5 class="fw-bold text-muted mb-3 d-flex align-items-center">
                                     <i class="ti ti-devices me-2"></i> SCANNED ITEMS (<?= count($scannedItems) ?>)
-                                </h6>
+                                </h5>
 
-                                <div class="d-flex flex-column gap-3 pe-2" style="max-height: 380px; overflow-y: auto; overflow-x: hidden;">
+                                <div class="d-flex flex-column gap-3 pe-2" style="max-height: 520px; overflow-y: auto; overflow-x: hidden;">
                                     <?php foreach ($scannedItems as $item): ?>
                                         <?php $isMissingCard = (($item['status'] ?? '') === 'missing'); ?>
                                         <div class="row align-items-center p-3 border rounded-3 <?= $isMissingCard ? 'bg-danger-subtle border-danger' : 'bg-light' ?> shadow-sm mx-0">
@@ -201,24 +201,24 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                                 $itemStudentPic = $item['student_profile_pic'] ?? 'default.png';
                                                 ?>
                                                 <div class="d-flex align-items-center pb-2 mb-2 border-bottom">
-                                                    <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-2 border border-2 border-light shadow-sm" style="width: 32px; height: 32px; object-fit: cover; flex-shrink: 0;">
+                                                    <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-2 border border-2 border-light shadow-sm" style="width: 44px; height: 44px; object-fit: cover; flex-shrink: 0;">
                                                     <div class="d-flex flex-column">
-                                                        <span class="text-uppercase fw-bold text-primary" style="font-size: 0.8rem;"><?= esc(trim(($item['student_first_name'] ?? '') . ' ' . ($item['student_last_name'] ?? '')) ?: 'Unknown Student') ?></span>
-                                                        <span class="text-uppercase text-muted" style="font-size: 0.7rem;"><?= esc($item['student_number'] ?? 'NO ID') ?></span>
+                                                        <span class="text-uppercase fw-bold text-primary" style="font-size: 1.05rem;"><?= esc(trim(($item['student_first_name'] ?? '') . ' ' . ($item['student_last_name'] ?? '')) ?: 'Unknown Student') ?></span>
+                                                        <span class="text-uppercase text-muted" style="font-size: 0.85rem;"><?= esc($item['student_number'] ?? 'NO ID') ?></span>
                                                     </div>
                                                 </div>
                                                 <div class="mb-2">
                                                     <?php if ($isTimeIn): ?>
-                                                        <span class="badge bg-success text-white fw-bold px-2 py-1 fs-2 rounded-2 shadow-sm">
+                                                        <span class="badge bg-success text-white fw-bold px-3 py-2 fs-4 rounded-2 shadow-sm">
                                                             <i class="ti ti-login me-1"></i> TIME IN
                                                         </span>
                                                     <?php else: ?>
-                                                        <span class="badge bg-secondary text-white fw-bold px-2 py-1 fs-2 rounded-2 shadow-sm">
+                                                        <span class="badge bg-secondary text-white fw-bold px-3 py-2 fs-4 rounded-2 shadow-sm">
                                                             <i class="ti ti-logout me-1"></i> TIME OUT
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
-                                                <h6 class="fw-bold text-dark mb-2 text-uppercase"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h6>
+                                                <h6 class="fw-bold text-dark mb-2 text-uppercase" style="font-size: 1.3rem;"><?= esc($item['brand_model'] ?? $item['name'] ?? 'Unknown Item') ?></h6>
 
                                                 <?php
                                                 $itemStatus = $item['status'] ?? 'unknown';
@@ -232,18 +232,18 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                                 ];
                                                 $alertInfo = $statusAlerts[$itemStatus] ?? ['class' => 'secondary', 'icon' => 'ti-help-circle', 'text' => 'Unknown'];
                                                 ?>
-                                                <div class="alert alert-<?= $alertInfo['class'] ?> py-1 px-2 mb-2 d-flex align-items-center shadow-sm" style="font-size: 0.75rem;">
-                                                    <i class="ti <?= $alertInfo['icon'] ?> me-1"></i>
+                                                <div class="alert alert-<?= $alertInfo['class'] ?> py-2 px-3 mb-2 d-flex align-items-center shadow-sm" style="font-size: 0.95rem;">
+                                                    <i class="ti <?= $alertInfo['icon'] ?> me-2"></i>
                                                     <span class="fw-bold text-uppercase"><?= esc($alertInfo['text']) ?></span>
                                                 </div>
 
-                                                <p class="text-muted fw-semibold mb-1" style="font-size: 0.8rem;">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
-                                                <p class="text-muted fw-semibold mb-0" style="font-size: 0.8rem;">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
+                                                <p class="text-muted fw-semibold mb-1" style="font-size: 1rem;">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
+                                                <p class="text-muted fw-semibold mb-0" style="font-size: 1rem;">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
                                             </div>
                                             <div class="col-md-5 order-1 order-md-2">
-                                                <div class="image-placeholder-box p-2 h-100 bg-white border" style="min-height: 100px; border-radius: 8px;">
+                                                <div class="image-placeholder-box p-2 h-100 bg-white border" style="min-height: 130px; border-radius: 8px;">
                                                     <?php if (!empty($item['photo'])): ?>
-                                                        <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" alt="Item" class="img-fluid rounded" style="max-height: 100px; width: 100%; object-fit: contain;">
+                                                        <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" alt="Item" class="img-fluid rounded" style="max-height: 130px; width: 100%; object-fit: contain;">
                                                     <?php else: ?>
                                                         <i class="ti ti-device-laptop text-muted opacity-25 d-flex justify-content-center align-items-center h-100" style="font-size: 2.5rem;"></i>
                                                     <?php endif; ?>
