@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         try {
             videoStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: facingMode }
+                video: { facingMode: facingMode, aspectRatio: { ideal: 1 } }
             });
 
             webcamVideo.srcObject = videoStream;
@@ -56,10 +56,19 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     takePhotoBtn?.addEventListener('click', () => {
+        // Camera streams don't always honor the aspectRatio constraint
+        // exactly, so center-crop to a square here as well — guarantees the
+        // saved photo is always 1:1, matching the square box the guard sees.
+        const videoWidth = webcamVideo.videoWidth;
+        const videoHeight = webcamVideo.videoHeight;
+        const side = Math.min(videoWidth, videoHeight);
+        const sx = (videoWidth - side) / 2;
+        const sy = (videoHeight - side) / 2;
+
         const context = photoCanvas.getContext('2d');
-        photoCanvas.width = webcamVideo.videoWidth;
-        photoCanvas.height = webcamVideo.videoHeight;
-        context.drawImage(webcamVideo, 0, 0, photoCanvas.width, photoCanvas.height);
+        photoCanvas.width = side;
+        photoCanvas.height = side;
+        context.drawImage(webcamVideo, sx, sy, side, side, 0, 0, side, side);
 
         const imageData = photoCanvas.toDataURL('image/png');
         webcamPhotoInput.value = imageData;
