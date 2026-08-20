@@ -94,6 +94,7 @@
 <script src="<?= base_url('assets/js/guard/guard.js') ?>"></script>
 <script src="<?= base_url('assets/js/theme.js') ?>"></script>
 <script src="<?= base_url('assets/js/initial-loader.js') ?>"></script>
+<script src="<?= base_url('assets/js/drawer') ?>"></script>
 
 <script>
     function updateNavProfileVisibility() {
