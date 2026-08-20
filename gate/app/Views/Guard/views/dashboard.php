@@ -356,6 +356,9 @@ $autoOpenVisitorModal = !empty($visitorRfid);
             <div class="modal-content rounded-4 border-0 shadow">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="guard-card-title mb-0" id="logVisitorModalLabel">LOG A VISITOR</h5>
+                    <button type="button" class="mobile-sheet-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ti ti-x"></i>
+                    </button>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-3 p-md-4">
