@@ -194,7 +194,7 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                     <?php foreach ($scannedItems as $item): ?>
                                         <?php $isMissingCard = (($item['status'] ?? '') === 'missing'); ?>
                                         <div class="row align-items-center p-3 border rounded-3 <?= $isMissingCard ? 'bg-danger-subtle border-danger' : 'bg-light' ?> shadow-sm mx-0">
-                                            <div class="col-md-7 order-2 order-md-1 mt-3 mt-md-0">
+                                            <div class="col-md-8 order-2 order-md-1 mt-3 mt-md-0">
                                                 <?php
                                                 // MULTIPLE ITEM LOGIC
                                                 $isTimeIn = (isset($item['action_taken']) && $item['action_taken'] === 'TIME-IN');
@@ -240,10 +240,10 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                                 <p class="text-muted fw-semibold mb-1" style="font-size: 1rem;">SN: <span class="font-monospace fw-normal text-dark"><?= esc($item['serial_number'] ?? 'N/A') ?></span></p>
                                                 <p class="text-muted fw-semibold mb-0" style="font-size: 1rem;">TYPE: <span class="fw-normal text-dark"><?= esc($item['category'] ?? 'N/A') ?></span></p>
                                             </div>
-                                            <div class="col-md-5 order-1 order-md-2">
-                                                <div class="image-placeholder-box p-2 h-100 bg-white border" style="min-height: 130px; border-radius: 8px;">
+                                            <div class="col-md-4 order-1 order-md-2">
+                                                <div class="image-placeholder-box h-100 bg-white border overflow-hidden" style="min-height: 170px; border-radius: 8px;">
                                                     <?php if (!empty($item['photo'])): ?>
-                                                        <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" alt="Item" class="img-fluid rounded" style="max-height: 130px; width: 100%; object-fit: contain;">
+                                                        <img src="<?= base_url('uploads/items/' . esc($item['photo'])) ?>" alt="Item" class="w-100 h-100" style="min-height: 170px; object-fit: cover;">
                                                     <?php else: ?>
                                                         <i class="ti ti-device-laptop text-muted opacity-25 d-flex justify-content-center align-items-center h-100" style="font-size: 2.5rem;"></i>
                                                     <?php endif; ?>
