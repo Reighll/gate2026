@@ -128,15 +128,15 @@ $autoOpenVisitorModal = !empty($visitorRfid);
                                 <?php $itemStudentPic = $item['student_profile_pic'] ?? $scannedStudent['profile_pic'] ?? 'default.png'; ?>
                                 <?php $isMissingSingle = (($item['status'] ?? '') === 'missing'); ?>
                                 <div class="border rounded-3 shadow-sm p-3 p-md-4 mb-4 <?= $isMissingSingle ? 'bg-danger-subtle border-danger' : '' ?>">
-                                    <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
-                                        <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 56px; height: 56px; object-fit: cover; flex-shrink: 0;">
-                                        <div class="d-flex flex-column">
-                                            <span class="text-uppercase fw-bold text-primary fs-3"><?= esc(trim(($item['student_first_name'] ?? '') . ' ' . ($item['student_last_name'] ?? '')) ?: ($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name'])) ?></span>
-                                            <span class="text-uppercase text-muted mt-1" style="font-size: 0.95rem;"><?= esc($item['student_number'] ?? $scannedStudent['student_number'] ?? 'NO ID') ?></span>
-                                        </div>
-                                    </div>
                                     <div class="row align-items-center">
                                         <div class="col-md-6 order-2 order-md-1 mt-4 mt-md-0">
+                                            <div class="d-flex align-items-center pb-3 mb-3 border-bottom">
+                                                <img src="<?= base_url('uploads/profiles/' . esc($itemStudentPic)) ?>" alt="Student" class="rounded-circle me-3 border border-2 border-light shadow-sm" style="width: 56px; height: 56px; object-fit: cover; flex-shrink: 0;">
+                                                <div class="d-flex flex-column">
+                                                    <span class="text-uppercase fw-bold text-primary fs-3"><?= esc(trim(($item['student_first_name'] ?? '') . ' ' . ($item['student_last_name'] ?? '')) ?: ($scannedStudent['first_name'] . ' ' . $scannedStudent['last_name'])) ?></span>
+                                                    <span class="text-uppercase text-muted mt-1" style="font-size: 0.95rem;"><?= esc($item['student_number'] ?? $scannedStudent['student_number'] ?? 'NO ID') ?></span>
+                                                </div>
+                                            </div>
                                             <?php
                                             $isTimeIn = (isset($item['action_taken']) && $item['action_taken'] === 'TIME-IN');
                                             ?>
